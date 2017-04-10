@@ -1,0 +1,5 @@
+<apex:page showHeader="true" standardStylesheets="false" sidebar="true"  >
+
+    <c:TimerProConsole />
+
+</apex:page>

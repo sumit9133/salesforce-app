@@ -1,0 +1,12 @@
+<apex:page title="Timer Pro - Account: {!Account.Name}" 
+	contentType="text/html" 
+	standardController="Account" 
+	showHeader="false" sidebar="false">
+
+	<head><title>Timer Pro - Account: {!Account.Name}</title></head>
+
+	<apex:stylesheet value="https://timerpro.s3.amazonaws.com/TimerProWidgetStyle.css"/>
+	
+	<c:TimerProWidget nowTimingName="{!Account.Name}"/>
+
+</apex:page>

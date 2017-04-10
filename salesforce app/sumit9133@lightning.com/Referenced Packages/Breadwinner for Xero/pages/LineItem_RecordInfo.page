@@ -1,0 +1,32 @@
+<apex:page standardController="Bread_Winner__Line_Item__c" extensions="Bread_Winner.RecordInfoExtension" showHeader="false">
+    <style>
+        .content{padding-top:5px; border:1.5px solid #ececec; border-left:0px; vertical-align:center; text-align:left; color:#000; font-size:15px; background-color:#FFFFFF ; }
+        .image{padding:15px; padding-right:5px; border:1.5px solid #ececec; border-right:0px;background-color:#FFFFFF ;  }
+    </style>
+    
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+        <tr  >
+            <td class="image">
+                <apex:image url="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/BreadwinnerLogo.png')}" />
+            </td>
+            <td class="content">
+                <apex:outputPanel rendered="{!daysOverdue>0}">
+                  <apex:outputPanel rendered="{!OR(isAdministrator, daysOverdue > 7)}">
+                    <apex:pageMessage severity="{!daysOverdueSeverity}" summary="{!summaryMessage}" strength="{!IF(daysOverdue > 10, 3, IF(daysOverdue >3, 2, 1))}" />
+                  </apex:outputPanel>
+                </apex:outputPanel>
+                
+                <apex:outputPanel rendered="{!isUnderTrial}">
+                    <p>
+                        These records only sync with Xero if you have a Breadwinner subscription of Professional or more. You are able to see these records now because your free trial defaults to the Professional Edition of Breadwinner. If you subscribe to Breadwinner at the Basic level, you will not be able to see these records anymore. This applies to Line Items and Payments.
+                    </p>
+                </apex:outputPanel>
+                <apex:outputPanel >
+                    <p>
+                        Do not add custom fields to this object, or lookups from or to this object, or Triggers or Workflows, as Breadwinner may need to delete/destroy this and any other Line Item record during a regular sync with Xero.
+                    </p>
+                </apex:outputPanel>
+            </td>
+        </tr>
+    </table>
+</apex:page>

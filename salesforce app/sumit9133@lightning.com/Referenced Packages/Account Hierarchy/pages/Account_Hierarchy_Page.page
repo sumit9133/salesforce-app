@@ -1,0 +1,24 @@
+<apex:page standardController="Account" readOnly="true" >
+    
+     
+    <apex:includeLightning />
+    
+    <div id="lightning" />
+    
+        <script>
+            $Lightning.use("accHierarchy:AccountHierarchyApp", function() {
+           
+              $Lightning.createComponent("accHierarchy:AccountHierarchyCmp",
+              {recordId:'{!account.id}'},
+              "lightning",
+              function(cmp) {
+                     
+              });
+            });
+        </script>
+    <style>
+    html body.sfdcBody {
+        padding: 0!important;
+    }
+    </style>
+</apex:page>

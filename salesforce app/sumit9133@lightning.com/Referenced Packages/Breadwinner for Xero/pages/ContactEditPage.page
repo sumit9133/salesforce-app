@@ -1,0 +1,365 @@
+<apex:page sidebar="false" standardController="Bread_Winner__Breadwinner_Account_Connection__c" extensions="Bread_Winner.BAC_PageExtension" action="{!EditContact}">
+    <apex:variable value="{!OR($User.UIThemeDisplayed == 'Theme4d', $User.UIThemeDisplayed == 'Theme4t')}" var="isLightning" />
+    <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/jquery-1.11.3.js')}"></script>
+    
+    <script type="text/javascript">
+        var j$=jQuery.noConflict();
+    function changeTheContact(firstname, lastname, email){
+        if({!!notValidEditionforEdit}){
+            j$('input[id$=confirstname]').val(firstname);
+            j$('input[id$=conlastname]').val(lastname);
+            j$('input[id$=conemail]').val(email);
+            rerenderFields();
+        }
+    }
+    </script>
+    
+    <script>
+    var j$ = jQuery.noConflict();
+    
+    function HideStyleSheet() {
+        j$("link.user[href$='elements.css']").each(function() {
+            j$(this).attr("href", "#");
+        });
+    }
+    
+    function message() {
+        j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+        j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+        j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+        j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+        
+        j$("div .messageText h4").css( "color", "white" );
+        j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+        j$("table.messageTable td").css({"color" : "white"});
+        j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+    }
+    j$(function() {
+        HideStyleSheet();
+        message();
+    });
+    </script>
+    
+    <script>
+    var j$ = jQuery.noConflict();
+    function identifyfield(elementt, helptext, TopMinusparam,LeftMinusParam) {
+        
+        var x = j$(elementt).offset();
+        var islightningparam='{!isLightning}';
+        if(islightningparam=='true'){
+            LeftMinusParam=LeftMinusParam-9;
+            TopMinusparam=TopMinusparam-105;
+        }
+        var ToSetleft = x.left - LeftMinusParam;
+        j$("#help p").text(helptext);
+        var ToSetheight = x.top - TopMinusparam;
+        var heptextdiv = document.getElementById("help");
+        j$(heptextdiv).css({
+            top: ToSetheight + 'px',
+            left: ToSetleft + 'px',
+            display: ""
+        })
+        
+    }
+    
+    function mouseoutclose() {
+        var heptextdiv = document.getElementById("help");
+        j$(heptextdiv).css({
+            top: "0px",
+            left: "0px",
+            display: "none"
+        });
+    }
+    </script>
+    <style>
+        
+        .msgIcon {
+        display: none;
+        }
+        
+        .message .messageText {
+        margin: 0px;
+        }
+        
+        .message .messageText h4 {
+        font-weight: inherit;
+        display: initial;
+        }
+    </style>
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>
+        </head>
+        <body>
+            <div class="BreadwinnerLightning">
+                
+                
+                <div id="help" class="slds-popover slds-popover--tooltip slds-nubbin--bottom-left" role="tooltip" aria-live="polite" style="display:none;position:absolute;top:0px;left:0px;">
+                    <div class="slds-popover__body slds-text-longform">
+                        <p>Help text will come here dynamically</p>
+                    </div>
+                </div>
+                <div class="slds-page-header" role="banner">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <svg aria-hidden="true" class="slds-icon slds-icon-standard-user">
+                                <use xlink:href="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/icons/utility-sprite/svg/symbols.svg#moneybag')}"></use>
+                            </svg>
+                        </div>
+                        <div class="slds-media__body">
+                            <p class="slds-page-header__title slds-truncate" title="Breadwinner Xero Contact"> Breadwinner Xero Contact </p>
+                            <p class="slds-text-body--small">Breadwinner • Xero </p>
+                        </div>
+                    </div>
+                </div><br/>
+                <apex:form >                   
+                    
+                    <div class="slds-m-horizontal--large">
+                        <apex:outputPanel layout="block" styleClass="warningM3" style="border-radius:4px;" rendered="{!!isActiveOrganization}">
+                            <b> Your Trial has Expired </b>
+                            <br/>
+                            <apex:outputLabel value="You must have a valid subscription to Breadwinner to Edit Xero Contact."></apex:outputLabel>&nbsp;
+                            <apex:outputLink rendered="{!AND(NOT(isSandbox),NOT(isDeveloperEdition))}" value="{!BW_API_BaseURL}/payment/{!$Organization.Id}" >Start your subscription now</apex:outputLink>
+                            <apex:outputLabel rendered="{!OR(isSandbox,isDeveloperEdition)}" value="Please visit the Breadwinner tab for more info."></apex:outputLabel>
+                        </apex:outputPanel>
+                        <apex:pageMessages ></apex:pageMessages>
+                        <apex:pageMessage rendered="{!if(isBasicOrHigher, false, true)}" severity="WARNING" strength="3" summary="This feature is only available to customers on our latest subscription plan. You may be able to move to one of these plan at little or even no cost. Please contact jo@breadwinner.com, and ask her about moving onto a higher plan with more features." />
+                        <apex:outputPanel layout="block" rendered="{!bacExists}" style="border-radius:4px;" styleClass="warningM3 slds-m-top--small slds-m-bottom---small" >
+                            You are trying to edit a Xero Contact, but another Xero Contact with that name already exists. The existing Xero Contact is called {!xeroCntct.Bread_Winner__CompanyName__c} and is already associated with a different Salesforce Account&nbsp;<apex:outputField value="{!existingBAC.Bread_Winner__Account__c}"/>.
+                            <br/> <br/>
+                            You have several options:
+                            <br/>
+                            <ul>
+                                <li>Edit Xero Contact but give it a different name.</li>
+                                <li>Merge the Salesforce Account&nbsp;<apex:outputField value="{!existingBAC.Bread_Winner__Account__c}"/> with this one. Start the&nbsp;
+                                    <apex:outputLink value="/merge/accmergewizard.jsp?goNext=+Next+&cid={!xeroCntct.Bread_Winner__Account__c}&cid={!existingBAC.Bread_Winner__Account__c}">Salesforce Account merge wizard</apex:outputLink>.
+                                </li>
+                            </ul>
+                            To understand more about how Breadwinner associates Xero contacts with Salesforce Accounts, this&nbsp;<a href="{!BW_SupportPortalURL}/customer/portal/articles/1787500-how-do-xero-contacts-work-with-salesforce-accounts-" target="_blank">knowledge base article</a> might help. Warning: it's long and technical!
+                            
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" rendered="{!bacExistsMsg2}" style="border-radius:4px;" styleClass="warningM3 slds-m-top--small slds-m-bottom---small" >
+                            A Xero Contact with the same name already exists and is related to the current Salesforce Account&nbsp; <apex:outputField value="{!existingBAC.Bread_Winner__Account__c}"/>. You can edit Xero Contact by giving it a different name.
+                        </apex:outputPanel>
+                        <apex:pageMessage rendered="{!isOAuthIssue}" escape="false" detail="{!oAuthExceptionWarningMessage}" summary="There was a problem with the connection to Xero." severity="WARNING" strength="3"/>
+                        <div class="slds-grid slds-wrap slds-m-horizontal--large">
+                            <div class="slds-size--1-of-1 slds-medium-size--2-of-6 slds-large-size--4-of-12 slds-p-horizontal--small">
+                                <div class="slds-form-element">
+                                    <span class="slds-form-element__label slds-m-top--medium">{!$ObjectType.Breadwinner_Account_Connection__c.fields.Name.label}</span>
+                                    <div class="slds-form-element__control">
+                                        <span class="slds-form-element__static" >{!xeroCntct.name}</span>
+                                    </div>
+                                </div>
+                                <apex:outputpanel rendered="{!AND(OR(isProfessionalOrHigher, bwSetting.Status__c == 'trial'), OR(haveMultiCurrency, Not(ISBlank(xeroCntct.defaultcurrency__c)))) }">                                                 
+                                    <div class="slds-form-element"> 
+                                        
+                                        <label class="slds-form-element__label slds-m-top--medium" >Default Currency for Xero Contact</label>
+                                        <apex:outputPanel rendered="{!bwSetting.Bread_Winner__Status__c == 'trial'}">
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);">
+                                                    <svg aria-hidden="true" class="slds-icon slds-icon--x-small slds-icon-text-default" onmouseover="identifyfield(this,'Selecting the default Currency for Xero Contacts is only available on Breadwinner Professional Edition and above. You can use this feature during your free trial, but to keep using it after your trial you must subscribe at the Professional or more.','217','25')" onmouseout="mouseoutclose();">
+                                                        <use xlink:href="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/icons/utility-sprite/svg/symbols.svg#info')}"></use>
+                                                    </svg>
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel id="conDefaultCurrency1">
+                                            <div class="slds-picklist slds-m-bottom--large">
+                                                
+                                                
+                                                <apex:selectList label="Default Currency" size="1" value="{!conDefaultCurrency}" styleClass="slds-input slds-m-bottom--medium" disabled="{!notValidEditionforEdit}" rendered="{!haveMultiCurrency}">
+                                                    <apex:selectOptions value="{!xeroOrgCurrencies}"></apex:selectOptions>
+                                                </apex:selectList>
+                                                <apex:outputText value="{!conDefaultCurrency}" rendered="{!NOT(haveMultiCurrency)}"></apex:outputText>                                                    
+                                            </div>
+                                        </apex:outputPanel>
+                                        
+                                    </div>
+                                </apex:outputpanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__CompanyName__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" >
+                                            <abbr class="slds-required" title="required">*</abbr>{!$ObjectType.Breadwinner_Account_Connection__c.fields.CompanyName__c.label}</label>
+                                        
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__CompanyName__c}" styleClass="slds-input"  disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__AttentionTo__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.AttentionTo__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__AttentionTo__c}" styleClass="slds-input" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__StreetAddress__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.StreetAddress__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputTextarea value="{!xeroCntct.Bread_Winner__StreetAddress__c}" rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__StreetAddress__c.updateable}" styleClass="slds-input" disabled="{!notValidEditionforEdit}"/><br/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel> 
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__City__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.City__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__City__c}" styleClass="slds-input" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Region__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.Region__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__Region__c}" styleClass="slds-input" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__PostalCode__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.PostalCode__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__PostalCode__c}" styleClass="slds-input" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Country__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.Country__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__Country__c}" styleClass="slds-input" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Phone__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.Phone__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__Phone__c}" styleClass="slds-input" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__FirstName__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.FirstName__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__FirstName__c}" styleClass="slds-input" id="confirstname" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__LastName__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.LastName__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__LastName__c}" styleClass="slds-input" id="conlastname" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__EmailAddress__c.updateable}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >{!$ObjectType.Breadwinner_Account_Connection__c.fields.EmailAddress__c.label}</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputtext value="{!xeroCntct.Bread_Winner__EmailAddress__c}" styleClass="slds-input" id="conemail" disabled="{!notValidEditionforEdit}"/>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Accounts_Receivable_Tax_Type__c.updateable && SpecialBusinessPlanOrHigher}">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >Default Sales Tax rate</label>
+                                        <div class="slds-picklist">
+                                            <apex:selectList label="Default Sales Tax Rate" size="1" value="{!conDefaultTaxRate}" styleClass="slds-input">
+                                                <apex:selectOptions value="{!xeroOrgTaxRates}"></apex:selectOptions>
+                                            </apex:selectList>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel rendered="{!AND($ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Invoice_Default_Due_Date_Type__c.updateable, $ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Invoice_Default_Due_Date_Days__c.updateable, SpecialBusinessPlanOrHigher)}"> 
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >Sales Terms</label>
+                                        <div class="slds-form-element__control slds-grid">
+                                            <apex:inputtext styleClass="slds-input slds-size--1-of-5 slds-m-right--small" value="{!defaultDueDateDays}" />
+                                            <apex:selectList size="1" value="{!defaultDueDaysOption}" styleClass="slds-input slds-size--4-of-5"> 
+                                                <apex:selectOptions value="{!defaultDueDaysOptions}"/>
+                                            </apex:selectList>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                
+                            </div>
+                            <div class="slds-size--1-of-1 slds-medium-size--4-of-6 slds-large-size--8-of-12 slds-p-horizontal--small">
+                                <div class="slds-text-heading--small slds-m-top--small">
+                                    
+                                    <p style="text-align:left;padding-left: 30px;">
+                                        <b>You can populate the fields First Name, Last Name, and Email on the Xero Contact from one of the Salesforce Contacts below.
+                                        </b>
+                                        <br/>
+                                        <br/>
+                                    </p>
+                                    
+                                    
+                                    <font color="red">
+                                        <apex:outputText rendered="{!contactWrapperList.size==0}"><div class="slds-text-color--error" style="text-align:left;padding-left: 30px;">No Salesforce Contacts exist for this Salesforce Account.</div></apex:outputText>
+                                    </font>
+                                    <div class="slds-form-element__control" style="text-align:left;padding-left: 30px; LINE-HEIGHT:30px;">
+                                        <apex:repeat value="{!contactWrapperList}" var="con">
+                                            
+                                            <span class="slds-radio">
+                                                <input type="radio" name="SalesforceContact" id="{!con.ContactId}" value="{!con.ContactId}" onchange="changeTheContact('{!con.firstname}','{!con.lastname}', '{!con.Email}');" />
+                                                <label class="slds-radio__label" for="{!con.ContactId}">
+                                                    <span class="slds-radio--faux"></span>
+                                                    <span class="slds-form-element__label">{!con.textToDisplay}</span>
+                                                </label>
+                                                <br/>
+                                            </span>
+                                        </apex:repeat>
+                                    </div>
+                                    <apex:pageMessage rendered="{!OR(NOT($ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.createable), NOT($ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__CompanyName__c.createable))}" detail="You do not have sufficient access to edit Xero Contact, please contact your administrator." summary="Insufficient Access" severity="WARNING" strength="3" />
+                                    <script>
+                                    //document.getElementById('{!JSENCODE(selectedContactWrapperRecord.ContactId)}').checked = true;
+                                    //changeTheContact('{!selectedContactWrapperRecord.firstname}','{!selectedContactWrapperRecord.lastname}','{!selectedContactWrapperRecord.Email}');
+                                    
+                                        if({!AND(Not(isProfessionalOrHigher))}) {   
+                                            <apex:repeat value="{!contactWrapperList}" var="con">
+                                                document.getElementById('{!JSENCODE(con.ContactId)}').disabled = true;
+                                            </apex:repeat>
+                                        }
+                                    </script>
+                                    <apex:actionFunction name="rerenderFields" reRender="firstname,lastname,email,radio"/>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div><br/>
+                    <div align="center">
+                        <apex:commandButton value="Save" action="{!saveXeroContact}" styleclass="slds-button slds-button--brand" disabled="{!OR(NOT(isXeroOrgConnected), isArchiveContact)}"/> &nbsp;&nbsp;&nbsp;&nbsp;
+                        <apex:commandButton value="Cancel" action="{!cancel}" styleclass="slds-button slds-button--neutral" />
+                        <div class="slds-text slds-m-top--small slds-m-bottom--small">
+                            Changing details will not alter the  associated Salesforce Account, nor will it break the association between the Xero Contact and Salesforce Account.
+                        </div>
+                    </div>
+                </apex:form>
+                
+                
+            </div>            
+        </body>
+    </html>
+    
+</apex:page>

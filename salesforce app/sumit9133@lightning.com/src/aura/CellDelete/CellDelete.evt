@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION" description="Event to request delete data on the grid.">
+	<aura:attribute name="rowIndex" type="integer" description="Starting row index to delete." />
+	<aura:attribute name="rowAmount" type="integer" default="1" description="Number of rows to delete. For example, if rowIndex is 3 and rowAmount is 2, row[3] and row[4] will be deleted." />
+	<aura:attribute name="componentName" type="string" description="Name of the component who should respond to this event." />
+</aura:event>

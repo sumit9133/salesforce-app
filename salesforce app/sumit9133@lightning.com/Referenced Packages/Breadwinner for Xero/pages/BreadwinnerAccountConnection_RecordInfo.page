@@ -1,0 +1,60 @@
+<apex:page standardController="Bread_Winner__Breadwinner_Account_Connection__c" extensions="Bread_Winner.BAC_PageExtension" ShowHeader="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <apex:variable value="{!OR($User.UIThemeDisplayed == 'Theme4d', $User.UIThemeDisplayed == 'Theme4t')}" var="isLightning" />
+        <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/jquery-1.11.3.js')}"></script>
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>
+        <script>
+            var j$ = jQuery.noConflict();
+            
+            function HideStyleSheet() {
+                j$("link.user[href$='elements.css']").each(function() {
+                    j$(this).attr("href", "#");
+                });
+            }
+            
+            function message() {
+                j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                
+                j$("div .messageText h4").css( "color", "white" );
+                j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                j$("table.messageTable td").css({"color" : "white"});
+                j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+            }
+            j$(function() {
+                HideStyleSheet();
+                message();
+            });
+            </script>
+        </head>
+        <body>
+            <div class="BreadwinnerLightning">
+                <div class="slds-grid slds-box">
+                    
+                    <span class="slds-image">
+                        <apex:image url="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/BreadwinnerLogo.png')}" />
+                    </span>   
+                    <div>
+                        <apex:outputPanel layout="block" styleClass="errorM3" style="border-radius:4px;" rendered="{!!isActiveOrganization}">
+                            <apex:outputLabel value="You might have an invalid subscription or our server was down. Please visit Breadwinner Tab."></apex:outputLabel>&nbsp;
+                        </apex:outputPanel>
+                        <apex:outputLink rendered="{!AND(isAuthorized, !($User.UIThemeDisplayed == 'Theme4d'  || $User.UIThemeDisplayed == 'Theme4t'), isActiveOrganization )}" styleClass=" slds-button slds-button--brand" value="{!$Page.Bread_Winner__ContactEditPage}?id={!Bread_Winner__Breadwinner_Account_Connection__c.Id}"  target="_parent">Edit this Xero Contact</apex:outputLink>
+                        <apex:outputLink rendered="{!AND(isAuthorized, ($User.UIThemeDisplayed == 'Theme4d'  || $User.UIThemeDisplayed == 'Theme4t'), isActiveOrganization )}" styleClass=" slds-button slds-button--brand" value="{!$Page.Bread_Winner__ContactEditPage}?id={!Bread_Winner__Breadwinner_Account_Connection__c.Id}">Edit this Xero Contact</apex:outputLink>
+                        <apex:outputLink rendered="{!AND(isAuthorized, !($User.UIThemeDisplayed == 'Theme4d'  || $User.UIThemeDisplayed == 'Theme4t'), isActiveOrganization )}" styleClass="slds-button slds-button--brand" value="{!$Page.Bread_Winner__ContactReparentingPage}?id={!Bread_Winner__Breadwinner_Account_Connection__c.Id}"  target="_parent"> Reparent this Xero Company to a different Salesforce Account</apex:outputLink>
+                        <apex:outputLink rendered="{!AND(isAuthorized, ($User.UIThemeDisplayed == 'Theme4d'  || $User.UIThemeDisplayed == 'Theme4t'), isActiveOrganization )}" styleClass="slds-button slds-button--brand" value="{!$Page.Bread_Winner__ContactReparentingPage}?id={!Bread_Winner__Breadwinner_Account_Connection__c.Id}"> Reparent this Xero Company to a different Salesforce Account</apex:outputLink>
+                        <br/><br/><!-- <apex:outputLabel styleclass="slds-text-heading--small"> -->
+                        <ul class="slds-list--dotted slds-m-top--xx-small">
+                        	 <li class="slds-text-heading--small slds-m-bottom--xx-small">This record represents a single Xero Contact.</li>
+                        	 <li class="slds-text-heading--small slds-m-bottom--xx-small"> The fields here are an exact copy of the Contact in Xero. Approximately every hour we will check Xero for any changes and update those changes here.</li>
+                        	 <li class="slds-text-heading--small"><b>Please Edit this Xero Contact using the blue Edit button above, not the standard Salesforce button.</b></li>
+                       	 </ul>
+                        <!-- </apex:outputLabel> -->
+                    </div>
+                </div>  
+            </div>
+        </body>
+    </html>
+</apex:page>

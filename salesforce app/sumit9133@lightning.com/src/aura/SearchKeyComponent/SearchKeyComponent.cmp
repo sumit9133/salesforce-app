@@ -1,0 +1,6 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes">   
+    <aura:registerEvent name="SearchEvent" type="c:SearchEvent"/>
+            <span class="slds-form-element">
+     <input type="text" class="slds-input" onkeyup="{!c.searchKeyInput}" placeholder="Search"/>
+  </span>
+</aura:component>

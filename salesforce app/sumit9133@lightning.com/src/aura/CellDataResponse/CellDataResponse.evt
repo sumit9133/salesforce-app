@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to receive data which is requested by CellDataRequest event." >
+    <aura:attribute name="records" type="object[]" description="Data on the grid." />
+    <aura:attribute name="componentName" type="string" description="Name of the component which triggered this event." />
+</aura:event>

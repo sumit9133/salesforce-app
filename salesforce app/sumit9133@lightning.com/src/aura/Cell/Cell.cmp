@@ -1,0 +1,28 @@
+<aura:component controller="CellController" implements="flexipage:availableForAllPageTypes" description="Component to put excel like data grid editor.">
+    <aura:attribute name="sobject" type="string" default="Account" required="true" description="Name of the object to be mapped to." />
+    <aura:attribute name="fields" type="string" description="Comma separated list of the field name to be displayed on the grid." />
+    <aura:attribute name="loadData" type="boolean" default="false" description="Whether to load data. If query is not set, all records are retrieved. If query is set, records are retrieved based on that query." />
+    <aura:attribute name="query" type="string" description="SOQL statement to retrieve records of the SObject. loadData has to be true to make this query work." />
+    <aura:attribute name="rows" type="integer" default="3" description="Number of rows displayed when no data is loaded." />
+    <aura:attribute name="showRowHeader" type="boolean" default="false" description="Whether to show Row Header on the left side of the grid." />
+    <aura:attribute name="componentName" type="string" description="Unique name of the component. This value will be used to determin if this component should take action when catches related event. Also this value will be included in the event triggered by this component." />
+
+    <aura:handler event="c:CellDataChange" action="{!c.setData}" description="Data which is included in the event is set to the grid on receiving this event." />
+    <aura:handler event="c:CellDataRequest" action="{!c.sendData}" description="Data on the grid is sent out using CellDataResponse Event on receiving this event." />
+    <aura:handler event="c:CellSave" action="{!c.saveData}" description="Data on the grid is saved to the database on receiving this event." />
+    <aura:handler event="c:CellClear" action="{!c.clearData}" description="Data on the grid is cleared on receiving this event." />
+    <aura:handler event="c:CellDelete" action="{!c.deleteData}" description="Selected rows are deleted on receiving this event." />
+
+    <aura:registerEvent name="CellDataResponse" type="c:CellDataResponse" description="This event is fired on receiving CellDataRequest Event to send data on the grid." />
+    <aura:registerEvent name="CellSaveComplete" type="c:CellSaveComplete" description="This event is fired when saving data to the database is completed." />
+    <aura:registerEvent name="CellDelete" type="c:CellDelete" description="This event is fired when rows are removed and user confirms that data on the database is also deleted." />
+    <aura:registerEvent name="CellDeleteComplete" type="c:CellDeleteComplete" description="This event is fired when deleting data on the database is completed." />
+
+    <ltng:require scripts="/resource/Cell_moment_js,/resource/Cell_pikaday_js,/resource/Cell_handsontable_full_min_js" afterScriptsLoaded="{!c.doInit}" />
+    <link rel="stylesheet" href="/resource/Cell_pikaday_css" />
+    <link rel="stylesheet" href="/resource/Cell_handsontable_full_min_css" />
+
+    <div style="background-color:#fff; width: 100%;">
+    	<div id="{!globalId + '_handsontableContainer'}"></div>
+    </div>
+</aura:component>

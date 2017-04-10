@@ -1,0 +1,139 @@
+<apex:page standardController="Contact" extensions="Bread_Winner.BreadwinnerAccountChartsExtension" action="{!initializeAccountAndRelatedInvoice}" showHeader="false">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            .content{ border-left:2px solid #666; }
+            #invoiceInfoTable{ padding:10px;}
+            #invoiceInfoTable td{padding:5px; background: #f1f1f1;border-bottom: 1px solid #fff;}
+            .gaugeChartText{font-size: 12px; margin:5px; width:auto; text-align:center}
+            .pieChart3d, .gaugeChart{ text-align: -webkit-center;}
+        </style>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+        google.load("visualization", "1", {packages:["corechart", "gauge"]});
+        google.setOnLoadCallback(drawChart);
+        
+        function drawChart() {
+            
+            var jsonDataTotalInvoicesBilled = {!SUBSTITUTE(JSENCODE(jsonTotalBilledPieChartData), '\\', '') };
+            var pie_chart_data = new google.visualization.DataTable(jsonDataTotalInvoicesBilled);
+            
+            var pie_chart_options = {
+                /* title: '{!JSENCODE(totalBilledPieChartTitle)}',*/
+                titleTextStyle: {  fontSize: 11 },
+                width: 220,
+                height: 220,             
+                is3D: true,
+                colors: ['green', 'orange', 'red'],              
+                legend: { position: 'bottom' },
+                chartArea:{top:20}
+            };
+          
+          var gaugeData = {!JSENCODE(longestOverDueGaugeChartData)};
+          var guage_data = google.visualization.arrayToDataTable([
+              ['Label', 'Value'],
+              ['Days', gaugeData ],
+          ]);
+              
+          var guage_options = {
+              width: 150, height: 150,
+              max: 90,
+              redFrom: 30, redTo: 90,
+              yellowFrom:0, yellowTo: 30,
+              majorTicks: [0,30,60,90],
+              minorTicks: 5,
+          };
+                                                                 
+          var pie_chart = new google.visualization.PieChart(document.getElementById('piechart_3d2'));
+          pie_chart.draw(pie_chart_data, pie_chart_options); 
+          
+          var guage_chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+          guage_chart.draw(guage_data, guage_options);
+          
+      }
+      
+      window.onresize = drawChart;
+      </script>
+
+  </head>
+    <body>  
+        
+        <apex:outputPanel rendered="{!isInvoicePresent}">
+            <table id="chartDivId" cellpadding="0" cellspacing="0" border="0" style="padding:10px;" width="100%">                
+                <tr>
+                    <td class="gaugeChartText">
+                        <apex:outputText style="font-weight:600;" value="{!totalBilledPieChartTitle}"></apex:outputText>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pieChart3d">
+                        <div id="piechart_3d2" style="margin: 0 auto; display: table;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="gaugeChartText" style="padding-bottom:5px;">
+                        <apex:outputText value="{!longestOverDueGaugeChartTitle}"></apex:outputText>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td class="gaugeChart">
+                        <div id="chart_div" style="margin: 0 auto; display: table;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td  style="text-align: center;">
+                        <table id="invoiceInfoTable" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td>{!invoiceInfo.noOfOverdueInvoice}</td>
+                                <td>
+                                    Invoices Overdue:
+                                </td>
+                                <td class="rightText">
+                                    <apex:outputPanel rendered="{!IF(invoiceInfo.noOfOverdueInvoice > 0,true,false)}">
+                                        {!invoiceInfo.amountOverdue}
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{!invoiceInfo.noOfDueInvoice}</td>
+                                <td> 
+                                    Invoices Due:
+                                </td>
+                                <td class="rightText">
+                                    <apex:outputPanel rendered="{!IF(invoiceInfo.noOfDueInvoice > 0,true,false)}">
+                                        {!invoiceInfo.amountDue}
+                                    </apex:outputPanel>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {!invoiceInfo.noOfFullyPaidInvoice}
+                                </td>
+                                <td>
+                                    Invoices Fully Paid:
+                                </td>
+                                <td class="rightText">
+                                    <apex:outputPanel rendered="{!IF(invoiceInfo.noOfFullyPaidInvoice > 0,true,false)}">
+                                        {!invoiceInfo.amountFullyPaid}
+                                    </apex:outputPanel>                                    
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="text-align: center;">
+                            <apex:outputLabel value="{!IF(isMultiCurrency==true, 'Amounts are in Multiple Currencies','Amounts in '+CurrencyCode)}"/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+      <apex:outputpanel rendered="{!!isInvoicePresent}" style="padding:10px;">
+          <div style="font-size: 20px; margin-bottom: 10px;text-align: center; padding-top: 20px;">
+              {!noInvoiceMessageHeading}
+          </div>
+          <div style="font-size: 13px; margin-bottom: 10px;text-align: center;">
+              {!noInvoiceMessageSubHeading}
+          </div>    
+      </apex:outputpanel>
+    </body>
+</apex:page>

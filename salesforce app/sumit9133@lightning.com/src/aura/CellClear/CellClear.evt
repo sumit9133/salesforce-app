@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event to request making cell clear." >
+	<aura:attribute name="componentName" type="string" description="Name of the component who should respond to this event." />
+</aura:event>

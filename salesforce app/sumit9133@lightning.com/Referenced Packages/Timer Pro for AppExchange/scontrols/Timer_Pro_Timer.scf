@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	
+<!--  
+***************************************
+NOTE: As of 3/20/09, this S-control has been deprecated in favor of new VisualForce components. Please discontinue
+use of this S-control and replace it with the corresponding VisualForce components included with the installation package.
+For more information, email support@efactory.com
+***************************************
+ -->
+	
+	<head>
+		<title>Timer Pro for AppExchange</title>
+		
+		<META HTTP-EQUIV="Last-Update" CONTENT="2009-03-20T13:53:01">
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.1/swfobject.js"></script>
+		
+		<script type="text/javascript">
+			swfobject.registerObject("timerProTimer", "9.0.0");
+		</script>
+		
+		<script type="text/javascript">
+		
+			var objectId = '';
+			var objectName = '';
+			var objectType = '';
+			
+			if ('{!Case.Id}' != '') {
+   				objectId   = '{!Case.Id}';
+   				objectName = '{!Case.CaseNumber}';
+   				objectType = 'Case';
+   			}
+			else if ('{!Contact.Id}' != '') {
+   				objectId   = '{!Contact.Id}';
+   				objectName = '{!Contact.Name}';
+   				objectType = 'Contact';
+   			}
+   			else if ('{!Lead.Id}' != '') {
+				objectId   = '{!Lead.Id}';
+   				objectName = '{!Lead.Name}';
+   				objectType = 'Lead';
+   			}
+			else if ('{!Opportunity.Id}' != '') {
+				objectId   = '{!Opportunity.Id}';
+				objectName = '{!Opportunity.Name}';
+				objectType = 'Opportunity';
+   			}
+   			else if ('{!Account.Id}' != '') {
+   				objectId   = '{!Account.Id}';
+   				objectName = '{!Account.Name}';
+   				objectType = 'Account';
+   			}
+   				
+			var flashvars = {
+				sessionId: "{!$Api.Session_ID}", 
+				serverUrl: "{!$Api.Partner_Server_URL_150}",
+				relatedId: objectId, 
+				relatedType: objectType,
+				relatedName: objectName,
+				isAutoStart: false
+			};
+        	var params = {
+        		AllowScriptAccess: 'always'
+        	};
+        	var attributes = {};
+        	swfobject.embedSWF("https://timerpro.s3.amazonaws.com/TimerProWidget.swf", "altContent", "380", "234", "9.0.0", "expressInstall.swf", flashvars, params, attributes);
+		</script>
+	</head>
+	
+	<body>
+		<div id="altContent">
+    		<a href="http://www.adobe.com/go/getflashplayer">
+        		<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+			</a>
+		</div>
+	</body>
+</html>

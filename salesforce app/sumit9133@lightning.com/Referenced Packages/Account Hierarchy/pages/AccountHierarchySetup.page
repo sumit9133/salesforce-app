@@ -1,0 +1,142 @@
+<apex:page controller="accHierarchy.AccountHierarchySetupController" action="{!init}" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+<style>
+body {
+    margin: 0px;
+}
+</style>
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Account Hierarchy Setup</title>
+        <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.SLDS100,'assets/styles/salesforce-lightning-design-system-vf.min.css')}" />
+        <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.AccountHierarchy,'css/account-hierarchy-setup.css')}" />
+
+    </head>
+    <body>
+
+        <apex:form >
+        <div class="slds">
+            <div class="slds-container--center">
+
+                <header class="slds-page-header">
+                    <h1 class="slds-text-heading--large">Account Hierarchies</h1>
+                    <p class="slds-m-top--medium">This page allows you to control the layout of the Account Hierarchy page for your organization. You can select and prioritize up to ten fields to display as columns on the page.
+                    The first four fields will also be used in the hover preview. Below, you can select which related objects and fields to display on the hover preview.</p>
+                </header>
+                <!--Messages Section -->
+
+                <apex:messages styleClass="{!IF(hasError, 'pageMessages slds-notify slds-notify--alert slds-theme--error','pageMessages slds-notify slds-notify--alert slds-theme--info')}" />
+                <!--Account Fields Section -->
+                <div class="slds-grid slds-m-top--large slds-m-left--medium">
+                    <div class="slds-col slds-size--1-of-1">
+                        <div class="slds-text-heading--medium slds-m-top--medium">Account fields</div>
+                        <hr class="slds-m-bottom--large slds-m-top--xxx-small" />
+                        <div class="slds-form-element">
+                            <div class="slds-show--inline-block">
+                                <span class="slds-form-element__label display-block" aria-label="select-1">Available</span>
+                                <select class="multiselect-fields" multiple="multiple" id="available-accountFields">
+                                    <apex:repeat value="{!availableAccountFields}" var="accountField">
+                                        <option value="{!accountField.value}">{!accountField.label}</option>
+                                    </apex:repeat>
+                                </select>
+                            </div>
+                            <div class="slds-show--inline-block arrows-container slds-m-top--medium slds-m-horizontal--xx-small">
+                                <button class="slds-button slds-button--icon-container display-block button-arrow" id="btnAddRight">
+                                  <svg aria-hidden="true" class="slds-button__icon">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS100,'assets/icons/utility-sprite/svg/symbols.svg#right')}"></use>
+                                  </svg>
+                                  <span class="slds-assistive-text">Arrow right</span>
+                                </button>
+                                <button class="slds-button slds-button--icon-container display-block button-arrow" id="btnAddLeft">
+                                  <svg aria-hidden="true" class="slds-button__icon">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS100,'assets/icons/utility-sprite/svg/symbols.svg#left')}"></use>
+                                  </svg>
+                                  <span class="slds-assistive-text">Arrow left</span>
+                                </button>
+                            </div>
+                            <div class="slds-show--inline-block">
+                                <span class="slds-form-element__label display-block" aria-label="select-1">Selected</span>
+                                <select class="multiselect-fields" multiple="multiple" id="selected-accountFields">
+                                    <apex:variable value="{!0}" var="index" />
+                                    <apex:repeat value="{!selectedAccountFields}" var="accountField">
+                                        <option value="{!accountField.value}" class="{!IF(index == 0, 'readonly','')}">{!accountField.label}</option>
+                                        <apex:variable value="{!index + 1}" var="index" />
+                                    </apex:repeat>
+                                </select>
+                            </div>
+                            <div class="slds-show--inline-block arrows-container slds-m-top--medium slds-m-horizontal--xx-small">
+                                <button class="slds-button slds-button--icon-container display-block button-arrow" id="btnUp">
+                                  <svg aria-hidden="true" class="slds-button__icon">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS100,'assets/icons/utility-sprite/svg/symbols.svg#up')}"></use>
+                                  </svg>
+                                  <span class="slds-assistive-text">Arrow up</span>
+                                </button>
+                                <button class="slds-button slds-button--icon-container display-block button-arrow" id="btnDown">
+                                  <svg aria-hidden="true" class="slds-button__icon">
+                                    <use xlink:href="{!URLFOR($Resource.SLDS100,'assets/icons/utility-sprite/svg/symbols.svg#down')}"></use>
+                                  </svg>
+                                  <span class="slds-assistive-text">Arrow down</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Related List Section -->
+                <div class="slds-grid slds-m-top--xx-large slds-m-left--medium">
+                    <div class="slds-col slds-size--1-of-1">
+                        <div class="slds-text-heading--medium slds-m-top--medium">Hover fields</div>
+                        <hr class="slds-m-bottom--large slds-m-top--xxx-small" />
+                        <div class="slds-form-element">
+
+                            <ul class="slds-list--vertical">
+                                <apex:repeat value="{!accountRelatedList}" var="relatedList">
+                                    <li class="slds-list__item">
+                                        <label class="slds-checkbox">
+                                            <input name="checkbox" type="checkbox" data-value="{!relatedList.name}" class="parent-related-list-chbox" />
+                                            <span class="slds-checkbox--faux"></span>
+                                            <span class="slds-form-element__label relatedlist-name">{!relatedList.label}</span>
+                                        </label>
+                                        <ul id="{!relatedList.name}" class="slds-list--vertical slds-is-nested relatedlist relatedlist-hidden">
+                                            <apex:repeat value="{!relatedList.fields}" var="field">
+                                                <li class="slds-list__item">
+                                                    <label class="slds-checkbox">
+                                                        <input name="checkbox" type="checkbox" data-value="{!field.value}" data-parentid="{!relatedList.name}" class="field-related-list-chbox" />
+                                                        <span class="slds-checkbox--faux checkbox-tooltip"></span>
+                                                        <span class="slds-form-element__label">{!field.label}</span>
+                                                    </label>
+                                                </li>
+                                            </apex:repeat>
+                                        </ul>
+                                    </li>
+                                 </apex:repeat>
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Button Sections -->
+                <div class="slds-grid slds-m-top--medium slds-m-bottom--xx-large slds-grid--align-center">
+                    <div class="slds-col">
+                        <apex:commandButton action="{!save}" value="Save" onclick="return setSelectedElements();" styleClass="slds-button slds-button--brand"/>
+                        <apex:commandButton action="{!cancel}" value="Cancel" styleClass="slds-button slds-button--neutral"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <apex:inputHidden value="{!record.accHierarchy__Account_fields__c}" id="hiddenSelectedOptions" />
+        <apex:inputHidden value="{!record.accHierarchy__Cases_Fields__c}" id="hiddenSelectedCases" />
+        <apex:inputHidden value="{!record.accHierarchy__Opportunities_Fields__c}" id="hiddenSelectedOpportunities" />
+
+        <script type="text/javascript" src="{!URLFOR($Resource.AccountHierarchy,'js/jquery-2.2.4.js')}"></script>
+        <script type="text/javascript">
+            var closeIcon = "{!URLFOR($Resource.SLDS100,'/assets/icons/action-sprite/svg/symbols.svg#close')}";
+        </script>
+        <script type="text/javascript" src="{!URLFOR($Resource.AccountHierarchy,'js/account-hierarchy-setup.js')}"></script>
+        </apex:form>
+
+    </body>
+
+</html>
+</apex:page>

@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event to request data in the grid. The data will be sent out via CellDataResponse event." >
+	<aura:attribute name="componentName" type="string" description="Name of the component who should respond to this event." />
+</aura:event>

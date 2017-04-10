@@ -1,0 +1,731 @@
+<apex:page controller="Bread_Winner.BreadwinnerOptionalSettingsController" showheader="false" sidebar="false" rendered="{!initialized}" >
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>
+            <apex:includeScript value="{!URLFOR($Resource.Bread_Winner__Breadwinner_jQuery, 'jquery.min.js')}" />   
+            <script>
+            var j$ = jQuery.noConflict();
+            
+            function identifyfield(elementt, helptext, TopMinusparam,LeftMinusParam) {
+                var x = j$(elementt).offset();
+                var ToSetleft = x.left - LeftMinusParam;
+                j$("#help p").text(helptext);
+                var ToSetheight = x.top - TopMinusparam;
+                var heptextdiv = document.getElementById("help");
+                j$(heptextdiv).css({
+                    top: ToSetheight + 'px',
+                    left: ToSetleft + 'px',
+                    display: ""
+                })
+                
+            }
+            
+            function mouseoutclose() {
+                var heptextdiv = document.getElementById("help");
+                j$(heptextdiv).css({
+                    top: "0px",
+                    left: "0px",
+                    display: "none"
+                });
+            }
+            
+            function TroubleshootselectTab(elmnt, XeroOrgId) {
+                // slds-active
+                j$(elmnt).parent("li").siblings(".slds-active").removeClass("slds-active");
+                j$(elmnt).parent("li").addClass("slds-active");
+                
+                // tabindex
+                j$(elmnt).parent("li").siblings().children("a").attr("tabindex", -1);
+                j$(elmnt).attr("tabindex", 0);
+                
+                // aria-selected
+                j$(elmnt).parent("li").siblings().children("a").attr("aria-selected", false);
+                j$(elmnt).attr("aria-selected", true);
+                
+                PassXeroOrgId(XeroOrgId);
+            }     
+            
+            function HideStyleSheet() {
+                j$("link.user[href$='elements.css']").each(function() {
+                    j$(this).attr("href", "#");
+                });
+            }
+            
+            function message() {
+                j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                
+                j$("div .messageText h4").css( "color", "white" );
+                j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                j$("table.messageTable td").css({"color" : "white"});
+                j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+            }
+            
+            function scrolltoTop()
+            {
+                window.scrollTo(0,0);
+            }
+            function showHideSectionConent(sectionId){
+                var sectiondiv=document.getElementById(sectionId);
+                
+                if(j$(sectiondiv).hasClass("slds-is-open")){
+                    j$(sectiondiv).removeClass("slds-is-open");
+                    j$("#DeleteRecDivIdImage").attr("src","{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionClose.png')}");
+                    j$("#DeleteRecDivIdImage").css({"margin-bottom":"3px", "margin-right":"4px", "width":"14px"});
+                }
+                else{
+                    j$(sectiondiv).addClass("slds-is-open");
+                    j$("#DeleteRecDivIdImage").attr("src","{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionOpen.png')}");
+                    j$("#DeleteRecDivIdImage").css({"margin-bottom":"0px", "margin-right":"3px", "width":"15px"});
+                }
+            }
+            j$(function() {
+                HideStyleSheet();
+                message();
+            });
+            </script>
+            <style>
+               .msgIcon{
+                     display:none;
+                }
+                .message .messageText {
+                     margin: 0px;
+                }
+                .message .messageText h4 {
+                     font-weight: inherit;
+                     display: initial;
+                }
+                .BreadwinnerLightning .slds-spinner_container{
+                position: fixed;
+                z-index: 9999;
+                }
+                .BreadwinnerLightning .slds-section__title-action{
+                    display: initial;
+                }
+                .BreadwinnerLightning .slds-section__title-action:active,
+                .BreadwinnerLightning .slds-section__title-action:focus, 
+                .BreadwinnerLightning .slds-section__title-action:hover{
+                    background: initial;
+                }
+                .BreadwinnerLightning .slds-section-title--divider .slds-button:focus{
+                    box-shadow: initial;
+                }
+                .BreadwinnerLightning .slds-section__title-action {
+                    display: block;
+                }
+            </style> 
+        </head>
+        <body>
+            <div class="BreadwinnerLightning">
+                
+                <apex:actionStatus id="assign-action-status" layout="block">
+                    <apex:facet name="start">
+                        <div class="slds-spinner_container">
+                            <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="alert">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </apex:facet>
+                </apex:actionStatus>
+                
+                <!-- -----------------------------Header Starts -------------------------- -->
+                <div class="slds-page-header slds-m-bottom--medium" role="banner">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <svg aria-hidden="true" class="slds-icon slds-icon-standard-opportunity">
+                                <use xlink:href="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/icons/standard-sprite/svg/symbols.svg#custom')}"></use>
+                            </svg>
+                        </div>
+                        <div class="slds-media__body">
+                            <p class="slds-page-header__title slds-truncate" title="Invoice Configuration">Invoice Configuration</p>
+                            <p class="slds-text-body--small">Breadwinner • Xero </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- -----------------------------Header Ends -------------------------- -->
+                
+                <!-- ----------------------------------- fields level help ---------------------------------- -->
+                <div id="help" class="slds-popover slds-popover--tooltip slds-nubbin--bottom-left" role="tooltip" aria-live="polite" style="display:none;position:absolute;top:0px;left:0px;">
+                    <div class="slds-popover__body slds-text-longform">
+                        <p>Help text will come here dynamically</p>
+                    </div>
+                </div>
+                <!-- ----------------------------------- fields level help ---------------------------------- -->
+                
+                <apex:form id="frmId">
+                    
+                    <!-- -------------------------------------Tabs section Start-------------------------------------------------------- -->
+                    <apex:outputPanel rendered="{!AND(isMultiOrgEnabled,initialized,isBasicOrHigher) }">
+                        <ul class="slds-tabs--default__nav slds-m-bottom--medium" role="tablist">
+                            <li class="slds-tabs--default__item slds-text-title--caps slds-active slds-truncate" title="Bredwinner Wide Settings" role="presentation">
+                                <a class="slds-tabs--default__link"  role="tab" onclick="TroubleshootselectTab(this,'');" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item">
+                                    Breadwinner Wide Settings
+                                </a>
+                            </li>
+                            
+                            <apex:repeat value="{!appConfigMap}" var="appC">
+                                
+                                <li class="slds-tabs--default__item slds-text-title--caps slds-truncate" title="{!appConfigMap[appC].Connecting_App_Name__c}" role="presentation">
+                                    <a class="slds-tabs--default__link" href="javascript:void(0);" role="tab" onclick="TroubleshootselectTab(this,'{!appConfigMap[appC].Xero_Org_ID__c}');" tabindex="0" aria-selected="true" aria-controls="{!appConfigMap[appC].Xero_Org_ID__c}" id="{!appConfigMap[appC].Xero_Org_ID__c}__item">
+                                        {!appConfigMap[appC].Connecting_App_Name__c}
+                                    </a>
+                                </li>
+                            </apex:repeat>
+                            
+                        </ul>
+                    </apex:outputPanel>
+                    
+                    <apex:outputPanel rendered="{!AND(isMultiOrgEnabled,initialized,!isBasicOrHigher,isMultiorgsConnected) }">
+                        <ul class="slds-tabs--default__nav slds-m-bottom--medium" role="tablist">
+                            <apex:variable var="Index" value="{!1}">
+                            <apex:repeat value="{!appConfigMap}" var="appC">
+                                
+                                <li class="slds-tabs--default__item slds-text-title--caps slds-truncate {!IF(Index==1,'slds-active','')}" title="{!appConfigMap[appC].Connecting_App_Name__c}" role="presentation">
+                                    <a class="slds-tabs--default__link" href="javascript:void(0);" role="tab" onclick="TroubleshootselectTab(this,'{!appConfigMap[appC].Xero_Org_ID__c}');" tabindex="0" aria-selected="true" aria-controls="{!appConfigMap[appC].Xero_Org_ID__c}" id="{!appConfigMap[appC].Xero_Org_ID__c}__item">
+                                        {!appConfigMap[appC].Connecting_App_Name__c}
+                                    </a>
+                                </li>
+                                <apex:variable var="Index" value="{!Index+1}"/>
+                            </apex:repeat>
+                        </apex:variable>
+                        </ul>
+                    </apex:outputPanel>
+                    
+                    
+                    <apex:pagemessages id="pgmsg"/>
+                    
+                    <apex:actionFunction name="PassXeroOrgId" action="{!QueryXeroOrgInfo}" status="assign-action-status"  reRender="pgmsg,WholeBlock" oncomplete="HideStyleSheet();message();" >
+                        
+                        <apex:param name="PassXeroOrgIdParam" value="" assignTo="{!xeroOrgId}"/>
+                    </apex:actionFunction>
+                    
+                    <!-- -------------------------------------Tabs section End---------------------------------------------------------- -->
+                    
+                    <apex:outputPanel layout="block" id="WholeBlock">
+                        <apex:outputPanel layout="block" rendered="{!initialized}">
+                            <!-- -----------------------------Xero Org wide Settings Start---------------------------->  
+                            <apex:outputPanel layout="block"  styleClass="slds-m-horizontal--small" rendered="{!OR(AND(isMultiOrgEnabled,xeroOrgId!=null),AND(NOT(isMultiOrgEnabled),xeroOrgId!=null))}" >
+                                
+                                <apex:outputPanel layout="block" rendered="{!isMultiOrgEnabled }">
+                                    <h3 class="slds-section-title--divider slds-m-top--medium">{!apC.Connecting_App_Name__c} Settings</h3>
+                                    
+                                    <legend class="slds-text-heading--small slds-m-top--small slds-m-left--small">Display Common Name instead of Legal Name (Optional)</legend>
+                                    <div class="slds-m-left--small">
+                                        <div class="slds-text-body--small slds-m-top--x-small">
+                                            <p>You might have used your company's legal name in Xero, but want it displayed to your staff as a different name.</p>
+                                            <p>Perhaps as the Trading Name, or perhaps without Ltd, or Pty, etc.</p>
+                                        </div>
+                                        <div class="slds-form-element slds-m-top--x-small">
+                                            <label class="slds-form-element__label" >Display Name for Xero Org</label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputField value="{!apC.Bread_Winner__Display_Name__c}" styleClass="slds-input slds-size--1-of-1 slds-medium-size--2-of-6 slds-large-size--3-of-12"  ></apex:inputField>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <legend class="slds-text-heading--small slds-m-top--medium slds-m-left--small">Logo or Image associated with Xero Org (Optional)</legend>
+                                    <div class="slds-m-left--small">
+                                        <div class="slds-text-body--small slds-m-top--x-small">
+                                            <p>To minimize staff confusion, you can show an image or logo next to the Xero Org Name. You must host this image yourself (perhaps on your website), and it will be resized to 40 pixels high (for the sharpest image and fastest load times, resize it yourself to 40 px high). You can use jpg, png or gif files.</p>
+                                            <p>Please use the format https://mywebsite.com/myimage.jpg or similar. We recommend https, though http works fine.</p> 
+                                        </div>
+                                        <div class="slds-form-element slds-m-top--x-small">
+                                            <label class="slds-form-element__label" >URL of Image</label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputField value="{!apC.Bread_Winner__Logo_URL__c}" styleClass="slds-input slds-size--1-of-1 slds-medium-size--2-of-6 slds-large-size--3-of-12"  ></apex:inputField>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>                            
+                                <div class="slds-section-title--divider slds-m-top--medium">Allow Invoices to be created as Draft/Approved</div>
+                                <div class="slds-m-left--small">
+                                    <div class="slds-text-body--small slds-m-top--x-small">
+                                        <p>At least one or more of the two checkboxes must be checked. This will allow Breadwinner users to create invoices as Draft or Authorized</p>
+                                    </div>
+                                    
+                                    <div class="slds-form-element__control slds-m-top--x-small">
+                                        <span class="slds-checkbox">
+                                            <label class="slds-checkbox__label" >
+                                                <apex:inputCheckbox value="{!apC.Bread_Winner__Create_Button_Draft__c}"/>
+                                                <span class="slds-checkbox--faux"></span>
+                                                <span class="slds-form-element__label slds-m-left--small">Show "Create Draft Invoice in Xero" Button</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-checkbox">
+                                            <label class="slds-checkbox__label" >
+                                                <apex:inputCheckbox value="{!apC.Bread_Winner__Create_Button_Authorised__c}"/>
+                                                <span class="slds-checkbox--faux"></span>
+                                                <span class="slds-form-element__label slds-m-left--small">Show "Create Approved Invoice in Xero" Button</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-section-title--divider slds-m-top--medium">Default Due Date and Accounting Code</div>
+                                <div class="slds-m-left--small slds-m-top--small">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" >Invoice Default Due Date
+                                            <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                <a href="javascript:void(0);">
+                                                    <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Default Due Date will only apply for Contacts which do not have a Default Due Date specified on their contact record in Xero. If a Contact has its Default Due Date for Sales Invoices specified in Xero, then that value will override the value below.','117','18')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </apex:outputPanel>
+                                        </label>
+                                        <div class="slds-form-element__control  slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                            <div class="slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--7-of-12 slds-grid">
+                                                <apex:inputField value="{!apC.Bread_Winner__Default_Due_Date_Days_Number__c}" styleClass="slds-input slds-size--1-of-6" />
+                                                <apex:selectList size="1" value="{!apC.Bread_Winner__Default_Due_Date_Days_Option__c}" styleClass="slds-m-left--small slds-input slds-size--4-of-5">
+                                                    <apex:selectOptions value="{!defaultDueDaysOptions}"/>
+                                                </apex:selectList>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <apex:outputPanel layout="block" styleclass="slds-form-element slds-m-top--medium slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12" rendered="{!if(isBasicOrHigher, true, false)}">
+                                        <label class="slds-form-element__label" >Default Xero Accounting Tax Type</label>
+                                        <div class="slds-form-element__control">
+                                            <apex:selectList size="1" value="{!apC.Bread_Winner__Default_Xero_Tax_Type__c}" styleClass="slds-input slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--8-of-16">
+                                                <apex:selectOptions value="{!defaultXeroTaxOptions}"/>
+                                            </apex:selectList>
+                                        </div>
+                                    </apex:outputPanel>
+                                    
+                                    <div class="slds-form-element slds-m-top--medium">
+                                        <label class="slds-form-element__label" >Default Xero Accounting Code (Revenue Code)
+                                            <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                <a href="javascript:void(0);">
+                                                    <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Default Tax Rate is set in Xero for each Accounting Code in Chart of Accounts','62','18')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </apex:outputPanel>
+                                        </label>
+                                        <div class="slds-form-element__control slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                            <apex:selectList size="1" value="{!apC.Bread_Winner__Default_Xero_Accounting_Code__c}" styleClass="slds-input slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12" id="AccountCodes">
+                                                <apex:selectOptions value="{!defaultXeroAccountingOptions}"/>
+                                            </apex:selectList>
+                                        </div>
+                                    </div>
+                                    
+                                    <apex:outputPanel layout="block" styleClass="slds-form-element slds-m-top--medium" rendered="{!areRecordTypesEnabled}">
+                                        <label class="slds-form-element__label" >Breadwinner should create SF Accounts as Record Type:
+                                            <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                <a href="javascript:void(0);">
+                                                    <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'If Breadwinner discovers a new Xero Contact and thus creates a new Salesforce Account based on this Xero Contact, we can create that new SF Account as any one of your record types. Select a record type here, otherwise we will use the Primary Record Type when creating a new SF Account.','135','20')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </apex:outputPanel>
+                                        </label>
+                                        <div class="slds-form-element__control slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                            <apex:selectList size="1" value="{!apC.Bread_Winner__Default_Account_RecordType__c}" styleClass="slds-input slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                <apex:selectOptions value="{!recordTypesAvailable}"/>
+                                            </apex:selectList>
+                                        </div>
+                                    </apex:outputPanel>
+                                    
+                                </div>
+                                
+                                <div class="slds-section" id="DeleteRecDivId" >
+                                        <h3 class="slds-section-title--divider slds-m-top--medium" style="padding: 0.19rem;">
+                                            <button class="slds-button slds-section__title-action"  type="button" onclick="showHideSectionConent('DeleteRecDivId');" style="letter-spacing: .0625rem;text-transform: initial;">
+                                                <img id="DeleteRecDivIdImage" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionClose.png')}" style="margin-bottom: 3px;margin-right: 4px;" />
+                                                <span style="color: #54698d;    text-transform: uppercase;">Advanced Settings</span></button>
+                                        </h3>
+                                    <div class="slds-section__content slds-m-left--small">
+                                        <div class="slds-section__title">Liabilities</div>
+                                        <div class="slds-form-element slds-m-left--small slds-m-top--small ">
+                                            <span class="slds-checkbox">
+                                                <label class="slds-checkbox__label" >
+                                                    <apex:inputCheckbox value="{!apC.Bread_Winner__Display_Liabilities__c}" />
+                                                    <span class="slds-checkbox--faux"></span>
+                                                    <span class="slds-form-element__label slds-m-right--small">Display Liabilities on New Invoice creation Page as well as Revenue Accounts</span>
+                                                </label>
+                                            </span>
+                                        </div>
+                                        
+                                        <apex:outputPanel layout="block" rendered="{!isProfessionalOrHigher}">
+                                            <div class="slds-section__title slds-m-top--medium">Invoice Auto-Matching</div>
+                                            <div class="slds-m-left--small slds-m-top--small">
+                                                
+                                                <div class="slds-form-element">
+                                                    <span class="slds-checkbox">
+                                                        <label class="slds-checkbox__label" >
+                                                            <apex:inputCheckbox value="{!apC.Bread_Winner__Invoice_Opportunity_Auto_Match__c}" />
+                                                            <span class="slds-checkbox--faux"></span>
+                                                            <span class="slds-form-element__label slds-m-right--small">Auto Match newly discovered Invoices to an Opportunity if a Salesforce Account only has one Opportunity on it</span>
+                                                        </label>
+                                                    </span>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--medium">
+                                                    <label class="slds-form-element__label" >Whenever a new Invoice is discovered in Xero, auto-match it to an Opportunity, as long as the Xero Invoice Reference field matches the following Salesforce custom field
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'If Invoice Reference and the above field contain identical values (case sensitive), then we will match the Invoice to that Opportunity.','80','18')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                        <apex:selectList size="1" value="{!apC.Bread_Winner__Invoice_Mapping_Opportunity_Field_Name__c}" styleClass="slds-input slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                            <apex:selectOptions value="{!textFields}"/>
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="block" rendered="{!AND(isBasicOrHigher,NOT(isMultiOrgEnabled))}">
+                                            <div class="slds-section__title slds-m-top--medium">Account and Opportunity Rollup calculation
+                                                <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                    <a href="javascript:void(0);">
+                                                        <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Breadwinner creates a roll-up summary of your invoices on the Opportunity and Account records. We currently calculate the Account rollups on Net. You can set the Opportunity rollups to be either Gross or Net.','117','18')" onmouseout="mouseoutclose();" />
+                                                        <span class="slds-assistive-text">Help</span>
+                                                    </a>
+                                                </apex:outputPanel>   
+                                                
+                                            </div>
+                                            <div class="slds-form-element slds-m-left--small slds-m-top--small" >
+                                                <label class="slds-form-element__label" >Opportunity rollups to be either Gross or Net</label>
+                                                <div class="slds-form-element__control slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                    <apex:selectList size="1" value="{!selectedFieldForOpportunityRollup}" styleClass="slds-input slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                        <apex:selectOptions value="{!defaultXeroRollupAmountsOptions}"/>
+                                                    
+                                                    </apex:selectList>
+                                                </div>
+                                            </div>
+                                            
+                                        </apex:outputPanel>
+                                        <apex:outputPanel layout="block" rendered="{!AND(isProfessionalOrHigher, NOT(isMultiOrgEnabled))}">
+                                          <div class="slds-section__title slds-m-top--medium">Invoice Field</div>                                            
+                                            <div class="slds-form-element slds-m-left--small slds-m-top--small">
+                                                <label class="slds-form-element__label" >Custom Invoice Number
+                                                    <apex:outputPanel styleClass="slds-form-element__icon" rendered="{!TrialOrg}">
+                                                        <a href="javascript:void(0);">
+                                                            <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Normally, Xero will assign an Invoice number to any Invoices created by Breadwinner. However, you can optionally set your own Invoice number based on an Opportunity Custom Field.','100','18')" onmouseout="mouseoutclose();" />
+                                                            <span class="slds-assistive-text">Help</span>
+                                                        </a>
+                                                    </apex:outputPanel>
+                                                </label>
+                                                <div class="slds-form-element__control slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                    <apex:selectList value="{!selectedFieldForCustomInvoiceNumber}" size="1" styleClass="slds-input slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                        <apex:selectOptions value="{!textFields}"/>    
+                                                    </apex:selectList>
+                                                </div>
+                                            </div>
+                                        </apex:outputPanel> 
+                                        
+                                    </div>
+                                </div>
+                                
+                            </apex:outputPanel> 
+                            <!-- -----------------------------Xero Org wide Settings Ends ---------------------------->
+                            
+                            <!-- -----------------------------Breadwinner Wide Settings Start---------------------------->
+                            <apex:outputPanel layout="block"  styleClass="slds-m-horizontal--small slds-m-bottom--medium" rendered="{!OR(AND(isMultiOrgEnabled,xeroOrgId==null),AND(NOT(isMultiOrgEnabled),xeroOrgId!=null))}">
+                                <!-- ------------------------- Help text start------------------------------------->
+                                <apex:outputPanel layout="block" styleclass="slds-text-heading--small slds-m-horizontal--xx-small" style="font-style: italic;" rendered="{!AND(isMultiOrgEnabled,OR(isMultiorgsConnected,isBasicOrHigher))}">
+                                    As you are using Breadwinner with Multiple Xero Orgs, we have split the Configuration section into multiple pages. This page is for settings that affect all of Breadwinner regardless of which Xero org. The other pages are for settings that affect just one of your many Xero orgs.
+                                </apex:outputPanel>
+                                <!-- ------------------------- Help text END----------------------------------- -->
+                                
+                                <apex:outputPanel layout="block"  rendered="{!isProfessionalOrHigher}">
+                                    <apex:outputtext rendered="{!(!isProfessionalOrHigher&& !TrialOrg)}"> The functionality below is beta functionality and is not generally available. Furthermore, we may limit this functionality to certain plans. </apex:outputtext>
+                                    
+                                    <div class="slds-text-color--weak slds-m-left--small slds-m-top--medium">
+                                        When creating Invoices from Opportunities and Opportunity Products, we populate data in the Invoice from standard Salesforce fields. However, you might have your own 
+                                        field you'd like to use to prepopulate the Invoice. You can select your own custom fields below. If you'd like to use two or more fields, we suggest you combine them using a formula.
+                                    </div>
+                                    
+                                    <h3 class="slds-section-title--divider slds-m-top--medium">
+                                        Invoice Fields
+                                        <apex:outputPanel styleClass="slds-form-element__icon" rendered="{!TrialOrg}">
+                                            <a href="javascript:void(0);">
+                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'This Invoice Fields mapping is only available to customers on the Professional Plan and higher. During your free trial of Breadwinner, you can use this functionality, but if you subscribe to the Basic plan, then this will no longer be available.','117','18')" onmouseout="mouseoutclose();" />
+                                                <span class="slds-assistive-text">Help</span>
+                                            </a>
+                                        </apex:outputPanel>
+                                    </h3>
+                                    <div class="slds-text-body--small slds-m-top--small slds-m-left--small ">Invoice Fields are populated from the Opportunity object. Please select a field or a formula field below. This only affects invoices created from Opportunities.</div>
+                                    <div class="slds-m-top--small slds-m-left--small"><i>Please note</i>: <i>All mapped fields must be on the Opportunity</i>. <i>If you wish to map data on an object other than the Opportunity</i>, <i>please create a formula field on the Opportunity to pull in this data</i>.</div>
+                                    <div class="slds-grid slds-wrap slds-m-left--small">
+                                        <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                                            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                                                
+                                                <!-- <apex:outputPanel layout="block" styleclass="slds-form-element slds-m-top--small" rendered="{!isProfessionalOrHigher}">
+                                                    <label class="slds-form-element__label" >Custom Invoice Number
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" rendered="{!TrialOrg}">
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Normally, Xero will assign an Invoice number to any Invoices created by Breadwinner. However, you can optionally set your own Invoice number based on an Opportunity Custom Field.','100','18')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!selectedFieldForCustomInvoiceNumber}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!textFields}"/>    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </apex:outputPanel> -->
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label" >Invoice Reference</label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!selectedFieldForInvoiceReference}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!textFields}"/>    
+                                                        </apex:selectList> 
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label" >Invoice Date</label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!selectedFieldForInvoiceDate}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!invoice_DateFields}"/>    
+                                                        </apex:selectList> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                                            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label" >Invoice Due Date</label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!selectedFieldForInvoiceDueDate}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!dateFields}"/>    
+                                                        </apex:selectList> 
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label" >Invoice Branding Theme</label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!selectedFieldForInvoiceBrandingTheme}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!BrandingThemeFields}"/>    
+                                                        </apex:selectList> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel layout="block" rendered="{!if(isBusinessOrHigher, true, false)}">
+                                    <h3 class="slds-section-title--divider slds-m-top--medium">
+                                        Invoice Line Item Fields
+                                    </h3>
+                                    
+                                    <div class="slds-text-color--weak slds-m-top--small slds-m-left--small">
+                                        <p>Invoice Line Items are normally populated from the Opportunity Product fields. We presume you use the standard fields Description, Amount, Discount, and Quantity. However, you may wish to override these fields with your own custom fields. Additionally, you may want to populate the Account Revenue, Tax, and the optional Xero Tracking Category fields.</p>
+                                        <p class="slds-m-top--small">For the Account Revenue, Tax, and Tracking categories, you must provide values that already exist in Xero. For security and data accuracy reasons, if the match is not exact, we will leave that field blank on the Breadwinner New Invoice page, allowing you to manually populate it before committing to Xero. </p>   
+                                    </div>
+                                    <div class="slds-m-top--small slds-m-left--small">
+                                        <p class="slds-m-top--small"><i>Please note</i>: <i>All mapped fields must be on the Opportunity Product . If you wish to map data on an object other than the Opportunity Product</i>, <i>please create a formula field on the Opportunity Product to pull in this data.</i></p>
+                                    </div>
+                                    
+                                    <div class="slds-grid slds-wrap slds-m-left--small">
+                                        <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                                            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label">Line Item Description - Override Field
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 2px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Normally populated by Opportunity Product Name and Description. You can not select a Long Text Area field here due to Xero Limitations.','80','18')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!LineItem_Description}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!OLI_DescriptiontextFields}"/>    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label">Line Item Quantity - Override Field
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Normally populated by Opportunity Product Quantity.','62','18')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!LineItem_Quantity}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!OLINumberFields}"/>    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label">Line Item Amount - Override Field
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Normally populated by Opportunity Product Amount. ','62','18')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!LineItem_Amount}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!OLINumberFields}"/>    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label">Line Item Discount - Override Field
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Normally populated by Opportunity Product Discount. ','62','18')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!LineItem_Discount}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!OLINumPercentFields}" />    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                                            <div class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2">
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label">Account Revenue
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Must be a perfect match with the Xero value. ','45','18')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!LineItem_AccountRevenue}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!OLItextFields}"/>    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label">Tax Rate
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Must be a perfect match with the Xero value. ','45','18')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!LineItem_TaxRate}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!OLItextFields}"/>    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label">Tracking Category 1
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Tracking Categories are optional fields which must be enabled first in Xero. It\'s possible these fields aren\'t used in your instance of Xero. These field\'s values must be a perfect match with the values in Xero. ','98','17')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!LineItem_TrackingCategory1}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!OLItextFields}"/>    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="slds-form-element slds-m-top--small">
+                                                    <label class="slds-form-element__label">Tracking Category 2
+                                                        <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                            <a href="javascript:void(0);">
+                                                                <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Tracking Categories are optional fields which must be enabled first in Xero. It\'s possible these fields aren\'t used in your instance of Xero. These field\'s values must be a perfect match with the values in Xero. ','98','17')" onmouseout="mouseoutclose();" />
+                                                                <span class="slds-assistive-text">Help</span>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:selectList value="{!LineItem_TrackingCategory2}" size="1" styleClass="slds-input">
+                                                            <apex:selectOptions value="{!OLItextFields}"/>    
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" rendered="{!AND(isBasicOrHigher,isMultiOrgEnabled)}">
+                                    <div class="slds-section" id="DeleteRecDivId" >
+                                        <h3 class="slds-section-title--divider slds-m-top--medium" style="padding: 0.19rem;">
+                                            <button class="slds-button slds-section__title-action"  type="button" onclick="showHideSectionConent('DeleteRecDivId');" style="letter-spacing: .0625rem;text-transform: initial;">
+                                                <img id="DeleteRecDivIdImage" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionClose.png')}" style="margin-bottom: 3px;margin-right: 4px;" />
+                                                <span style="color: #54698d;    text-transform: uppercase;">Advanced Settings</span></button>
+                                        </h3>
+                                        <div class="slds-section__content slds-m-left--small">
+                                            <div class="slds-section__title">Account and Opportunity Rollup calculation
+                                                <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                    <a href="javascript:void(0);">
+                                                        <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Breadwinner creates a roll-up summary of your invoices on the Opportunity and Account records. We currently calculate the Account rollups on Net. You can set the Opportunity rollups to be either Gross or Net.','117','18')" onmouseout="mouseoutclose();" />
+                                                        <span class="slds-assistive-text">Help</span>
+                                                    </a>
+                                                </apex:outputPanel>   
+                                            </div>
+                                            <div class="slds-form-element slds-m-left--small slds-m-top--small" >
+                                                <label class="slds-form-element__label" >Opportunity rollups to be either Gross or Net</label>
+                                                <div class="slds-form-element__control slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                    <apex:selectList size="1" value="{!selectedFieldForOpportunityRollup}" styleClass="slds-input slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                        <apex:selectOptions value="{!defaultXeroRollupAmountsOptions}"/>
+                                                    </apex:selectList>
+                                                </div>
+                                            </div>
+                                        
+                                        <apex:outputPanel layout="block" styleclass="slds-section__content slds-m-left--small" rendered="{!isProfessionalOrHigher}">
+                                            <label class="slds-form-element__label" >Custom Invoice Number
+                                                <apex:outputPanel styleClass="slds-form-element__icon" rendered="{!TrialOrg}">
+                                                    <a href="javascript:void(0);">
+                                                        <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Normally, Xero will assign an Invoice number to any Invoices created by Breadwinner. However, you can optionally set your own Invoice number based on an Opportunity Custom Field.','100','18')" onmouseout="mouseoutclose();" />
+                                                        <span class="slds-assistive-text">Help</span>
+                                                    </a>
+                                                </apex:outputPanel>
+                                            </label>
+                                            <div class="slds-form-element__control slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                <apex:selectList value="{!selectedFieldForCustomInvoiceNumber}" size="1" styleClass="slds-input slds-size--1-of-1 slds-medium-size--3-of-6 slds-large-size--6-of-12">
+                                                    <apex:selectOptions value="{!textFields}"/>    
+                                                </apex:selectList>
+                                            </div>
+                                        </apex:outputPanel>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                            </apex:outputPanel>  
+                            <!-- -----------------------------Breadwinner Wide Settings End -------------------------- -->
+                            
+                            <div align="center" class="slds-m-top--large slds-m-bottom--large">
+                                <apex:commandButton value="Save" action="{!SaveChanges}" reRender="WholeBlock, AccountCodes, pgmsg" status="assign-action-status" styleClass="slds-button slds-button--brand"  oncomplete="HideStyleSheet();message();scrolltoTop();"/>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                </apex:form>
+                
+            </div>            
+        </body>
+    </html>
+</apex:page>

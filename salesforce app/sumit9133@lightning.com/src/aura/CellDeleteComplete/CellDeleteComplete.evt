@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to notify deletion of rows has been completed.">
+	<aura:attribute name="componentName" type="string" description="Name of the component where rows were deleted."/>
+	<aura:attribute name="deletedId" type="string[]" description="List of record Id which were deleted."/>
+</aura:event>

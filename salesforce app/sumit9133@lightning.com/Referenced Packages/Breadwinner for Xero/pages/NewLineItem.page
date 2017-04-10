@@ -1,0 +1,33 @@
+<apex:page standardController="Bread_Winner__Line_Item__c">
+    <style>
+       div .messageText {
+            color:white;
+        }
+        div .messageText h4{
+            color:white;
+        }
+        table.messageTable td {
+            color: white;
+        }
+        .message {
+            background-color: rgba(194,57,52,.95);
+            border-style: none;
+        }
+        .msgIcon{
+            display:none;
+        }
+        .message .messageText {
+            margin: 0px;
+         	font-weight: bold;
+         	line-height:1.4;
+         	word-spacing:1px;
+        }
+        .message .messageText h4 {
+            font-weight: bold;
+            display: initial;
+        }
+       </style>
+    <apex:outputPanel style="font-size:14px;">
+        <apex:pageMessage summary="This action is not possible with Breadwinner." detail="You can create an Invoice to create line items." severity="FATAL" strength="3" />
+    </apex:outputPanel>
+</apex:page>

@@ -1,0 +1,222 @@
+﻿<apex:page sidebar="false" controller="Bread_Winner.InventoryImportPageController" tabStyle="Product2" title="Inventory Import by Breadwinner" action="{!fetchInventoryItems}" >
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.css')}" ></apex:stylesheet>
+            <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/jquery-1.11.3.js')}"></script>
+            <script>
+               var j$ = jQuery.noConflict();
+                
+                function HideStyleSheet() {
+                j$("link.user[href$='elements.css']").each(function() {
+                    j$(this).attr("href", "#");
+                });
+            }
+            
+            function message()
+            {
+                j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                
+                j$("div .messageText h4").css( "color", "white" );
+                j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                j$("table.messageTable td").css({"color" : "white"});
+                j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+                
+            }
+            function addallfuncs(){
+                HideStyleSheet();
+                message();
+            }
+            j$(function(){
+                addallfuncs();
+                massCheckUncheck('');
+            });
+            
+            
+            function massCheckUncheck(element){
+                
+                if(element.id=='Checkall'){
+                    
+                    var AllCheckboxElements=j$("input[type*='checkbox']");
+                    
+                    for(x in AllCheckboxElements ){
+                        if(AllCheckboxElements[x].type=='checkbox'){
+                            AllCheckboxElements[x].checked=element.checked;
+                        }
+                    }  
+                }
+                // following is used to uncheck 
+                var AllCheckboxElementsCopy=j$("input[type*='checkbox']");
+                var checkboxtotalcount=AllCheckboxElementsCopy.length;
+                var checkedcount=0;
+                for(xw in AllCheckboxElementsCopy ){
+                    if(AllCheckboxElementsCopy[xw].checked){
+                        checkedcount+=1;}
+                }
+                
+                if(document.getElementById("Checkall").checked){
+                    if(checkedcount<checkboxtotalcount)
+                        document.getElementById("Checkall").checked='';
+                }
+                else {
+                    if(checkedcount==(checkboxtotalcount-1))
+                        document.getElementById("Checkall").checked='checked';
+                    else
+                        document.getElementById("Checkall").checked='';
+                }
+                
+                
+            }
+            </script>
+            
+            <style>
+                body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+                background-color: white;
+                -moz-border-radius: 4px;
+                border: 0px;
+                -webkit-border-radius: 4px;
+                border-radius: 4px;
+                }
+                .tableheder{
+                background-color: white !important;
+                font-weight: normal !important;
+                padding: 4px 2px 4px 5px !important;
+                }
+                .msgIcon{
+                     display:none;
+                }
+                .message .messageText {
+                     margin: 0px;
+                }
+                .message .messageText h4 {
+                     font-weight: inherit;
+                     display: initial;
+                }
+                
+            </style>
+        </head>
+        <body>
+            <div class="BreadwinnerLightning">
+                <apex:form >
+                    <div class="slds-page-header" role="banner">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <svg class="slds-icon slds-icon-standard-product" aria-hidden="true">
+                                    <use xlink:href="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/icons/standard-sprite/svg/symbols.svg#product')}"></use>
+                                </svg>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-page-header__title slds-truncate"><apex:outputText >Breadwinner Xero Inventory Import (BETA)</apex:outputText> <apex:outputLabel rendered="{!isMultiOrgEnabled}" value="from {!xeroOrgName}"/></p>
+                                <p class="slds-text-body--small">Breadwinner • Xero </p>
+                            </div>
+                        </div>
+                    </div>
+                    <apex:pagemessages ></apex:pagemessages>
+                    <!-- -----------------------------header END ---------------------------->
+                    <apex:outputPanel rendered="{!initialized}" >
+                        <div style="-webkit-border-radius: 4px;border-radius: 4px;" class="infoM3" >
+                            This is a Beta feature and is still being developed. If you choose to use this, please test in a Sandbox or Development org first before importing Products to your main Salesforce environment.
+                        </div>
+                        <apex:pageMessage severity="WARNING" strength="3" escape="false" summary="Due to Salesforce limitations, Breadwinner can only import products if you have less than 1000 Xero Inventory Items." />
+                        <div class="slds-m-top--medium slds-m-left--medium">
+                            
+                            <div class="slds-text-longform" style="color: #5876a3;">
+                                <ul>
+                                    <li>
+                                        <p>
+                                            We will import all of your Xero Inventory Items as Salesforce Products. You have a chance to
+                                            edit them below before importing. You can change the price, and give the Product a name.  
+                                        </p>
+                                    </li>
+                                    <li> 
+                                        <p>We will create these products and attach them to the standard Salesforce Price Book, with the
+                                            Price Point shown below. Salesforce Requires all Products to have a price, so if your Xero
+                                            Inventory item does not have a price, we will import it as 0.00
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p>
+                                            We have designed Breadwinner so that you only have to import your Inventory Items as SF
+                                            Products once. After this initial import, we recommend you create SF Products. When you
+                                            create a Xero Invoice in Breadwinner that contacts an Opportunity Product, we’ll create it as an
+                                            Inventory Item on the fly, at the moment of Invoice Creation.
+                                        </p>
+                                    </li>
+                                    <li> <p>Matching between Salesforce Products and Xero Inventory is based on a perfect text-match between the Xero Inventory Code and the Salesforce Product Code. </p> </li>
+                                    <li> <p>Please change any values you wish to, then click Import. </p> </li>
+                                </ul>
+                                
+                            </div>
+                            
+                            
+                            <h3 class="slds-section-title--divider">Products Breadwinner import</h3>
+                            <apex:pageMessage rendered="{!NOT(productsFetchedList.size > 0)}" severity="INFO" strength="3" summary="{!IF(existingProductList.size > 0, 'All Inventory is imported', 'No Inventory Present in Xero')}"/>
+                            <apex:pageBlock mode="main-detail" >
+                                <apex:pageBlockTable value="{!productsFetchedList}" var="i" rendered="{!productsFetchedList.size > 0}" styleClass="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                    <apex:column html-data-label="Import?" style="text-align:center;" headerClass="tableheder slds-text-title--caps">
+                                        <apex:facet name="header">
+                                            <div align="center" style="margin-right: 5px;">
+                                                <label class="slds-checkbox">
+                                                    <input type="checkbox" id="Checkall" onchange="massCheckUncheck(this);" /> 
+                                                    <span class="slds-checkbox--faux"></span>
+                                                </label>
+                                            </div>
+                                        </apex:facet>
+                                        
+                                        <span class="slds-checkbox">
+                                            <apex:inputcheckbox id="Checkboxid" value="{!i.Checked}" onchange="massCheckUncheck(this);" /> 
+                                            <apex:outputLabel styleclass="slds-checkbox__label" for="Checkboxid">
+                                                <span class="slds-checkbox--faux"></span>
+                                            </apex:outputLabel>
+                                        </span>
+                                        
+                                    </apex:column>
+                                    <apex:column headerValue="SF Product Name" html-data-label="SF Product Name" headerClass="tableheder slds-text-title--caps">
+                                        <abbr class="slds-required" title="required">*</abbr>
+                                        <apex:inputField value="{!i.p.Name}"  styleClass="slds-input" required="false" />
+                                    </apex:column>
+                                    <apex:column headerValue="Product Price" html-data-label="Product Price" headerClass="tableheder slds-text-title--caps">
+                                        <abbr class="slds-required" title="required">*</abbr>
+                                        <apex:inputField value="{!i.pe.UnitPrice}"  styleClass="slds-input" required="false" />
+                                    </apex:column>
+                                    <apex:column headerValue="SF Product Description" html-data-label="SF Product Description" headerClass="tableheder slds-text-title--caps">
+                                        <apex:inputTextarea value="{!i.p.Description}" rows="1"  onfocus="this.rows=3;"  onblur="this.rows=1;" styleClass="slds-input" rendered="{!$ObjectType.Product2.Fields.Description.Updateable}" />
+                                    </apex:column>
+                                    <apex:column headerValue="SF Product Code" html-data-label="SF Product Code" headerClass="tableheder slds-text-title--caps">
+                                        <apex:inputField value="{!i.p.ProductCode}"   styleClass="slds-input" />
+                                    </apex:column>
+                                    <apex:column headerValue="SF Product Family" html-data-label="SF Product Family" headerClass="tableheder slds-text-title--caps">
+                                        <apex:inputField value="{!i.p.Family}"  styleClass="slds-input" />
+                                    </apex:column>
+                                    
+                                </apex:pageBlockTable>
+                            </apex:pageBlock>
+                            <div align="right" class="slds-m-top--medium">
+                                <apex:commandButton value="Import Xero Inventory as Salesforce Products" action="{!importInventoryItems}"  status="assign-action-status" styleClass="slds-button slds-button--brand"/>
+                            </div>
+                            <h3 class="slds-section-title--divider slds-m-top--medium">Products which were imported</h3>
+                            <div class="slds-text-body--small slds-m-top--medium slds-m-bottom--medium slds-m-left--small"> These Xero Inventory Items have already been matched to Salesforce Opportunity Products as
+                                they share the same Product Code / Inventory Item Code. There is no action need or possible
+                                here, but we list them so you can confirm they have already been imported.
+                            </div>
+                            <apex:pageBlock mode="main-detail" >
+                                <apex:pageBlockTable value="{!existingProductList}" var="pw" styleClass="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                    <apex:column headerValue="SF Product Name"   html-data-label="SF Product Name"  headerClass="tableheder slds-text-title--caps">
+                                        <a href="/{!pw.pe.Product2Id}" target="_blank">{!pw.pe.name}</a>
+                                    </apex:column>   
+                                    <apex:column headerValue="Product Price"     html-data-label="Product Price" value="{!pw.pe.UnitPrice}" headerClass="tableheder slds-text-title--caps" />
+                                    <apex:column headerValue="SF Product Code"   html-data-label="SF Product Code" value="{!pw.p.ProductCode}" headerClass="tableheder slds-text-title--caps"/>
+                                    <apex:column headerValue="SF Product Family" html-data-label="SF Product Family" value="{!pw.p.Family}" headerClass="tableheder slds-text-title--caps"/>
+                                </apex:pageBlockTable>
+                            </apex:pageBlock>
+                        </div>
+                    </apex:outputPanel>
+                </apex:form>
+                
+            </div>            
+        </body>
+    </html>
+</apex:page>

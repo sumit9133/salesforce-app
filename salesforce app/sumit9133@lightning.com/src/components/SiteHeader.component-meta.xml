@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexComponent xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>36.0</apiVersion>
+    <description>Default Force.com site header component</description>
+    <label>SiteHeader</label>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
+        <minorNumber>124</minorNumber>
+        <namespace>Bread_Winner</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
+        <minorNumber>44</minorNumber>
+        <namespace>Dropbox_for_SF</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
+        <minorNumber>67</minorNumber>
+        <namespace>MC4SF</namespace>
+    </packageVersions>
+</ApexComponent>

@@ -1,0 +1,72 @@
+<aura:component implements="force:appHostable" description="Component to put excel like data grid editor." controller="Test_req_controller">
+<ltng:require styles="/resource/slds090/assets/styles/salesforce-lightning-design-system.min.css"/>	
+<aura:attribute name="account1" type="Account"
+default="{ 'sobjectType': 'Account',
+'Name': '55',
+'Phone': '90500'
+}"/>
+     <div class="slds">
+<div class="slds-page-header">
+<div class="slds-grid">
+<div class="slds-col slds-has-flexi-truncate">
+<p class="slds-text-heading--label">Account</p>
+<div class="slds-grid">
+<div class="slds-grid slds-type-focus slds-no-space">
+<h1 class="slds-text-heading--medium slds-truncate" title="My
+Expenses">{!$Label.c.Insert_Account}</h1>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+    
+<fieldset class="slds-form--compound">
+  <legend class="slds-form-element__label slds-text-title--caps"></legend>
+  <div class="form-element__group">
+    <div class="slds-form-element__row">
+      <div class="slds-form-element slds-size--1-of-2">
+        <label class="slds-form-element__label" for="input-01">Name</label>
+          <ui:inputText value="{!v.account1.Name}" aura:id="input-01" class="slds-input"/>
+      </div>
+      <div class="slds-form-element slds-size--1-of-2">
+        <label class="slds-form-element__label" for="input-02">Longitude</label>
+        <input id="input-02" class="slds-input" type="text" />
+      </div>
+    </div>
+  </div>
+</fieldset>
+<fieldset class="slds-form--compound">
+  <legend class="slds-form-element__label slds-text-title--caps"></legend>
+  <div class="form-element__group">
+    <div class="slds-form-element__row">
+      <div class="slds-form-element slds-size--1-of-1">
+        <label class="slds-form-element__label" for="input-03">Street</label>
+        <input id="input-03" class="slds-input" type="text" />
+      </div>
+    </div>
+    <div class="slds-form-element__row">
+      <div class="slds-form-element slds-size--1-of-2">
+        <label class="slds-form-element__label" for="input-04">City</label>
+        <input id="input-04" class="slds-input" type="text" />
+      </div>
+      <div class="slds-form-element slds-size--1-of-2">
+        <label class="slds-form-element__label" for="input-05">State</label>
+        <input id="input-05" class="slds-input" type="text" />
+      </div>
+    </div>
+    <div class="slds-form-element__row">
+      <div class="slds-form-element slds-size--1-of-2">
+        <label class="slds-form-element__label" for="input-06">ZIP Code</label>
+        <input id="input-06" class="slds-input" type="text" />
+      </div>
+    </div>
+  </div>
+</fieldset>
+<div class="slds">
+        <div class="slds-grid slds-m-top--medium slds-grid--align-center">
+        <button onclick="{!c.InsertAccount}" formtarget="_parent" class="slds-button slds-button--neutral slds-button--small slds-m-right--medium">Save</button>
+        <button onclick="{!c.InsertAccount}" formtarget="_parent" class="slds-button slds-button--neutral slds-button--small">Cancel</button>
+        </div>
+    </div>
+</aura:component>

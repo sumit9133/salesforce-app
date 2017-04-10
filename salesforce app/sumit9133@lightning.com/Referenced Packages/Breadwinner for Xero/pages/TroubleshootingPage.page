@@ -1,0 +1,500 @@
+<apex:page controller="Bread_Winner.TroubleshootingPageController" title="Troubleshooting Breadwinner" tabStyle="Breadwinner__tab" showHeader="false" >
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>
+            <apex:includeScript value="{!URLFOR($Resource.Bread_Winner__Breadwinner_jQuery, 'jquery.min.js')}" />
+            <script>
+            var j$ = jQuery.noConflict();
+            
+            function HideStyleSheet(){
+                j$("link.user[href$='elements.css']").each(function(){
+                    j$(this).attr("href", "#");
+                });
+            }
+            function message()
+            {
+                j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                
+                j$("div .messageText h4").css( "color", "white" );
+                j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                j$("table.messageTable td").css({"color" : "white"});
+                j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+            }
+            
+            function TroubleshootselectTab(elmnt, XeroOrgId) {
+                // slds-active
+                j$(elmnt).parent("li").siblings(".slds-active").removeClass("slds-active");
+                j$(elmnt).parent("li").addClass("slds-active");
+                
+                // tabindex
+                j$(elmnt).parent("li").siblings().children("a").attr("tabindex", -1);
+                j$(elmnt).attr("tabindex", 0);
+                
+                // aria-selected
+                j$(elmnt).parent("li").siblings().children("a").attr("aria-selected", false);
+                j$(elmnt).attr("aria-selected", true);
+                
+                PassXeroOrgId(XeroOrgId);
+            }
+            
+            function showHideSectionConent(sectionId){
+                var sectiondiv=document.getElementById(sectionId);
+                
+                if(j$(sectiondiv).hasClass("slds-is-open")){
+                    j$(sectiondiv).removeClass("slds-is-open");
+                    j$("#DeleteRecDivIdImage").attr("src","{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionClose.png')}");
+                    j$("#DeleteRecDivIdImage").css({"margin-bottom":"3px", "margin-right":"4px", "width":"14px"});
+                    j$("#DeleteDisconnectedRecDivIdImage").attr("src","{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionClose.png')}");
+                    j$("#DeleteDisconnectedRecDivIdImage").css({"margin-bottom":"3px", "margin-right":"4px", "width":"14px"});
+                }
+                else{
+                    j$(sectiondiv).addClass("slds-is-open");
+                    j$("#DeleteRecDivIdImage").attr("src","{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionOpen.png')}");
+                    j$("#DeleteRecDivIdImage").css({"margin-bottom":"0px", "margin-right":"3px", "width":"15px"});
+                    j$("#DeleteDisconnectedRecDivIdImage").attr("src","{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionOpen.png')}");
+                    j$("#DeleteDisconnectedRecDivIdImage").css({"margin-bottom":"0px", "margin-right":"3px", "width":"15px"});
+                }
+            }
+            </script>
+            <style>
+                
+                .BreadwinnerLightning table {
+                width: initial;
+                }
+                .BreadwinnerLightning img[src*='https://cdn.daddyanalytics.com/breadwinner'] {
+                width: 24px;
+                height: 20px;
+                }
+                .BreadwinnerLightning a {
+                text-decoration: underline;
+                }
+                .BreadwinnerLightning .slds-section__title-action{
+                    display: initial;
+                }
+                .BreadwinnerLightning .slds-section__title-action:active,
+                .BreadwinnerLightning .slds-section__title-action:focus, 
+                .BreadwinnerLightning .slds-section__title-action:hover{
+                    background: initial;
+                }
+                .BreadwinnerLightning .slds-section-title--divider .slds-button:focus{
+                    box-shadow: initial;
+                }
+                .msgIcon{
+                     display:none;
+                }
+                .message .messageText {
+                     margin: 0px;
+                }
+                .message .messageText h4 {
+                     font-weight: inherit;
+                     display: initial;
+                }
+                .BreadwinnerLightning .slds-spinner_container{
+                    position: fixed;
+                    z-index: 9999;
+                }
+            </style>
+        </head>
+        <body>
+            <apex:form >
+                <div class="BreadwinnerLightning">
+                    
+                    <apex:actionStatus id="assign-action-status" layout="block" >
+                        <apex:facet name="start">
+                            <div class="slds-spinner_container">
+                                <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </apex:facet>
+                    </apex:actionStatus>
+                    
+                    <!-- -----------------------------Troubleshooting header start ---------------------------->
+                    <div class="slds-page-header" role="banner">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <svg aria-hidden="true" class="slds-icon slds-icon-standard-opportunity">
+                                    <use xlink:href="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/icons/standard-sprite/svg/symbols.svg#custom')}"></use>
+                                </svg>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-page-header__title slds-truncate" title="Troubleshooting">Troubleshooting</p>
+                                <p class="slds-text-body--small">Breadwinner • Xero </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- -----------------------------Troubleshooting header END ---------------------------->
+                   
+                    <apex:actionFunction name="checkIfConsumerDetailsExist" action="{!checkIfConsumerDetailsExist}" reRender="ConsumerDetailsExistStatus,ConsumerDetailsExistError,ScheduledjobStatus,scheduledlink"  status="ConsumerDetailsExistStatus" oncomplete="checkConnectionToXero();HideStyleSheet();message();"/>
+                    <apex:actionFunction name="checkConnectionToXero" action="{!checkConnectionToXero}" reRender="ConnectionToXeroStatus,ConnectionToXeroError" status="ConnectionToXeroStatus" oncomplete="checkIfContactPagingApiWorking();"/>
+                    <apex:actionFunction name="checkIfContactPagingApiWorking" action="{!checkIfContactPagingApiWorking}" reRender="ContactPagingApiWorkingStatus,ContactPagingApiWorkingError" status="ContactPagingApiWorkingStatus" oncomplete="checkIfInvoicePagingApiWorking();HideStyleSheet();message();"/>
+                    <apex:actionFunction name="checkIfInvoicePagingApiWorking" action="{!checkIfInvoicePagingApiWorking}" reRender="InvoicePagingApiWorkingStatus,InvoicePagingApiWorkingError" status="InvoicePagingApiWorkingStatus" oncomplete="checkIfInvoiceNonPagingApiWorking();HideStyleSheet();message();"/>
+                    <apex:actionFunction name="checkIfInvoiceNonPagingApiWorking" action="{!checkIfInvoiceNonPagingApiWorking}" reRender="InvoiceNonPagingApiWorkingStatus,InvoiceNonPagingApiWorkingError" status="InvoiceNonPagingApiWorkingStatus" oncomplete="renderschedjob();HideStyleSheet();message();" />
+                    <apex:actionFunction name="renderschedjob"  reRender="ScheduledjobStatus,scheduledlink" status="ScheduledjobStatus" oncomplete="HideStyleSheet();message();" />
+                    
+                    <ul class="slds-tabs--default__nav slds-m-bottom--medium slds-m-top--medium" role="tablist">
+                        <li class="slds-tabs--default__item slds-text-title--caps slds-active slds-truncate" title="Bredwinner Wide Settings" role="presentation">
+                            <a class="slds-tabs--default__link"  role="tab" onclick="TroubleshootselectTab(this,'');" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item">
+                                Overview
+                            </a>
+                        </li>
+                        <apex:variable var="tabindex" value="{!1}">
+                            <apex:repeat value="{!appConfigMap}" var="appC">
+                                
+                                <li class="slds-tabs--default__item slds-text-title--caps slds-truncate" title="{!appConfigMap[appC].Connecting_App_Name__c}" role="presentation">
+                                    <a class="slds-tabs--default__link" href="javascript:void(0);" role="tab" onclick="TroubleshootselectTab(this,'{!appConfigMap[appC].Xero_Org_ID__c}');" tabindex="0" aria-selected="true" aria-controls="{!appConfigMap[appC].Xero_Org_ID__c}" id="{!appConfigMap[appC].Xero_Org_ID__c}__item">
+                                        <apex:outputPanel rendered="{!AND(bs.Bread_Winner__Multi_Org_Enabled__c==false,tabindex==1)}">
+                                            Advanced
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!bs.Bread_Winner__Multi_Org_Enabled__c==true}">
+                                            {!appConfigMap[appC].Connecting_App_Name__c}
+                                        </apex:outputPanel>
+                                    </a>
+                                </li>
+                                <apex:variable var="tabindex" value="{!tabindex+1}"/>
+                            </apex:repeat>
+                        </apex:variable>
+                    </ul>
+                    
+                    <apex:actionFunction name="PassXeroOrgId" action="{!QueryXeroOrgInfo}" status="assign-action-status"  reRender="pgmsg,WholeBlock" oncomplete="HideStyleSheet();message();checkIfConsumerDetailsExist();" >
+                        <apex:param name="PassXeroOrgIdParam" value="" assignTo="{!xeroOrgId}"/>
+                    </apex:actionFunction>
+                    <div class="slds-m-horizontal--small">
+                        <apex:outputPanel id="WholeBlock">
+                            
+                            <!-------------------------------- Breadwinner Wide Settings Start------------------------->
+                            <apex:outputPanel layout="block" styleClass="slds-m-bottom--medium" rendered="{!xeroOrgId==null}">
+                                <h3 class="slds-section-title--divider slds-m-bottom--small"> Breadwinner Info</h3>
+                                <div class="slds-m-horizontal--small">
+                                    <table border="0" cellpadding="0" >
+                                        <tr>
+                                            <td style="text-align: right;padding: 5px;">Salesforce Edition:</td> 
+                                            <td style="text-align: left;padding: 5px;"><apex:outputtext value="{!o.OrganizationType}"> </apex:outputtext></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;padding: 5px;">Salesforce Org Type:</td> 
+                                            <td style="text-align: left;padding: 5px;"><apex:outputtext value="{!if(o.IsSandbox==true, 'Sandbox', 'Production')}{!if(o.TrialExpirationDate!= null,' - Trial','')}"></apex:outputtext></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;padding: 5px;">Salesforce Org Id:</td>         
+                                            <td style="text-align: left;padding: 5px;"><apex:outputtext value="{!o.Id}"></apex:outputtext></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;padding: 5px;">Breadwinner Plan Code:</td> 
+                                            <td style="text-align: left;padding: 5px;"><apex:outputtext value="{!PlanCode}"></apex:outputtext></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;padding: 5px;">Breadwinner Plan Name:</td> 
+                                            <td style="text-align: left;padding: 5px;">
+                                                <apex:outputPanel >
+                                                    <apex:outputtext value="{!IF(AND(ISBLANK(PlanName),TrialOrg),'You are currently in a Free Trial',PlanName)}"></apex:outputtext>
+                                                </apex:outputPanel> </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right;padding: 5px;">Breadwinner Version:</td>      
+                                            <td style="text-align: left;padding: 5px;"><apex:outputtext value="{!BreadwinnerVersion}"></apex:outputtext></td>
+                                        </tr>
+                                    </table>
+                                    
+                                </div>                                
+                                <apex:outputPanel layout="block" rendered="{!isAdministrator}">
+                                        <h3 class="slds-section-title--divider slds-m-bottom--small slds-m-top--medium">Scheduled Jobs Status</h3>
+                                        <div class="slds-m-horizontal--medium">
+                                            Scheduled jobs are running under 
+                                            <apex:outputPanel rendered="{!isScheduledJobsRunbyActiveUser}">
+                                                <b><i>Active User</i></b>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!!isScheduledJobsRunbyActiveUser}" style="color:red;">
+                                                <b><i>Inactive User</i></b>
+                                            </apex:outputPanel>
+
+                                            <apex:outputPanel >
+                                                <apex:commandLink action="{!restartScheduledJobs}" status="assign-action-status" styleClass="slds-m-left--medium slds-button {!IF(isScheduledJobsRunbyActiveUser,'slds-button--brand','slds-button--destructive')}"  reRender="nothing" >Restart Scheduled Jobs under my Admin User</apex:commandLink>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </apex:outputPanel>
+                            </apex:outputPanel>
+                            <!-------------------------------- Breadwinner Wide Settings End------------------------->
+                            
+                            <!-------------------------------- Xero Org Wide Settings Start------------------------->
+                            <apex:outputPanel layout="block"  rendered="{!xeroOrgId!=null}">
+                                <h3 class="slds-section-title--divider slds-m-bottom--small">Troubleshooting {!IF(AND(NOT(ISBLANK(appConfig.Bread_Winner__Connecting_App_Name__c)),appConfig.Bread_Winner__Connecting_App_Name__c <> 'xero'), appConfig.Bread_Winner__Connecting_App_Name__c, 'Breadwinner')}</h3>
+                                <apex:pageMessage rendered="{!bs.Bread_Winner__New_Interface__c==False}" severity="WARNING" strength="3" summary="Please reconnect to Xero before beginning Troubleshooting. You can do so in Step 2 on the Breadwinner tab." ></apex:pageMessage>
+                                <div class="slds-m-horizontal--small slds-m-bottom--medium">
+                                    <table border="0" width="60%" cellpadding="2" style="font-size:medium;line-height:2;">
+                                        <tr>
+                                            <td style="width:4%">
+                                                
+                                                1)
+                                            </td>
+                                            
+                                            <td style="width:55%">
+                                                Checking if Xero is connected
+                                            </td>
+                                            
+                                            <td align="left" style="width: 10%;">
+                                                <apex:actionStatus id="ConsumerDetailsExistStatus" >
+                                                    <apex:facet name="start" >
+                                                        <div class="slds-spinner--medium" role="alert"> 
+                                                            <img src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/images/spinners/slds_spinner_brand.gif')}" /> 
+                                                        </div>                   
+                                                    </apex:facet>
+                                                    <apex:facet name="stop">
+                                                        <apex:image value="{!IF(showConsumerDetailsExist, IF(areConsumerDetailsExist , 'https://cdn.daddyanalytics.com/breadwinner/images/green_check.png' , 'https://cdn.daddyanalytics.com/breadwinner/images/red_check.png' ), '/img/prev_cal_arrow.gif')}" style="{!IF(NOT(showConsumerDetailsExist), 'opacity: 0;','')}"  height="30" width="30"/>
+                                                    </apex:facet>
+                                                </apex:actionStatus>
+                                                
+                                            </td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                            </td>
+                                            <td colspan ="2">
+                                                <apex:outputPanel layout="block" id="ConsumerDetailsExistError" >
+                                                    <apex:pagemessage rendered="{!AND(showConsumerDetailsExist,NOT(areConsumerDetailsExist),NOT(ISBLANK(errorConsumerDetailsExist)))}"  severity="ERROR" Summary="{!errorConsumerDetailsExist}" strength="3" ></apex:pagemessage>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td>
+                                                2)
+                                            </td>
+                                            
+                                            <td>
+                                                Checking if connection is valid
+                                            </td>
+                                            
+                                            <td>
+                                                <apex:outputPanel id="ConnectionToXeroStatuss">
+                                                    <apex:actionStatus id="ConnectionToXeroStatus" >
+                                                        <apex:facet name="start" >
+                                                            <div class="slds-spinner--medium" role="alert"> 
+                                                                <img src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/images/spinners/slds_spinner_brand.gif')}" /> 
+                                                            </div>                
+                                                        </apex:facet>
+                                                        <apex:facet name="stop">
+                                                            <apex:image value="{!IF(showConnectingToXero, IF(isConnectingToXero, 'https://cdn.daddyanalytics.com/breadwinner/images/green_check.png' , 'https://cdn.daddyanalytics.com/breadwinner/images/red_check.png' ), '/img/prev_cal_arrow.gif')}" style="{!IF(NOT(showConnectingToXero), 'opacity: 0;','')}" height="30" width="30"/>
+                                                        </apex:facet>
+                                                        
+                                                    </apex:actionStatus>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td>
+                                            </td>
+                                            <td colspan ="2">
+                                                <apex:outputPanel layout="block" id="ConnectionToXeroError" >
+                                                    <apex:pagemessage rendered="{!AND(showConnectingToXero,NOT(isConnectingToXero),NOT(ISBLANK(errorConnectingToXero)))}" severity="ERROR" Summary="{!errorConnectingToXero}" strength="3" ></apex:pagemessage>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td>
+                                                3)
+                                            </td>
+                                            
+                                            <td>
+                                                Checking for paging API of Xero Contacts
+                                            </td>
+                                            
+                                            <td>
+                                                <apex:actionStatus id="ContactPagingApiWorkingStatus" >
+                                                    <apex:facet name="start" >
+                                                        <div class="slds-spinner--medium" role="alert"> 
+                                                            <img src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/images/spinners/slds_spinner_brand.gif')}" /> 
+                                                        </div>               
+                                                    </apex:facet>
+                                                    <apex:facet name="stop">
+                                                        <apex:image value="{!IF(showContactPagingApiWorking   , IF(isContactPagingApiWorking    , 'https://cdn.daddyanalytics.com/breadwinner/images/green_check.png' , 'https://cdn.daddyanalytics.com/breadwinner/images/red_check.png' ), '/img/prev_cal_arrow.gif')}" style="{!IF(NOT(showContactPagingApiWorking   ), 'opacity: 0;','')}" height="30" width="30"/>
+                                                    </apex:facet>
+                                                </apex:actionStatus>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                            </td>
+                                            <td colspan ="2">
+                                                <apex:outputPanel layout="block" id="ContactPagingApiWorkingError" >
+                                                    <apex:pagemessage rendered="{!AND(showContactPagingApiWorking   ,NOT(isContactPagingApiWorking    ),NOT(ISBLANK(errorContactPagingApiWorking)))}" severity="ERROR" Summary="{!errorContactPagingApiWorking}" strength="3" ></apex:pagemessage>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                4)
+                                            </td>
+                                            
+                                            <td>
+                                                Checking for paging API of Xero Invoices
+                                            </td>
+                                            
+                                            <td>
+                                                <apex:actionStatus id="InvoicePagingApiWorkingStatus" >
+                                                    <apex:facet name="start" >
+                                                        <div class="slds-spinner--medium" role="alert"> 
+                                                            <img src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/images/spinners/slds_spinner_brand.gif')}" /> 
+                                                        </div>                   
+                                                    </apex:facet>
+                                                    <apex:facet name="stop">
+                                                        <apex:image value="{!IF(showInvoicePagingApiWorking   , IF(isInvoicePagingApiWorking   , 'https://cdn.daddyanalytics.com/breadwinner/images/green_check.png' , 'https://cdn.daddyanalytics.com/breadwinner/images/red_check.png' ), '/img/prev_cal_arrow.gif')}" style="{!IF(NOT(showInvoicePagingApiWorking   ), 'opacity: 0;','')}" height="30" width="30"/>
+                                                    </apex:facet>
+                                                </apex:actionStatus>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                            </td>
+                                            <td colspan ="2">
+                                                <apex:outputPanel layout="block" id="InvoicePagingApiWorkingError" >
+                                                    <apex:pagemessage rendered="{!AND(showInvoicePagingApiWorking   ,NOT(isInvoicePagingApiWorking   ),NOT(ISBLANK(errorInvoicePagingApiWorking)))}" severity="ERROR" Summary="{!errorInvoicePagingApiWorking}" strength="3" ></apex:pagemessage>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                5)
+                                            </td>
+                                            
+                                            <td>
+                                                Checking non-paging API of Xero Invoices
+                                            </td>
+                                            
+                                            <td>
+                                                <apex:actionStatus id="InvoiceNonPagingApiWorkingStatus" >
+                                                    <apex:facet name="start" >
+                                                        <div class="slds-spinner--medium" role="alert"> 
+                                                            <img src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/images/spinners/slds_spinner_brand.gif')}" /> 
+                                                        </div>                   
+                                                    </apex:facet>
+                                                    <apex:facet name="stop">
+                                                        <apex:image value="{!IF(showInvoiceNonPagingApiWorking, IF(isInvoiceNonPagingApiWorking, 'https://cdn.daddyanalytics.com/breadwinner/images/green_check.png' , 'https://cdn.daddyanalytics.com/breadwinner/images/red_check.png' ), '/img/prev_cal_arrow.gif')}" style="{!IF(NOT(showInvoiceNonPagingApiWorking), 'opacity: 0;','')}" height="30" width="30"/>
+                                                        
+                                                    </apex:facet>
+                                                </apex:actionStatus>
+                                            </td>
+                                            
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                            </td>
+                                            <td colspan ="2">
+                                                <apex:outputPanel layout="block" id="InvoiceNonPagingApiWorkingError" >
+                                                    <apex:pagemessage rendered="{!AND(showInvoiceNonPagingApiWorking,NOT(isInvoiceNonPagingApiWorking),NOT(ISBLANK(errorInvoiceNonPagingApiWorking)))}" severity="ERROR" Summary="{!errorInvoiceNonPagingApiWorking}" strength="3" ></apex:pagemessage>
+                                                </apex:outputPanel>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    
+                                </div>
+                                
+                                <apex:outputPanel layout="block" rendered="{!isAdministrator}">
+                                    <div class="slds-section" id="DeleteRecDivId" >
+                                        <h3 class="slds-section-title--divider" style="padding: 0.19rem;">
+                                            <button class="slds-button slds-section__title-action"  type="button" onclick="showHideSectionConent('DeleteRecDivId');" style="letter-spacing: .0625rem;text-transform: initial;">
+                                                <img id="DeleteRecDivIdImage" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionClose.png')}" style="margin-bottom: 3px;margin-right: 4px;" />
+                                                <span style="color: #54698d;    text-transform: uppercase;">Delete Invoices and Xero contacts</span></button>
+                                        </h3>
+                                        <div class="slds-section__content">
+                                            <apex:outputPanel layout="block" id="deletesectionid" styleclass="slds-m-horizontal--small">
+                                                <div class="slds-text-title--caps slds-m-top--small" style="color:red;" >Don&apos;t use the delete functionality unless specifically asked by Breadwinner Support.</div>
+                                                <div class="slds-text-title slds-m-top--small" > Click delete to remove all Xero Contacts or Invoice records from Salesforce.com. (no data in Xero will be affected)</div>
+                                                <apex:commandButton action="{!deleteInvoices}" reRender="deletesectionid" onclick="if(!window.confirm(' Are you sure? \n \n You want to delete ALL ({!InvoiceCount}) Invoices from Salesforce'))return false;" value="Delete All Invoices ({!InvoiceCount}) from Salesforce"  styleClass="slds-button slds-button--brand slds-m-top--small slds-m-left--xx-small slds-m-right--large" disabled="{!If(InvoiceCount > 0,false,true)}" status="assign-action-status" oncomplete="HideStyleSheet();message();"></apex:commandButton>
+                                                <apex:commandButton action="{!deleteBACs}" reRender="deletesectionid"  onclick="if(!window.confirm(' Are you sure? \n \n You want to delete ALL ({!BACCount}) Xero Contacts from Salesforce'))return false;" value="Delete All Xero Contacts ({!BACCount}) from Salesforce"  styleClass="slds-button slds-button--brand slds-m-top--small " disabled="{!If(BACCount > 0,false,true)}" status="assign-action-status" oncomplete="HideStyleSheet();message();"></apex:commandButton>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </div>
+                                    
+                                </apex:outputPanel> 
+                                
+                            </apex:outputPanel>
+                            <!-- Deleting Invoice/BAC when there are no Apps Connected--->
+                            <apex:outputPanel layout="block" rendered="{!AND(isAdministrator, orgsNotConnected)}">
+                                    <div class="slds-section" id="DeleteDisconnectedRecDivId" >
+                                        <h3 class="slds-section-title--divider" style="padding: 0.19rem;">
+                                            <button class="slds-button slds-section__title-action"  type="button" onclick="showHideSectionConent('DeleteDisconnectedRecDivId');" style="letter-spacing: .0625rem;text-transform: initial;">
+                                                <img id="DeleteDisconnectedRecDivIdImage" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionClose.png')}" style="margin-bottom: 3px;margin-right: 4px;" />
+                                                <span style="color: #54698d;    text-transform: uppercase;">Delete Invoices and Xero contacts</span></button>
+                                        </h3>
+                                        <div class="slds-section__content">
+                                            <apex:outputPanel layout="block" id="deleteDisconnectedsectionid" styleclass="slds-m-horizontal--small">
+                                                <div class="slds-text-title--caps slds-m-top--small" style="color:red;" >Don&apos;t use the delete functionality unless specifically asked by Breadwinner Support.</div>
+                                                
+                                                <apex:commandButton action="{!deleteInvoices}" reRender="deletesectionid" onclick="if(!window.confirm(' Are you sure? \n \n You want to delete ALL ({!InvoiceCount}) Invoices from Salesforce'))return false;" value="Delete All Invoices ({!InvoiceCount}) from Salesforce"  styleClass="slds-button slds-button--brand slds-m-top--small slds-m-left--xx-small slds-m-right--large" disabled="{!If(InvoiceCount > 0,false,true)}" rerender="deleteDisconnectedsectionid" oncomplete="HideStyleSheet();message();" status="assign-action-status" ></apex:commandButton>
+                                                <apex:commandButton action="{!deleteBACs}" reRender="deletesectionid"  onclick="if(!window.confirm(' Are you sure? \n \n You want to delete ALL ({!BACCount}) Xero Contacts from Salesforce'))return false;" value="Delete All Xero Contacts ({!BACCount}) from Salesforce"  styleClass="slds-button slds-button--brand slds-m-top--small " disabled="{!If(BACCount > 0,false,true)}" rerender="deleteDisconnectedsectionid" oncomplete="HideStyleSheet();message();" status="assign-action-status" ></apex:commandButton>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </div>                                    
+                                </apex:outputPanel> 
+                                
+                            <!-------------------------------- Xero Org Wide Settings End------------------------->
+                            
+                            <apex:outputPanel layout="block" rendered="{!AND(xeroOrgId==null,appConfig!=null,bwSetting.Bread_Winner__Active__c, isAdministrator)}">
+                                 <h3 class="slds-section-title--divider slds-m-bottom--small slds-m-top--medium">Restarting and Updating</h3>
+                                <div class="slds-m-horizontal--medium">
+                                <apex:outputPanel layout="block">
+                                    <span>
+                                        <apex:commandLink value="Update Revenue Accounts, Currencies and Tax Rates" styleClass="slds-button slds-button--brand slds-m-top--x-small" reRender="nothing"  action="{!updateXeroAccountingDetails}" status="assign-action-status"/>
+                                    </span>
+                                    <span>
+                                        <apex:commandLink value="Restart Background Xero Contact Sync" styleClass="slds-m-left--small slds-button slds-button--brand slds-m-top--x-small" action="{!restartHistoricalAccountSync}" status="assign-action-status"  reRender="RestartHistoricalBACSyncScriptPanel" onComplete="onCompletionOfRestartHistoricalBACSync();"/>
+                                    </span>
+                                    <span>
+                                        <apex:commandLink value="Update Account and Opportunity RollUps" styleClass="slds-m-left--small slds-button slds-button--brand slds-m-top--x-small" action="{!updateAccountAndOpportunityRollups}" status="assign-action-status" reRender="nothing"/>
+                                    </span>
+                                </apex:outputPanel>
+                                <apex:commandLink action="{!showEditSettingSection}" rendered="{!isAdministrator}" status="assign-action-status" rerender="SettingSectionPanel">.</apex:commandLink>           
+                                <apex:outputPanel layout="block" id="SettingSectionPanel">     
+                                    <apex:outputPanel rendered="{!isEditSettingSection}">
+                                        
+                                        <div class="slds-box slds-float--left slds-m-top--small" >
+                                            <span class="slds-checkbox">
+                                                <label class="slds-checkbox__label" >
+                                                    <apex:inputField value="{!bs.Bread_Winner__Disable_Opportunity_Rollups__c}" />
+                                                    <span class="slds-checkbox--faux"></span>
+                                                    <span class="slds-form-element__label slds-m-left--small">{!$ObjectType.Breadwinner_Settings__c.Fields.Disable_Opportunity_Rollups__c.Label}</span>
+                                                    
+                                                </label>
+                                            </span>
+                                            <div class="slds-m-top--small" >
+                                                <apex:commandButton value="Save" action="{!saveSettingSection}" styleClass="slds-button slds-button--brand " status="assign-action-status"/>                                     
+                                                <apex:commandButton value="Cancel" action="{!cancelSettingSection}" styleClass="slds-button slds-button--neutral" status="assign-action-status"/>    
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>     
+                                </apex:outputPanel> 
+                                </div>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                    </div>
+                    
+                </div>  
+                <apex:outputPanel id="RestartHistoricalBACSyncScriptPanel">
+                <script>
+                function onCompletionOfRestartHistoricalBACSync()
+                {
+                    if({!isRestartHistoricalBACSyncSuccessful} == true)
+                        alert('Xero Contact Sync was successfully restarted');
+                    else
+                        alert('Error');                
+                }
+                </script>
+            </apex:outputPanel>
+            </apex:form>
+            
+            
+        </body>
+    </html>  
+    
+</apex:page>

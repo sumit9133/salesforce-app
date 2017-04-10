@@ -1,0 +1,67 @@
+<apex:page controller="Bread_Winner.CompleteAuthController" tabStyle="Breadwinner__tab" sidebar="false">
+    <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>
+    <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/jquery-1.11.3.js')}"></script>
+    <script>
+       var j$ = jQuery.noConflict();
+    function HideStyleSheet() {
+        j$("link.user[href$='elements.css']").each(function() {
+            j$(this).attr("href", "#");
+        });
+    }
+    function message() {
+        j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+        j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+        j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+        j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+        
+        j$("div .messageText h4").css( "color", "white" );
+        j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+        j$("table.messageTable td").css({"color" : "white"});
+        j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+    }
+    
+     
+    j$(document).ready(function(){
+        doInit();
+        HideStyleSheet();
+        message();
+    });
+    </script>
+    <style>
+        .message {
+        background-color: inherit;
+        border-style: none;
+        padding: initial;
+        }
+        table.messageTable td {
+        border-top: 0px !important;
+        }
+        .msgIcon{
+        display:none;
+        }
+        .message .messageText {
+        margin: 0px;
+        }
+        .message .messageText h4 {
+        font-weight: inherit;
+        display: initial;
+        }
+        
+        .BreadwinnerLightning .slds-table .messageTable td {
+        padding: 1px;
+        }
+    </style>
+    <apex:form >
+        <apex:actionFunction name="doInit" action="{!upsertAppConfig}" reRender="completePanel" oncomplete="redirectMe();HideStyleSheet();message();"/>
+        <apex:outputPanel id="completePanel">
+            <apex:outputPanel rendered="{!isSuccess}">
+                <script type="text/javascript">
+                function redirectMe(){
+                    window.location.href= "{!URLFOR($Page.Breadwinner)}";
+                }
+                </script>
+            </apex:outputPanel>
+            <apex:pageMessages />
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

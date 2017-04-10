@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>BW_Account_Status__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( Total_Amount_Invoiced__c = 0, 
+IMAGE ( &quot;https://cdn.daddyanalytics.com/breadwinner/images/neverbilled.png&quot;,&quot;Never Billed&quot;), 
+
+IF( Total_Amount_Overdue__c &gt; 0, 
+IMAGE ( &quot;https://cdn.daddyanalytics.com/breadwinner/images/overdue.png&quot;,&quot;Overdue&quot;), 
+
+IF( Total_Amount_Due__c &gt; 0, 
+IMAGE ( &quot;https://cdn.daddyanalytics.com/breadwinner/images/due.png&quot;,&quot;Due&quot;), 
+
+IMAGE ( &quot;https://cdn.daddyanalytics.com/breadwinner/images/paid.png&quot;,&quot;Paid&quot;) 
+
+) 
+) 
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>BW Account Status</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Amount_Credit__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Total Amount Credited is sum of Amount Credited field in related Invoices. Amount Credited field in Invoice is the total amount allocated to Invoice via Credit Notes, Over Payments and Pre Payments</description>
+        <externalId>false</externalId>
+        <label>Total Amount Credited</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Amount_Due__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Total Amount Due</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Amount_Invoiced__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Total Amount Invoiced</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Amount_Overdue__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Total Amount Overdue</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Amount_Paid__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Total Amount Paid</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Draft_Amount__c</fullName>
+        <defaultValue>0</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Total amount of draft invoices</description>
+        <externalId>false</externalId>
+        <label>Total Draft Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Unallocated_Credit__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Total Unallocated Credit</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <listViews>
+        <fullName>Accounts_with_Xero_Invoices</fullName>
+        <columns>ACCOUNT.NAME</columns>
+        <columns>ACCOUNT.PHONE1</columns>
+        <columns>BW_Account_Status__c</columns>
+        <columns>Total_Amount_Overdue__c</columns>
+        <columns>Total_Amount_Due__c</columns>
+        <columns>Total_Amount_Paid__c</columns>
+        <columns>Total_Amount_Invoiced__c</columns>
+        <columns>Total_Amount_Credit__c</columns>
+        <columns>Total_Unallocated_Credit__c</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Total_Amount_Invoiced__c</field>
+            <operation>greaterThan</operation>
+            <value>0</value>
+        </filters>
+        <label>Accounts with Xero Invoices</label>
+    </listViews>
+</CustomObject>

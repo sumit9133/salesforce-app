@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION" description="Event to notify that saving data has been completed">
+    <aura:attribute name="status" type="string" description="Result of saving. Possible values are SUCCESS and FAIL."/>
+	<aura:attribute name="message" type="string" description="Detail of the result of saving."/>
+	<aura:attribute name="componentName" type="string" description="Name of the component which triggered this event." />
+</aura:event>

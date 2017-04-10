@@ -1,0 +1,330 @@
+<apex:page standardcontroller="Bread_Winner__Invoice__c" extensions="Bread_Winner.CreateInvoiceExtension" title="Invoice Testing Page" sidebar="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>    
+            <apex:includeScript value="{!URLFOR($Resource.Bread_Winner__Breadwinner_jQuery, 'jquery.min.js')}" />  
+            <script>
+            var j$ = jQuery.noConflict();
+            
+            function HideStyleSheet() {
+                j$("link.user[href$='elements.css']").each(function() {
+                    j$(this).attr("href", "#");
+                });
+            }
+            
+            function message() {
+                j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                
+                j$("div .messageText h4").css( "color", "white" );
+                j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                j$("table.messageTable td").css({"color" : "white"});
+                j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+            }
+            j$(function() {
+                HideStyleSheet();
+                message();
+            });
+            function identifyfield(elementt, helptext, TopMinusparam,LeftMinusParam) {
+                
+                var x = j$(elementt).offset();
+                //alert("Top position: " + x.top + " Left position: " + x.left+" height: "+$(elementt).height());                
+                var ToSetleft = x.left - LeftMinusParam;
+                j$("#help p").text(helptext);
+                var ToSetheight = x.top - TopMinusparam;
+                var heptextdiv = document.getElementById("help");
+                j$(heptextdiv).css({
+                    top: ToSetheight + 'px',
+                    left: ToSetleft + 'px',
+                    display: ""
+                })
+                
+            }
+            
+            function mouseoutclose() {
+                var heptextdiv = document.getElementById("help");
+                j$(heptextdiv).css({
+                    top: "0px",
+                    left: "0px",
+                    display: "none"
+                });
+            }
+            </script>
+            <style>
+            
+                table.messageTable td img{
+                display: none;
+                }                
+                .msgIcon {
+                display: none;
+                }
+                
+                .message .messageText {
+                margin: 0px;
+                }
+                
+                .message .messageText h4 {
+                font-weight: inherit;
+                display: initial;
+                }
+            
+            </style> 
+        </head>
+        <body>
+            <div class="BreadwinnerLightning">
+                <!-- ----------------------------------- fields level help ---------------------------------- -->
+                <div id="help" class="slds-popover slds-popover--tooltip slds-nubbin--bottom-left" role="tooltip" aria-live="polite" style="display:none;position:absolute;top:0px;left:0px;">
+                    <div class="slds-popover__body slds-text-longform">
+                        <p>Help text will come here dynamically</p>
+                    </div>
+                </div>
+                
+                <!-- -----------------------------header start ---------------------------->
+                <div class="slds-page-header slds-m-bottom--large" role="banner">
+                    <div class="slds-media">
+                        <div class="slds-media__body">
+                            <p class="slds-page-header__title slds-truncate" title="{!if(Invoice_Type=='bill','Bill', if(Invoice_Type=='purchaseorder','Purchase Order','Invoice'))} parameters Testing page">{!if(Invoice_Type=='bill','Bill', if(Invoice_Type=='purchaseorder','Purchase Order','Invoice'))} parameters Testing page</p>
+                            <p class="slds-text-body--small">Breadwinner • Xero </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- -----------------------------header END ---------------------------->
+                <apex:outputPanel layout="block" style="border-radius:4px;" styleClass="warningM3" rendered="{!subscribeBreadwinner}">
+                    <p><b> Your Trial has Expired </b></p>
+                    <apex:outputLabel value="You must have a valid subscription to Breadwinner to create and sync invoices."></apex:outputLabel>&nbsp;
+                    <apex:outputPanel rendered="{!AND(NOT(isSandbox),NOT(isDeveloperEdition))}">
+                        <a href="{!BW_API_BaseURL}/payment/{!$Organization.Id}" target="_blank">Start your subscription now</a>
+                    </apex:outputPanel>
+                    <apex:outputLabel rendered="{!OR(isSandbox,isDeveloperEdition)}" value="Please visit the Breadwinner tab for more info."></apex:outputLabel>
+                </apex:outputPanel>               
+                <apex:outputPanel rendered="{!!subscribeBreadwinner}">
+                <apex:pageMessage escape="false" summary="{!TestingPageException}" rendered="{!AND(NOT(ISBLANK(TestingPageException)), LEN(TestingPageException) >5 )}" strength="3" severity="Error"/>
+                <apex:pagemessage rendered="{!if(!isEnterprise,true, false)}" summary="You must be on a higher plan to create Invoice using{!IF( LIfromoriginatingobj, ' Custom URL Line Items', ' Custom URL')}" severity="error" strength="3"></apex:pagemessage>
+                <!-- <apex:pagemessage rendered="{!AND(LIfromoriginatingobj, !isEnterprise)}" summary="You must be on a higher plan to create Invoice using Custom URL Line Items" severity="error" strength="3"></apex:pagemessage>-->
+                </apex:outputPanel>
+                <apex:form rendered="{!OR(AND(if(isProfessionalOrHigher,true, false),LIfromchildobj, accountname!=null),Parent_Account !=null, AND(LIfromoriginatingobj, isBusinessOrHigher), AND(OR(Invoice_Type='bill',Invoice_Type='purchaseorder') , OR(parentid!=null, NOT(ISBLANK(Supplier_Account))), isProfessionalOrHigher))}" id="theform">
+                    <apex:pagemessages ></apex:pagemessages> 
+                    
+                    <apex:outputPanel layout="block" >
+                        
+                        <apex:pageMessage rendered="{!(InvalidFields&&!nonnumaricvalues)}" summary="Please check the fields you have entered." detail="" severity="error" strength="3" />
+                        <apex:pagemessage rendered="{!nonnumaricvalues}" summary="Please check the Quantity, Discount and Unit price values you have entered." detail="Quantity, Discount and Unit price values should be numeric" severity="error" strength="3"></apex:pagemessage>
+                        <apex:pageMessage rendered="{!(Invoice_from_Lead)}" summary="Sorry, You can not create Invoices from Leads." detail="This is because once the Lead is converted it is no longer accessible through the User Interface." severity="error" strength="3" />
+                        
+                        <apex:outputPanel layout="block" styleClass="slds-m-horizontal--medium" style="font-size:14px;">
+                            <table class="slds-table">
+                                <tr><td>
+                                    <apex:outputlabel style="font-weight: bold;">Breadwinner Field  </apex:outputlabel>  </td><td>        
+                                    <apex:outputlabel style="font-weight: bold;">Salesforce Field Name / API</apex:outputlabel></td><td>        
+                                    <apex:outputlabel style="font-weight: bold;">Value</apex:outputlabel>
+                                    </td></tr>
+                                <apex:outputPanel rendered="{!OR(Invoice_Type=='bill', Invoice_Type=='purchaseorder')}">
+                                    <tr><td>
+                                        <apex:outputlabel >Invoice Type  </apex:outputlabel>  </td><td> </td> <td>       
+                                        <apex:outputlabel rendered="{!invoice_type!=null}">{!invoice_type}</apex:outputlabel>
+                                        <apex:outputlabel rendered="{!invoice_type==null}" style="color:red;" >Not Specified</apex:outputlabel>
+                                        </td></tr>
+                                </apex:outputPanel>
+                                <tr><td>
+                                    <apex:outputLabel >Originating Object  </apex:outputLabel>  </td><td>        
+                                    <apex:outputlabel rendered="{!ParentobjectName!=null}">{!ParentobjectName}</apex:outputlabel>
+                                    <apex:outputlabel style="color:red;" rendered="{!parentobjlabel==null}">{!parentobjlabel}Not Specified</apex:outputlabel></td>
+                                    <td><apex:outputlabel rendered="{!parentobjlabel!=null}">{!parentobjectValue}</apex:outputlabel>          
+                                    </td></tr>
+                                <tr><td>
+                                    <apex:outputText value="Child Object Relationship Name" ></apex:outputText></td><td> 
+                                    <apex:outputlabel rendered="{!child_relationship_name!=null}">{!child_relationship_name}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!child_relationship_name==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <!--<apex:outputlabel style="color:red;" rendered="{!child_relationship_name==null}">Not Specified (Required)</apex:outputlabel>-->
+                                    <td><apex:outputlabel >{!child_object}</apex:outputlabel>
+                                    </td></tr>
+                                <apex:outputPanel rendered="{!AND(OR(Invoice_type=='bill', Invoice_Type=='purchaseorder'), ISBLANK(Parent_Account))}">
+                                    <tr><td> 
+                                        <apex:outputlabel >Supplier Account  
+                                         <apex:outputPanel styleClass="slds-form-element__icon" >
+                                                <a href="javascript:void(0);">
+                                                    <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'This field must be a Lookup to the Account object. We will populate this field, so it should not be blank.','183','26')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </apex:outputPanel>
+                                        </apex:outputlabel>  
+                                       </td><td>        
+                                        <apex:outputlabel rendered="{!Supplier_Account!=null}">{!Supplier_Account}</apex:outputlabel>
+                                        <apex:outputLabel rendered="{!AND(Supplier_Account==null, Parent_Account!=null)}" style="color:#cca200;" > Parent Account Selected</apex:outputLabel>
+                                        <apex:outputlabel rendered="{!AND(Supplier_Account==null, Parent_Account==null)}" style="color:red;" >Not Specified</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Supplier_Account!=null}">{!Supplier_AccountValue}</apex:outputlabel>
+                                        </td></tr>
+                                </apex:outputPanel>
+                                <tr><td>
+                                    <apex:outputText value="Parent Account" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!Parent_Account !=null}">{!Parent_Account }</apex:outputlabel>
+                                    <apex:outputlabel style="color:red;" rendered="{!AND(Parent_Account ==null, Supplier_Account==null)}">Not Specified (Required)</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!AND(OR(Invoice_Type=='bill', Invoice_Type=='purchaseorder'), Supplier_Account!=null)}"> Supplier Selected</apex:outputlabel>
+                                    </td>
+                                    <td><apex:outputlabel rendered="{!accountname !=null}">{!accountname}</apex:outputlabel>
+                                        <apex:outputlabel style="color:red;" rendered="{!(accountname==null && Parent_Account !=null)}">(Required Value)</apex:outputlabel>
+                                    </td></tr>
+                                
+                                
+                                <tr><td>          
+                                    <apex:outputText value="Invoice Date" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!Invoice_date !=null}">{!Invoice_date}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!Invoice_date ==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><!--<apex:outputlabel >{!Invoice_datevalue}</apex:outputlabel>-->
+                                        <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!Invoice_datevalue}" /> </apex:outputText> 
+                                    </td></tr>
+                                <tr><td> 
+                                    <apex:outputText value="Due Date" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!due_date !=null}">{!due_date}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!due_date ==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td>
+                                        <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!due_datevalue}" /> </apex:outputText> 
+                                    </td></tr>
+                                <tr><td> 
+                                    <apex:outputText value="Invoice Reference" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!Invoice_reference !=null}">{!Invoice_reference}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!Invoice_reference ==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel >{!Invoice_Referencevalue}</apex:outputlabel>
+                                    </td></tr>
+                                <tr ><td> 
+                                    <apex:outputText value="Branding Theme" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!Branding_Theme!=null}">{!Branding_Theme}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!Branding_Theme==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel >{!Branding_ThemeValue}</apex:outputlabel>
+                                    </td></tr>
+                                <tr style="display:{!IF(Provided_InvoiceField!='' || Provided_InvoiceField!=null,'','none')};"><td>
+                                    <apex:outputText value="Lookup Field in Invoice" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!Provided_InvoiceField!=null}">{!Provided_InvoiceField}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!Provided_InvoiceField==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel ></apex:outputlabel>
+                                    </td></tr>
+                                <tr style="display:{!IF(invoice_lookup!='' || invoice_lookup!=null,'','none')};"><td>
+                                    <apex:outputText value="Sequencial Invoice Lookup" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!invoice_lookup!=null}">{!invoice_lookup}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!invoice_lookup==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel ></apex:outputlabel>
+                                    </td></tr>
+                                
+                                <tr style="display:{!IF(Invoice_Type=='purchaseorder','','none')};"><td> 
+                                    <apex:outputText value="Delivery Address" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!delivery_address!=null}">{!delivery_address}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!delivery_address==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel >{!delivery_addressValue}</apex:outputlabel>
+                                    </td></tr>
+                                <tr style="display:{!IF(Invoice_Type=='purchaseorder','','none')};"><td> 
+                                    <apex:outputText value="Attention To" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!attention!=null}">{!attention}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!attention==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel >{!attention_Value}</apex:outputlabel>
+                                    </td></tr>
+                                <tr style="display:{!IF(Invoice_Type=='purchaseorder','','none')};"><td> 
+                                    <apex:outputText value="Purchase Order Telephone" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!po_telephone!=null}">{!po_telephone}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!po_telephone==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel >{!po_telephone_value}</apex:outputlabel>
+                                    </td></tr>
+                                <tr style="display:{!IF(Invoice_Type=='purchaseorder','','none')};"><td> 
+                                    <apex:outputText value="Delivery Instructions" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!delivery_instructions!=null}">{!delivery_instructions}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!delivery_instructions==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel >{!delivery_instructions_value}</apex:outputlabel>
+                                    </td></tr>
+                                
+                                <tr style="display:{!IF(ISBLANK(Custom_InvoiceNumberField),'none','')};" ><td> 
+                                    <apex:outputText value="Custom Invoice Number" ></apex:outputText></td><td>
+                                    <apex:outputlabel rendered="{!Custom_InvoiceNumberField !=null}">{!Custom_InvoiceNumberField}</apex:outputlabel>
+                                    <apex:outputlabel style="color:#cca200;" rendered="{!Custom_InvoiceNumberField==null}">Not Specified (Optional)</apex:outputlabel></td>
+                                    <td><apex:outputlabel >{!Custom_InvoiceNumber}</apex:outputlabel>
+                                    </td></tr>
+                                
+                                <tr><td></td></tr>
+                              
+                                <apex:variable var="i" value="{!0}"/>      
+                                <apex:repeat value="{!ChildSobjectWrapperList}" var="Childsobj">
+                                    <tr style="font-weight: bold;"><td style="padding-top: 20px;padding-bottom: 5px;"><apex:outputpanel rendered="{!AND(NOT(ISBLANK(child_relationship_name)), ISBLANK(Childsobj.linenumber))}">Child Object #{!i+1}<apex:variable var="i" value="{!i+1}"/></apex:outputpanel>
+                                        <apex:outputpanel rendered="{!OR(/*ISBLANK(child_relationship_name), */NOT(ISBLANK(Childsobj.linenumber)))}">Line Item #{!Childsobj.linenumber}</apex:outputpanel>     
+                                        </td></tr>
+                                    <tr><td>
+                                        <apex:outputText value="Inventory Code" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.Inventory_Code))}">{!Childsobj.Inventory_Code}</apex:outputlabel>
+                                        <apex:outputlabel style="color:#cca200;" rendered="{!ISBLANK(Childsobj.Inventory_Code)}">Not Specified (Optional)</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.child_object_inventory_code !=null}">{!Childsobj.child_object_inventory_code}</apex:outputlabel>
+                                        </td></tr>
+                                    <tr><td>
+                                        <apex:outputText value="Description" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.DescriptionField))}">{!Childsobj.DescriptionField}</apex:outputlabel>
+                                        <apex:outputlabel style="color:Red;" rendered="{!AND(ISBLANK(Childsobj.DescriptionField), ISBLANK(Childsobj.Description))}">Not Specified (Required)</apex:outputlabel>
+                                        <apex:outputlabel rendered="{!AND(ISBLANK(Childsobj.DescriptionField), NOT(ISBLANK(Childsobj.Description)))}">{!Childsobj.Description}</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.Description !=null}">{!Childsobj.Description}</apex:outputlabel>
+                                        <apex:outputlabel rendered="{!Childsobj.Description ==null}" style="Color:red;">(Required Value)</apex:outputlabel>
+                                        </td></tr>
+                                    <tr><td>
+                                        <apex:outputText value="Quantity" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.Quantity))}">{!Childsobj.Quantity}</apex:outputlabel>
+                                        <apex:outputlabel style="color:#cca200;" rendered="{!ISBLANK(Childsobj.Quantity)}">Not Specified (Optional)</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.Child_Object_Quantity!=null}">{!Childsobj.Child_Object_Quantity}</apex:outputlabel>
+                                        </td></tr>
+                                    <tr><td> 
+                                        <apex:outputText value="Unit Price" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.unit_price))}">{!Childsobj.unit_price}</apex:outputlabel>
+                                        <apex:outputlabel style="color:#cca200;" rendered="{!ISBLANK(Childsobj.unit_price)}">Not Specified (Optional)</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.child_object_unit_price !=null}">{!Childsobj.child_object_unit_price}</apex:outputlabel>
+                                        </td></tr>
+                                    <tr  style="display:{!IF(Invoice_type!='bill','','none')};"><td> 
+                                        <apex:outputText value="Discount" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.Discount))}">{!Childsobj.Discount}</apex:outputlabel>
+                                        <apex:outputlabel style="color:#cca200;" rendered="{!ISBLANK(Childsobj.Discount)}">Not Specified (Optional)</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.Child_Object_Discount !=null}">{!Childsobj.Child_Object_Discount}</apex:outputlabel>
+                                        </td></tr>
+                                    <tr><td> 
+                                        <apex:outputText value="Revenue Account" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.revenue_account))}">{!Childsobj.revenue_account}</apex:outputlabel>
+                                        <apex:outputlabel style="color:#cca200;" rendered="{!ISBLANK(Childsobj.revenue_account)}">Not Specified (Optional)</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.child_object_revenue_account !=null}">{!Childsobj.child_object_revenue_account}</apex:outputlabel>
+                                        </td></tr>
+                                    <tr><td>
+                                        <apex:outputText value="Tax Rate" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.tax_rate))}">{!Childsobj.tax_rate}</apex:outputlabel>
+                                        <apex:outputlabel style="color:#cca200;" rendered="{!ISBLANK(Childsobj.tax_rate)}">Not Specified (Optional)</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.child_object_tax_rate!=null}">{!Childsobj.child_object_tax_rate}</apex:outputlabel>
+                                        </td></tr>
+                                    <tr><td> 
+                                        <apex:outputText value="Tracking Code 1" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.tracking_code_1))}">{!Childsobj.tracking_code_1}</apex:outputlabel>
+                                        <apex:outputlabel style="color:#cca200;" rendered="{!ISBLANK(Childsobj.tracking_code_1)}">Not Specified (Optional)</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.child_object_tracking_code_1 !=null}">{!Childsobj.child_object_tracking_code_1}</apex:outputlabel>
+                                        </td></tr>
+                                    <tr><td> 
+                                        <apex:outputText value="Tracking Code 2" ></apex:outputText></td><td>
+                                        <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.tracking_code_2))}">{!Childsobj.tracking_code_2}</apex:outputlabel>
+                                        <apex:outputlabel style="color:#cca200;" rendered="{!ISBLANK(Childsobj.tracking_code_2)}">Not Specified (Optional)</apex:outputlabel></td><td>
+                                        <apex:outputlabel rendered="{!Childsobj.child_object_tracking_code_2 !=null}">{!Childsobj.child_object_tracking_code_2}</apex:outputlabel>
+                                        </td></tr>                    
+                                    <apex:outputPanel rendered="{!AND(OR(Invoice_Type=='bill', Invoice_Type=='purchaseorder'), ISBLANK(Parent_Account))}">
+                                        <tr><td> 
+                                            <apex:outputText value="Supplier Account" ></apex:outputText></td><td>
+                                            <apex:outputlabel rendered="{!NOT(ISBLANK(Supplier_Account))}">{!Supplier_Account}</apex:outputlabel>
+                                            <apex:outputlabel style="color:red;" rendered="{!ISBLANK(Supplier_Account)}">Not Specified (Requried)</apex:outputlabel></td><td>
+                                            <apex:outputlabel rendered="{!NOT(ISBLANK(Childsobj.Supplier_Value))}">{!Childsobj.Supplier_Value}</apex:outputlabel>
+                                            </td></tr>
+                                    </apex:outputPanel>
+                                    <tr><td></td></tr>
+                                    
+                                </apex:repeat>
+                                </table>
+                            <div align="center" class="slds-m-top--medium" >
+                                <apex:commandButton value="Next" action="{!NewInvoicefromcustomobject}" status="assign-action-status" styleClass="slds-button slds-button--brand" rendered="{!(!Invalidfields &&!nonnumaricvalues && !notInitializedWithAccount && !Invoice_from_Lead && ISBLANK(TestingPageException)) }"/><!-- action="{!NewInvoice}" -->
+                            </div>
+                        </apex:outputPanel>
+                    </apex:outputPanel>
+                </apex:form>
+                <apex:outputPanel style="font-size:16px;" rendered="{!isAdministrator && isBusinessOrHigher}">
+                    <apex:outputLink value="{!URLFOR($Page.Bread_Winner__CustomURLGenerator)}?originating_object={!ParentobjectName}"> Click here</apex:outputLink>&nbsp;to go to custom Invoice URL generation page.
+                </apex:outputPanel>
+            </div>
+        </body>
+    </html>
+</apex:page>

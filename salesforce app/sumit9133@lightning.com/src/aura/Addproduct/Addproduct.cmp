@@ -1,0 +1,39 @@
+<aura:component controller="SB_Addproductcontroller" implements="force:appHostable,flexipage:availableForAllPageTypes">
+    <aura:attribute name="recordId" type="string" default="0062800000HnmE3"/>
+    <aura:attribute name="Items" type="SB_Addproductcontroller.OppWrapper[]"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    <aura:handler name="SearchEvent" event="c:SearchEvent" action="{!c.searchAccounts}"/>
+	<div class="slds-grid slds-grid--align-center">
+    <table class="slds-table">
+    <thead>
+	<tr>
+        <td>
+        	<c:SearchKeyComponent />   
+        </td>
+	</tr>   
+    </thead>
+    </table>
+	</div>
+    <div class="slds-grid slds-m-around--medium ">
+    <table class="slds-table slds-table--bordered slds-max-medium-table--stacked">
+    <thead>
+        <tr class="slds-text-heading--label">
+            <th scope="col">id</th>
+                   </tr>
+  	</thead>
+  	<tbody>
+    <aura:iteration items="{!v.Items}" var="item">
+        <tr>
+          <td>
+            <label class="slds-checkbox">
+              <ui:inputCheckbox text="{!item.selected}" change="{!c.updateCheckboxes}" value="{!item.selected}"/>
+              <span class="slds-checkbox--faux"></span>
+            </label>
+          </td>
+            <td>{!item.oitem.id}</td>
+        </tr>    
+  </aura:iteration>  
+  </tbody>
+    </table> 
+    </div>
+</aura:component>

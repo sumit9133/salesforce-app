@@ -1,0 +1,203 @@
+<apex:page sidebar="false" standardController="Bread_Winner__Invoice__c" extensions="Bread_Winner.Invoice_RecordInfoExtension" showHeader="true" >
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>
+            <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/jquery-1.11.3.js')}"></script>
+            <script>
+                var j$ = jQuery.noConflict();
+            function HideStyleSheet() {
+                j$("link.user[href$='elements.css']").each(function() {
+                    j$(this).attr("href", "#");
+                });               
+                
+            }
+            
+            function message() {
+                j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                
+                j$("div .messageText h4").css( "color", "white" );
+                j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                j$("table.messageTable td").css({"color" : "white"});
+                j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+            }
+            function addallfuncs(){
+                HideStyleSheet();
+                message();
+            }
+            j$(function(){
+                addallfuncs();
+                downloadInvoice();
+            });
+            </script>
+            
+            <style>
+                
+                .msgIcon {
+                display: none;
+                }
+                
+                .message .messageText {
+                margin: 0px;
+                }
+                
+                .message .messageText h4 {
+                font-weight: inherit;
+                display: initial;
+                }
+                
+                
+                @media (min-width: 48em){
+                .BreadwinnerLightning .slds-form--horizontal {
+                text-align: right;
+                margin-left: 10%;
+                margin-right: 30%;
+                }}
+                
+                .BreadwinnerLightning .slds-spinner--brand .slds-spinner__dot-a:after, .BreadwinnerLightning .slds-spinner--brand .slds-spinner__dot-a:before, .BreadwinnerLightning .slds-spinner--brand .slds-spinner__dot-b:after, .BreadwinnerLightning .slds-spinner--brand .slds-spinner__dot-b:before, .BreadwinnerLightning .slds-spinner--brand.slds-spinner:after, .BreadwinnerLightning .slds-spinner--brand.slds-spinner:before {
+                background-color: white;
+                }
+                .slds-spinner-displaytext {
+                top: 54%;
+                position: absolute;
+                left: 45%;
+                }
+                .BreadwinnerLightning .slds-spinner_container{
+                position: fixed;
+                z-index: 9999;
+                }
+            </style>
+            
+        </head>
+        <body>
+            <div class="BreadwinnerLightning">
+                
+                <apex:actionstatus id="actStatusId">
+                    <apex:facet name="start">
+                        <apex:facet name="start">
+                            <div class="slds-spinner_container">
+                                <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="alert"> 
+                                    <img src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/images/spinners/slds_spinner_brand.gif')}" /> 
+                                </div>
+                                <div class="slds-spinner-displaytext" role="alert"> 
+                                    <P>
+                                        Sending the Mail..... Please Wait....
+                                    </P>
+                                </div>
+                            </div>
+                        </apex:facet>
+                    </apex:facet>
+                </apex:actionstatus>
+                <apex:actionstatus id="actStatusId2">
+                    <apex:facet name="start">
+                        <apex:facet name="start">
+                            <div class="slds-spinner_container">
+                                <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="alert"> 
+                                    <img src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/images/spinners/slds_spinner_brand.gif')}" /> 
+                                </div>
+                                <div class="slds-spinner-displaytext" role="alert"> 
+                                    <P>
+                                        Marking the Mail Sent To Contact as True....
+                                    </P>
+                                </div>
+                            </div>
+                        </apex:facet>
+                    </apex:facet>
+                </apex:actionstatus>
+                
+                <div class="slds-page-header" role="banner">
+                    <div class="slds-media">
+                        <div class="slds-media__body">
+                            <p class="slds-page-header__title slds-truncate">Email the Invoice</p>
+                            <p class="slds-text-body--small">Breadwinner • Xero </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-m-top--small">
+                    <apex:pageMessages />
+                </div>
+                
+                <apex:pageMessage summary="You cannot send a PDF Email via Breadwinner on your current Breadwinner Subscription.
+                                           Please Contact Breadwinner to enquire about upgrading." severity="INFO" strength="1" rendered="{!if(!isProfessionalOrHigher,true,false)}" />
+                <apex:pageMessage summary="The Xero Org {!invoice.Bread_Winner__Xero_Org_Name__c} related to this Invoice is not connected to Breadwinner. Please connect it from Breadwinner Tab." severity="WARNING" strength="1" rendered="{!Not(isXeroOrgConnected)}" />
+                
+                <apex:pageMessage severity="ERROR" strength="2" summary="<b>There was a problem establishing a connection to Xero.</b>" escape="false" rendered="{!AND(AppUnauthorized,isProfessionalOrHigher)}">
+                    There was a problem establishing a connection to Xero. If you are a Xero Admin please reconnect to Xero now, or ask someone who is a Salesforce Admin and Xero Admin to Reconnect to Xero from the Breadwinner tab.  
+                </apex:pageMessage>
+                
+                <apex:form rendered="{!AND(!AppUnauthorized && isActiveOrganization)}" >
+                    <apex:pageMessage summary="There were no Contacts with Email found for the related Account." severity="error" strength="1" rendered="{!AND(if(Contacts.size >0,false,true),isProfessionalOrHigher)}" />
+                    <apex:actionFunction action="{!sendEmailValidation}" name="downloadInvoice" rerender="AttactmentName, Button" oncomplete="addallfuncs();"/>
+                    <div class="slds-form--horizontal slds-m-top--medium">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" >To</label>
+                            <div class="slds-form-element__control">
+                                <apex:selectList value="{!conID}" size="1" disabled="{!if(!isProfessionalOrHigher,true,false)}" styleClass="slds-input">
+                                    <apex:selectOptions value="{!Contacts}"></apex:selectOptions>
+                                </apex:selectList>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" >Subject</label>
+                            <div class="slds-form-element__control">
+                                <apex:inputText value="{!emailSubject}" styleClass="slds-input" disabled="{!if(!isProfessionalOrHigher,true,false)}"/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" >Body</label>
+                            <div class="slds-form-element__control">
+                                <apex:inputTextarea styleClass="slds-input" richText="true" value="{!emailBody}" disabled="{!if(!isProfessionalOrHigher,true,false)}"/>
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <apex:outputPanel id="AttactmentName">
+                            <label class="slds-form-element__label" >Attachments</label>
+                                <div class="slds-form-element__control" style="    margin-top: 3px;">
+                                    {!AttachmentName}
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                        
+                        <apex:outputPanel layout="block" styleClass="slds-form-element" rendered="{!OR(AND(invoice.Bread_Winner__Type__c == 'Invoice'  , invoice.Bread_Winner__Total__c == invoice.Bread_Winner__Amount_Due__c , invoice.Bread_Winner__Status__c == 'AUTHORISED') , AND(invoice.Bread_Winner__Type__c == 'Purchase Order' , OR(invoice.Bread_Winner__Status__c == 'AUTHORISED' , invoice.Bread_Winner__Status__c == 'BILLED') ))}">
+                            
+                            <label class="slds-form-element__label" >Mark this Invoice as sent in Xero</label>
+                            <div class="slds-form-element__control" style="margin-top: 3px;">
+                                <label class="slds-checkbox">
+                                    <apex:inputCheckbox value="{!isSentToContactUpdate}" disabled="{!if(!isProfessionalOrHigher,true,false)}"/> 
+                                    <span class="slds-checkbox--faux"></span>
+                                </label>
+                            </div>
+                            
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="block" styleClass="slds-form-element" rendered="{!NOT(OR(AND(invoice.Bread_Winner__Type__c == 'Invoice'  , invoice.Bread_Winner__Total__c == invoice.Bread_Winner__Amount_Due__c , invoice.Bread_Winner__Status__c == 'AUTHORISED') , AND(invoice.Bread_Winner__Type__c == 'Purchase Order' , OR(invoice.Bread_Winner__Status__c == 'AUTHORISED' , invoice.Bread_Winner__Status__c == 'BILLED') )))}">
+                            <label class="slds-form-element__label" ></label>
+                            <div class="slds-form-element__control" style="padding-top: 10px;">
+                                <div class="slds-text-body--small">Invoices with Credit Notes or Payments applied cannot be marked as Sent due to Xero limitations.</div>
+                            </div>
+                        </apex:outputPanel>
+                        
+                    </div>
+                    
+                    <div class="slds-text-align--center slds-m-top--large" >
+                        <apex:commandButton value="Send Email" action="{!sendEmail}" styleClass="slds-button slds-button--brand" status="actStatusId" disabled="{!OR(if(Contacts.size >0,false,true),!isProfessionalOrHigher,!isXeroOrgConnected)}" oncomplete="CallWebService_JS();" id="Button"/>
+                        <apex:actionFunction action="{!CallWebService}" name="CallWebService_JS" status="actStatusId2"  oncomplete="CallupdateInvoice();"/>
+                        <apex:actionFunction action="{!UpdateInvoice}" name="CallupdateInvoice" />
+                        <apex:actionFunction action="{!cancel}" name="CallCancel" />
+                        <apex:commandButton value="Cancel" action="{!cancel}" styleClass="slds-button slds-button--neutral"/>
+                    </div>
+                    
+                </apex:form>
+            </div>            
+        </body>
+    </html>
+    
+    
+</apex:page>

@@ -1,0 +1,72 @@
+<aura:component implements="force:appHostable" controller="ShoppingcartSample">
+    <aura:attribute name="products" type="Product2[]"/>
+<ltng:require styles="/resource/SLDS202/assets/styles/salesforce-lightning-design-system.css" />
+    <aura:attribute name="searchKey" type="String" default=""/>
+    <div class="slds-page-header" role="banner" style="padding: 3%;">
+        	<div class="slds-grid slds-grid--align-center slds-p-horizontal--small slds-size--7-of-12" style="align:center;margin-left: 20%;">
+            	<ui:inputText aura:id="searchkey" class="slds-input" value="{!v.searchKey}" keyup="{!c.searchkey}"
+                          placeholder="Enter part name or decription..."/>
+            	<button style="float: right;" class="slds-button slds-button--brand" type="button" onclick="{!c.searchkey}">Search</button>
+        	</div>
+        <div>
+     <table style="padding-top: 10px;">
+                <tr>
+                    <td style="width:20%;">
+                        <div>Filters</div>
+                    </td>
+                    <td style="width:40%; vertical-align: text-top;">
+                        <aura:iteration items="{!v.products}" var="pdt" indexVar="index">
+                            <img src="/resource/defaultProductImage" alt="No Product Image" height="75" width="75" border="0"/> 
+                            <div style="padding-top: 10px;">
+                            <span style="float: left;font-weight: bold;">{!pdt.Family}</span>
+                            </div> 
+                            <div style="padding-top: 25px;">
+                                <button style="float: right;height: 25px;line-height: 2px;" class="slds-button slds-button--brand" type="button" data-recordId="{!index}" onclick="{!c.addToList}">Add to Cart</button>
+                            </div>
+                            <div style="padding-top: 35px;">
+                                <span style="color: cornflowerblue;">{!pdt.Name}</span> <span style="float: right;font-weight: bold;">${!pdt.AcctSeed__Unit_Cost__c}</span>
+                            </div>
+                            <div>
+                            <span style="float: left;color: grey;">{!pdt.ProductCode}</span>
+                            </div> 
+                            <div style="padding-top: 25px;">
+                            <span style="float: left;color: grey;">{!pdt.Description}</span>
+                            </div> 
+                            <div style="border-bottom: 1px solid grey; padding-top: 10px; padding-bottom: 10px;"></div>
+                        </aura:iteration>
+                        <aura:renderIf isTrue="{!v.products.length == 0}">
+                            <div>No products found to your search criteria.</div>
+                        </aura:renderIf>
+                    </td>
+                    <td style="width:40%;vertical-align: text-top;padding-left: 20px;">
+                        <div>My Cart</div>
+                        <aura:iteration items="{!v.materials}" var="mat" indexVar="index1">
+                            <img src="/resource/defaultProductImage" alt="No Product Image" height="75" width="75" border="0"/> 
+                            <div style="padding-top: 10px;color: cornflowerblue;">
+                                <ui:outputText value="{!mat.pdtName}"/>
+                            </div>
+                            <div style="color: grey;">
+                                <ui:outputText value="{!mat.pdtcode}"/>
+                            </div>
+                            <div>
+                                <span style="font-weight: bold;padding-right: 20px;">${!mat.pricePerQuantity}</span><span style="padding-left: 10px;padding-right: 10px;color: grey;">x</span>
+                                <input id="text-input-01" class="{!'slds-input inputWidth inputNumber'+index1}" data-recordId="{!index1}" value="{!mat.matQuantity}" onkeyup="{!c.multiplyQuanPdts}" onchange="{!c.multiplyQuanPdts}" type="number" />
+                                <span style="float: right;font-weight: bold;">${!mat.totalPrice}</span>
+                            </div>
+                            <div>
+                                <a href="javascript:void(0);" style="color: #026a8f;" data-recordId="{!index1}" onclick="{!c.removeFromList}">Remove</a>
+                            </div>
+                            <!--div style="border-bottom: 1px solid grey; padding-top: 10px; padding-bottom: 10px;"></div-->
+                        </aura:iteration>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="float : right;"><span>Order Total</span><span style="padding-right: 20px; font-size: 9pt;color: grey;">(Plus shipping and taxes)</span><span style="font-weight: bold;">${!v.grandTotal}</span></div>
+        <div class="slds-modal__footer" style="margin-top: 20px;">
+            <button class="slds-button slds-button--neutral" onclick="{!c.cancelReload}">Cancel</button>
+            <button class="slds-button slds-button--neutral" onclick="{!c.cancel}">Save for Later</button>
+            <button class="slds-button slds-button--brand" onclick="{!c.submit}">Place Order</button>
+        </div>
+    </div>
+</aura:component>

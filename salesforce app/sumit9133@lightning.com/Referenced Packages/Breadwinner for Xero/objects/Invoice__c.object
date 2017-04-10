@@ -1,0 +1,887 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <content>NewInvoicePage</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <content>NewInvoicePage</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>Invoices from your finance system synced into Salesforce through Breadwinner</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableEnhancedLookup>false</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>Account_Bills_PO__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Account (Bills &amp; PO)</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Bills &amp; Purchase Orders</relationshipLabel>
+        <relationshipName>Account_Bills</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Account__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Account</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Invoices</relationshipLabel>
+        <relationshipName>Invoices</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Amount_Credit__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Amount Credited field in Invoice is the total amount allocated to Invoice via Credit Notes, Over Payments and Pre Payments</description>
+        <externalId>false</externalId>
+        <label>Amount Credited</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Amount_Due__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Amount Due</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Amount_Overdue__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( Due_Date__c  &lt;  TODAY(),  Amount_Due__c , 0)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Amount Overdue</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Amount_Paid__c</fullName>
+        <defaultValue>0.00</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Amount Paid</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Amounts_Are__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Amounts Are</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Attention_To__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Creating for Purchase Orders</description>
+        <externalId>false</externalId>
+        <label>Attention To</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Client_ID__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Client ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Company_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Company Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Created_via__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Created via</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Credit_Note_Allocated_Credit__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Credit Note - Allocated Credit</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Credit_Note_Total_Amount__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Credit Note - Total Amount</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Currency_Code__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Currency Code</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Currency_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Currency Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>6</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Days_Overdue__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(OR(Amount_Overdue__c == 0.00,ISBLANK(Amount_Overdue__c))  , null, TODAY() - Due_Date__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Days Overdue</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Delivery_Address__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Delivery Address</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Delivery_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Delivery Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Delivery_Instructions__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Delivery Instructions</label>
+        <length>500</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Due_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Due Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Expected_Arrival_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Expected Arrival Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Expected_Payment_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Expected Payment Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Fully_Paid_On_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Fully Paid On Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Invoice_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Invoice Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Invoice_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>true</externalId>
+        <label>Invoice Id</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Invoice_URL__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>if( CONTAINS(Type__c, &apos;Purchase Order&apos;),
+	HYPERLINK( &quot;https://go.xero.com/Accounts/Payable/PurchaseOrders/Edit/&quot;&amp;Invoice_Id__c, 
+		&quot;Click Here&quot;
+	),
+	if(CONTAINS(Type__c, &apos;Invoice&apos;),
+		HYPERLINK( &quot;https://go.xero.com/AccountsReceivable/&quot;&amp; 
+		IF(Type__c == &apos;Credit Note (Invoice)&apos;,
+			&quot;ViewCreditNote.aspx?creditNoteID=&quot;,
+			IF(Status__c == &apos;DRAFT&apos;,
+				&quot;Edit.aspx?invoiceID=&quot;,
+				&quot;View.aspx?invoiceID=&quot;
+			)
+		)
+		&amp;Invoice_Id__c,
+		&quot;Click Here&quot;
+		), 
+		HYPERLINK( &quot;https://go.xero.com/AccountsPayable/&quot;&amp; 
+		IF(Type__c == &apos;Credit Note (Bill)&apos;,
+			&quot;ViewCreditNote.aspx?creditNoteID=&quot;,
+			IF(Status__c == &apos;DRAFT&apos;,
+				&quot;Edit.aspx?invoiceID=&quot;,
+				&quot;View.aspx?invoiceID=&quot;
+			)
+		)
+		&amp;Invoice_Id__c,
+		&quot;Click Here&quot;
+		)
+	)
+)</formula>
+        <label>See this Invoice in Xero</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Last_Modified_in_Xero_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Last Modified in Xero Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Opportunity_Bills_PO__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Opportunity (Bills &amp; PO)</label>
+        <referenceTo>Opportunity</referenceTo>
+        <relationshipLabel>Bills &amp; Purchase Orders</relationshipLabel>
+        <relationshipName>Opportunity_Bills</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Opportunity__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Opportunity</label>
+        <referenceTo>Opportunity</referenceTo>
+        <relationshipLabel>Invoices</relationshipLabel>
+        <relationshipName>Invoices</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Reference__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Reference</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sent_to_Contact__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Sent to Contact</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Status_Flag__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Representing statuses in images</description>
+        <externalId>false</externalId>
+        <formula>IF(
+  CONTAINS($User.UIThemeDisplayed, &apos;Theme4&apos;),
+
+  IF( 
+	OR(Status__c = &apos;VOIDED&apos;, Status__c = &apos;DELETED&apos;),
+	  
+	IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/void_deleted_36.png&quot;, &quot;Deleted / Voided&quot;),
+	  
+	IF(
+	  OR(Type__c==&apos;Credit Note (Invoice)&apos;, Type__c==&apos;Invoice&apos;),
+	  IF( 
+		OR(Status__c = &apos;DRAFT&apos;, Status__c = &apos;SUBMITTED&apos;),
+		IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/draft_submitted_36.png&quot;, &quot;Draft / Submitted for Approval&quot; ) ,
+		IF( Amount_Overdue__c &gt; 0,
+		  IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/flag_red_36.png&quot;, &quot;Overdue&quot;) ,
+		  IF( Amount_Due__c &gt; 0,
+			IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/flag_yellow_36.png&quot;, &quot;Due&quot;) ,
+			IF( 
+			  AND(Type__c == &apos;Credit Note (Invoice)&apos;,Credit_Note_Allocated_Credit__c  &lt;&gt; Credit_Note_Total_Amount__c) ,
+			  IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/flag_yellow_36.png&quot;, &quot;Due&quot;),
+			  IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/flag_green_36.png&quot;, &quot;Paid&quot;)
+			)
+		  )
+		)
+	  ),	  
+	  IF(OR(Type__c==&apos;Credit Note (Bill)&apos;, Type__c==&apos;Bill&apos;),
+			IF(	OR(Status__c != &apos;PAID&apos;,Amount_Due__c &gt; 0,Amount_Overdue__c &gt; 0), 
+				IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/circle_36.png&quot;, &quot;Paid&quot;),
+				IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/black_full_circle_36.png&quot;, &quot;Paid&quot;, 36, 36)
+			),
+			IF(Status__c == &apos;DRAFT&apos;,
+				IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/draft_submitted_36.png&quot;, &quot;Draft&quot; ),
+				IF(OR(Status__c == &apos;SUBMITTED&apos;, Status__c == &apos;AUTHORISED&apos;),
+					IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/black_arrow_left_16.png&quot;, &quot;SUBMITTED/AUTHORISED &quot;), 
+					IF(OR(Status__c == &apos;BILLED&apos;),
+					IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/green_arrow_left_16.png&quot;, &quot;BILLED&quot;), 
+					IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/draft_submitted_36.png&quot;, &quot;Draft&quot; )
+					)
+				)				
+			)
+		)
+    )	
+  ),
+
+  IF( 
+   OR(Status__c = &apos;VOIDED&apos;, Status__c = &apos;DELETED&apos;),	  
+
+   IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/voided_deleted.png&quot;, &quot;Deleted / Voided&quot;),	  
+
+	IF( OR(Type__c==&apos;Credit Note (Invoice)&apos;, Type__c==&apos;Invoice&apos;),
+	  IF( 
+		OR(Status__c = &apos;DRAFT&apos;, Status__c = &apos;SUBMITTED&apos;),
+		IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/draft_submitted_36.png&quot;, &quot;Draft / Submitted for Approval&quot;, 16, 16) ,
+		IF( Amount_Overdue__c &gt; 0,
+		  IMAGE(&quot;/img/samples/flag_red.gif&quot;, &quot;Overdue&quot;) ,
+		  IF( Amount_Due__c &gt; 0,
+			IMAGE(&quot;/img/samples/flag_yellow.gif&quot;, &quot;Due&quot;) ,
+			IF(AND(Type__c == &apos;Credit Note (Invoice)&apos;,Credit_Note_Allocated_Credit__c  &lt;&gt; Credit_Note_Total_Amount__c), IMAGE(&quot;/img/samples/flag_yellow.gif&quot;, &quot;Due&quot;), IMAGE(&quot;/img/samples/flag_green.gif&quot;, &quot;Paid&quot;))
+		  )
+		)
+	  ),
+	  IF( OR(Type__c==&apos;Credit Note (Bill)&apos;, Type__c==&apos;Bill&apos;),
+			IF(	OR(Status__c != &apos;PAID&apos;,Amount_Due__c &gt; 0,Amount_Overdue__c &gt; 0), 
+				IMAGE(&quot;/img/samples/rating3.gif&quot;, &quot;Not Paid&quot;, 16, 16),IMAGE(&quot;/img/samples/rating5.gif&quot;, &quot;Paid&quot;)	),
+			IF(Status__c == &apos;DRAFT&apos;, IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/draft_submitted_36.png&quot;, &quot;Draft&quot;,16,16),
+				IF(Status__c == &apos;BILLED&apos;,IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/green_arrow_left_36.png&quot;, &quot;Billed&quot;,16,16),IMAGE(&quot;https://cdn.daddyanalytics.com/breadwinner/images/black_arrow_left_36.png&quot;,&apos;SUBMITTED&apos;,16,16) )
+				)				
+			)
+		)
+	)
+  )</formula>
+        <label>Status Flag</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Status__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Status</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sub_Total__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Sub Total</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Telephone__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Telephone</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Tax__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Total Tax</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Total</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Type__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Type</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Xero_Contact__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <description>Associated Xero Contact</description>
+        <externalId>false</externalId>
+        <label>Xero Contact</label>
+        <referenceTo>Breadwinner_Account_Connection__c</referenceTo>
+        <relationshipLabel>Invoices, Bills and POs</relationshipLabel>
+        <relationshipName>Invoices</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Xero_Org_ID__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Xero Org ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Xero_Org_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Xero Org Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Invoice</label>
+    <listViews>
+        <fullName>All</fullName>
+        <columns>NAME</columns>
+        <columns>Status_Flag__c</columns>
+        <columns>Status__c</columns>
+        <columns>Company_Name__c</columns>
+        <columns>Account__c</columns>
+        <columns>Opportunity__c</columns>
+        <columns>Amount_Due__c</columns>
+        <columns>Amount_Overdue__c</columns>
+        <columns>Amount_Credit__c</columns>
+        <columns>Amount_Paid__c</columns>
+        <columns>Due_Date__c</columns>
+        <columns>Invoice_Date__c</columns>
+        <columns>Currency_Code__c</columns>
+        <columns>LAST_UPDATE</columns>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <listViews>
+        <fullName>Bills</fullName>
+        <columns>NAME</columns>
+        <columns>Status_Flag__c</columns>
+        <columns>Status__c</columns>
+        <columns>Company_Name__c</columns>
+        <columns>Account_Bills_PO__c</columns>
+        <columns>Opportunity_Bills_PO__c</columns>
+        <columns>Invoice_Date__c</columns>
+        <columns>Reference__c</columns>
+        <columns>Total_Tax__c</columns>
+        <columns>Total__c</columns>
+        <columns>Currency_Code__c</columns>
+        <columns>Xero_Org_Name__c</columns>
+        <columns>LAST_UPDATE</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Type__c</field>
+            <operation>equals</operation>
+            <value>Bill</value>
+        </filters>
+        <label>Bills</label>
+    </listViews>
+    <listViews>
+        <fullName>Credit_Notes</fullName>
+        <columns>NAME</columns>
+        <columns>Status_Flag__c</columns>
+        <columns>Status__c</columns>
+        <columns>Company_Name__c</columns>
+        <columns>Account__c</columns>
+        <columns>Amount_Credit__c</columns>
+        <columns>Credit_Note_Allocated_Credit__c</columns>
+        <columns>Credit_Note_Total_Amount__c</columns>
+        <columns>Invoice_Date__c</columns>
+        <columns>Currency_Code__c</columns>
+        <columns>LAST_UPDATE</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Type__c</field>
+            <operation>contains</operation>
+            <value>Credit Note</value>
+        </filters>
+        <label>Credit Notes</label>
+    </listViews>
+    <listViews>
+        <fullName>Due_Overdue_Invoices</fullName>
+        <columns>NAME</columns>
+        <columns>Status_Flag__c</columns>
+        <columns>Status__c</columns>
+        <columns>Company_Name__c</columns>
+        <columns>Account__c</columns>
+        <columns>Opportunity__c</columns>
+        <columns>Amount_Due__c</columns>
+        <columns>Amount_Overdue__c</columns>
+        <columns>Amount_Credit__c</columns>
+        <columns>Amount_Paid__c</columns>
+        <columns>Due_Date__c</columns>
+        <columns>Invoice_Date__c</columns>
+        <columns>Currency_Code__c</columns>
+        <columns>LAST_UPDATE</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Amount_Due__c</field>
+            <operation>greaterThan</operation>
+            <value>0</value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operation>notEqual</operation>
+            <value>DRAFT</value>
+        </filters>
+        <label>Due &amp; Overdue Invoices</label>
+    </listViews>
+    <listViews>
+        <fullName>Overdue_Invoices</fullName>
+        <columns>NAME</columns>
+        <columns>Status_Flag__c</columns>
+        <columns>Status__c</columns>
+        <columns>Company_Name__c</columns>
+        <columns>Account__c</columns>
+        <columns>Opportunity__c</columns>
+        <columns>Amount_Due__c</columns>
+        <columns>Amount_Overdue__c</columns>
+        <columns>Amount_Credit__c</columns>
+        <columns>Amount_Paid__c</columns>
+        <columns>Due_Date__c</columns>
+        <columns>Invoice_Date__c</columns>
+        <columns>Currency_Code__c</columns>
+        <columns>LAST_UPDATE</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Amount_Overdue__c</field>
+            <operation>greaterThan</operation>
+            <value>0</value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operation>notEqual</operation>
+            <value>DRAFT</value>
+        </filters>
+        <label>Overdue Invoices</label>
+    </listViews>
+    <listViews>
+        <fullName>Purchase_Orders</fullName>
+        <columns>NAME</columns>
+        <columns>Status_Flag__c</columns>
+        <columns>Status__c</columns>
+        <columns>Company_Name__c</columns>
+        <columns>Account_Bills_PO__c</columns>
+        <columns>Opportunity_Bills_PO__c</columns>
+        <columns>Invoice_Date__c</columns>
+        <columns>Reference__c</columns>
+        <columns>Total_Tax__c</columns>
+        <columns>Total__c</columns>
+        <columns>Attention_To__c</columns>
+        <columns>Delivery_Date__c</columns>
+        <columns>Currency_Code__c</columns>
+        <columns>LAST_UPDATE</columns>
+        <filterScope>Everything</filterScope>
+        <filters>
+            <field>Type__c</field>
+            <operation>equals</operation>
+            <value>Purchase Order</value>
+        </filters>
+        <label>Purchase Orders</label>
+    </listViews>
+    <nameField>
+        <label>Invoice Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Invoices</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>Status_Flag__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Invoice_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Due_Date__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Total__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Amount_Overdue__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Amount_Due__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Amount_Paid__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Status__c</customTabListAdditionalFields>
+        <excludedStandardButtons>New</excludedStandardButtons>
+        <lookupDialogsAdditionalFields>Status_Flag__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Invoice_Date__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Due_Date__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Total__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Amount_Overdue__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Amount_Due__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Amount_Paid__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Status__c</lookupDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Status_Flag__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Invoice_Date__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Due_Date__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Total__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Amount_Overdue__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Amount_Due__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Amount_Paid__c</lookupPhoneDialogsAdditionalFields>
+        <lookupPhoneDialogsAdditionalFields>Status__c</lookupPhoneDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>Status_Flag__c</searchFilterFields>
+        <searchFilterFields>Invoice_Date__c</searchFilterFields>
+        <searchFilterFields>Due_Date__c</searchFilterFields>
+        <searchFilterFields>Total__c</searchFilterFields>
+        <searchFilterFields>Amount_Overdue__c</searchFilterFields>
+        <searchFilterFields>Amount_Due__c</searchFilterFields>
+        <searchFilterFields>Amount_Paid__c</searchFilterFields>
+        <searchFilterFields>Status__c</searchFilterFields>
+        <searchResultsAdditionalFields>Status_Flag__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Invoice_Date__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Due_Date__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Total__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Amount_Overdue__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Amount_Due__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Amount_Paid__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Status__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+    <webLinks>
+        <fullName>New_Bill</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>New Bill</masterLabel>
+        <openType>noSidebar</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>/apex/bread_winner__NewInvoicePage?accountid={!Account.Id}&amp;opportunityid={!Opportunity.Id}&amp;invoice_type=bill</url>
+    </webLinks>
+    <webLinks>
+        <fullName>New_Purchase_Order</fullName>
+        <availability>online</availability>
+        <displayType>massActionButton</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <height>600</height>
+        <linkType>url</linkType>
+        <masterLabel>New Purchase Order</masterLabel>
+        <openType>noSidebar</openType>
+        <protected>false</protected>
+        <requireRowSelection>false</requireRowSelection>
+        <url>/apex/bread_winner__NewInvoicePage?accountid={!Account.Id}&amp;opportunityid={!Opportunity.Id}&amp;invoice_type=purchaseorder</url>
+    </webLinks>
+</CustomObject>

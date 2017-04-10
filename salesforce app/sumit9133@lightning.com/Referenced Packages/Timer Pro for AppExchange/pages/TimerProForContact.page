@@ -1,0 +1,12 @@
+<apex:page title="Timer Pro - Contact: {!Contact.Name}" 
+	contentType="text/html" 
+	standardController="Contact" 
+	showHeader="false" sidebar="false">
+
+	<head><title>Timer Pro - Contact: {!Contact.Name}</title></head>
+	
+	<apex:stylesheet value="https://timerpro.s3.amazonaws.com/TimerProWidgetStyle.css"/>
+
+	<c:TimerProWidget nowTimingName="{!Contact.Name}"/>
+
+</apex:page>

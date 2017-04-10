@@ -1,0 +1,246 @@
+<apex:page sidebar="false" showHeader="true" controller="Bread_Winner.InvoiceMappingController" id="pg">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <apex:form >
+            <head>
+                <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.css')}" ></apex:stylesheet>
+                <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/jquery-1.11.3.js')}"></script>
+                <script>
+                    var j$ = jQuery.noConflict();
+                
+                function HideStyleSheet() {
+                    $("link.user[href$='elements.css']").each(function() {
+                        $(this).attr("href", "#");
+                    });
+                }
+                
+                function message()
+                {
+                    $(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                    $(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                    $(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                    $(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                    
+                    $("div .messageText h4").css( "color", "white" );
+                    $("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                    $("table.messageTable td").css({"color" : "white"});
+                    $("div[class*='warning'] table.messageTable td").css( "color", "black" );
+                    
+                }
+                function addallfuncs(){
+                    HideStyleSheet();
+                    message();
+                }
+                $(function(){
+                    addallfuncs();
+                    massCheckUncheck('');
+                });
+                
+                function showHideSectionConent(sectionId){
+                    var sectiondiv=document.getElementById(sectionId);
+                    
+                    if(j$(sectiondiv).hasClass("slds-is-open")){
+                        j$(sectiondiv).removeClass("slds-is-open");
+                        j$("#DeleteRecDivIdImage").attr("src","{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionClose.png')}");
+                        j$("#DeleteRecDivIdImage").css({"margin-bottom":"3px", "margin-right":"4px", "width":"14px"});
+                    }
+                    else{
+                        j$(sectiondiv).addClass("slds-is-open");
+                        j$("#DeleteRecDivIdImage").attr("src","{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/SectionOpen.png')}");
+                        j$("#DeleteRecDivIdImage").css({"margin-bottom":"0px", "margin-right":"3px", "width":"15px"});
+                    }
+                }
+                </script>
+                
+                <style>
+                    body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+                    background-color: white;
+                    -moz-border-radius: 4px;
+                    border: 0px;
+                    -webkit-border-radius: 4px;
+                    border-radius: 4px;
+                    }
+                    .tableheder{
+                    background-color: white !important;
+                    font-weight: normal !important;
+                    padding: 4px 2px 4px 5px !important;
+                    }
+                    .msgIcon{
+                    display:none;
+                    }
+                    .message .messageText {
+                    margin: 0px;
+                    }
+                    .message .messageText h4 {
+                    font-weight: inherit;
+                    display: initial;
+                    }
+                    .BreadwinnerLightning .slds-table td {
+                    white-space: normal;
+                    }
+                </style>
+                
+            </head>
+            <body>
+                <apex:outputPanel id="Body2">
+                    <div class="BreadwinnerLightning">
+                        <div class="slds-section" id="DeleteRecDivId">
+                            <apex:outputPanel id="InsertedInvoices">
+                                <div class="slds-text-heading--large" align="center">Invoices Information</div>
+                                <br/>
+                                <h3  style="display: block;">You have {!noOfRecords} Invoices with an Invoice status of Authorized or Paid with an Invoice Date in the last 90 days, with averages of&nbsp;<apex:outputText value="{!floor(noOfRecords/3)}"/> Invoices per Month.</h3><br/>
+                                <br/>
+                                <apex:outputPanel rendered="{!last90DaysInvoices.size > 0}">
+                                <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                                    <tr style="display:'';">
+                                        <th style="font-weight: bold;">Invoice</th>
+                                        <!--<th>Opportunity</th>-->
+                                        <th style="font-weight: bold;">Account</th>
+                                        <th style="font-weight: bold;">Xero Company Name</th>
+                                        <th style="font-weight: bold;">Invoice Date</th>
+                                        <th style="font-weight: bold;">Invoice Type</th>
+                                        <th style="font-weight: bold;">Invoice Status</th>
+                                    </tr>
+                                    <apex:repeat value="{!last90DaysInvoices}" var="inv" >
+                                        <tr style="display:'';">   
+                                            <td style="width:20%"><a href="/{!inv.Id}" target="_blank"> {!inv.name}  </a> </td>
+                                            <!--<td><a href="/{!inv.Opportunity__r.Id}" target="_blank">{!inv.Opportunity__r.name} </a></td>-->
+                                            <td>
+                                                <apex:outputLink value="/{!inv.Account__r.id}" rendered="{!inv.Bread_Winner__Type__c=='Invoice'}" target="_blank">{!inv.Account__r.Name}</apex:outputLink>
+                                                <apex:outputLink value="/{!inv.Account_Bills_PO__r.id}" rendered="{!inv.Bread_Winner__Type__c!='Invoice'}" target="_blank">{!inv.Account_Bills_PO__r.Name}</apex:outputLink>
+                                                <!--<a href="/{!inv.Account__r.id}" target="_blank"><apex:outputText value="{!If(inv.Type__c=='Invoice', inv.Account__r.Name, inv.Account_Bills_PO__r.Name)}"></apex:outputText> </a>--></td>
+                                            <td><a href="/{!inv.Xero_Contact__r.Id}" target="_blank">{!inv.Bread_Winner__Company_Name__c}</a></td>
+                                            <td><apex:outputText value="{0,date,MM/dd/yy}">
+                                                <apex:param value="{!Inv.Bread_Winner__Invoice_Date__c}" />
+                                                </apex:outputText></td>
+                                            <td>{!inv.Bread_Winner__Type__c}</td>
+                                            <td>{!inv.Bread_Winner__Status__c} </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </div>
+                        
+                        <apex:outputPanel rendered="{!if(noOfRecords<=100, false, true)}">
+                            <table>
+                                <tr>
+                                    <td>
+                                        Showing &nbsp;<apex:outputText >{!(setCon.pageNumber * size)+1-size}-{!IF((setCon.pageNumber * size)>noOfRecords, noOfRecords,(setCon.pageNumber * size))} of {!noOfRecords}</apex:outputText> records
+                                    </td><td Style="float: right;">
+                                    <div class="slds-grid ">
+                                        <apex:commandButton styleClass="slds-button slds-button--brand" status="fetchStatus" reRender="Body2" value="First" action="{!setCon.first}" disabled="{!!setCon.hasPrevious}" title="First Page"/>
+                                        <apex:commandButton styleClass="slds-button slds-button--brand" status="fetchStatus" reRender="Body2" value="Previous" action="{!setCon.previous}" disabled="{!!setCon.hasPrevious}" title="Previous Page"/>
+                                        <apex:commandButton styleClass="slds-button slds-button--brand" status="fetchStatus" reRender="Body2" value="Next" action="{!setCon.next}" disabled="{!!setCon.hasNext}" title="Next Page"/>
+                                        <apex:commandButton styleClass="slds-button slds-button--brand" status="fetchStatus" reRender="Body2" value="Last" action="{!setCon.last}" disabled="{!!setCon.hasNext}" title="Last Page"/>
+                                        
+                                        <apex:outputPanel style="color:#4AA02C;font-weight:bold">
+                                            <apex:actionStatus id="fetchStatus" startText="Fetching..." stopText=""/>
+                                        </apex:outputPanel>
+                                    </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </apex:outputPanel>
+                    </div>
+                </apex:outputPanel>
+            </body>
+        </apex:form>
+    </html>
+    <!--
+    <script>
+    function showLoader(){
+        $('#message').show();
+    }
+    if({!isSuccess}){
+        if('{!JSENCODE($CurrentPage.parameters.windowPopup)}'=='true'){
+            window.close();
+        }else{
+            parent.colBox$.colorbox.close();
+        }
+        //window.parent.location.href = window.parent.location.href;
+    }
+    </script>
+    
+    <br/>
+    <br/>
+    
+    <apex:form id="fm">   
+    <apex:pagemessages />
+    <div style=" font-family:Lucida Sans Unicode; font-size:25px;" align="center">
+    <b>Custom Invoice Settings</b>
+    </div>
+    <br/>
+    <div style=" font-family:Lucida Sans Unicode; font-size:13px; align:center;  color:red;">
+    <apex:outputtext rendered="{!(!isProfessionalOrHigher && !TrialOrg)}"> The functionality below is beta functionality and is not generally available. Furthermore, we may limit this functionality to certain plans. </apex:outputtext>
+    <apex:outputText rendered="{!TrialOrg}">This page is only available to customers on the Professional Plan and higher. During your free trial of Breadwinner, you can use this functionality, but if you subscribe to the Basic plan, then this will no longer be available.</apex:outputText>
+    </div>
+    <br/>
+    <div style=" font-family:Lucida Sans Unicode; font-size:13px; align:center;">
+    When creating Invoices from Opportunities and Opportunity Products, we populate data in the Invoice from standard Salesforce fields. However, you might have your own 
+    field you'd like to use to prepopulate the Invoice. You can select your own custom fields below. If you'd like to use two or more fields, we suggest you combine them using a formula.
+    </div>
+    <br/>
+    <br/>
+    <div style=" font-family:Lucida Sans Unicode; font-size:25px;">
+    Invoice Fields
+    </div>
+    <br/>
+    <div style=" font-family:Lucida Sans Unicode; font-size:13px; align:center; margin-left:3em;">
+    Invoice Fields are populated from the Opportunity object. Please select a field or a formula field below. This only affects invoices created from Opportunities.
+    </div>
+    <br/>
+    <div style=" font-family:Lucida Sans Unicode; font-size:20px; margin-left:2em;">
+    Invoice Reference
+    </div>
+    <div style="margin-left:10em;">
+    <apex:selectList value="{!selectedFieldForInvoiceReference}" size="1">
+    <apex:selectOptions value="{!textFields}"/>    
+    </apex:selectList>  
+    </div>
+    <br/>
+    <div style=" font-family:Lucida Sans Unicode; font-size:20px; margin-left:2em;">
+    Invoice Date
+    </div>
+    <div style="margin-left:10em;">
+    <apex:selectList value="{!selectedFieldForInvoiceDate}" size="1">
+    <apex:selectOptions value="{!dateFields}"/>    
+    </apex:selectList>
+    
+    </div>
+    <br/>
+    <div style=" font-family:Lucida Sans Unicode; font-size:20px; margin-left:2em;">
+    Invoice Due Date
+    </div>
+    <div style="margin-left:10em;">
+    <apex:selectList value="{!selectedFieldForInvoiceDueDate}" size="1">
+    <apex:selectOptions value="{!dateFields}"/>    
+    </apex:selectList>
+    
+    </div>
+    <br/>
+    <div style=" font-family:Lucida Sans Unicode; font-size:20px; margin-left:2em;">
+    Invoice Branding Theme
+    </div>
+    <div style="margin-left:10em;">
+    <apex:selectList value="{!selectedFieldForInvoiceBrandingTheme}" size="1">
+    <apex:selectOptions value="{!BrandingThemeFields}"/>    
+    </apex:selectList>
+    
+    </div>
+    
+    <b>Populate the Description Field in the Invoice from this field on the Opportunity products:  &nbsp;</b>  
+    <apex:selectList value="{!selectedOpportunityproductField}" size="1">
+    <apex:selectOptions value="{!OpportunityFieldname}"/>    
+    </apex:selectList>      <br/><br/><br/> 
+    
+    <b>Populate the Revenue Account Field in the Invoice from this field on the Opportunity products:  &nbsp;</b>  
+    <apex:selectList value="{!selectedproductFieldacc}" size="1">
+    <apex:selectOptions value="{!ProductFieldnameacc}"/>    
+    </apex:selectList>      <br/><br/><br/> 
+    
+    <div align="center"> 
+    <apex:commandButton value="Save" action="{!save}" onclick="showLoader();" style="align:center;margin-right:35px;margin-top:20px"/>
+    <apex:commandButton value="Cancel" action="{!cancel}"  onclick="showLoader();" style="align:center;margin-right:35px;margin-top:20px"/>
+    </div>     
+    </apex:form> -->
+</apex:page>

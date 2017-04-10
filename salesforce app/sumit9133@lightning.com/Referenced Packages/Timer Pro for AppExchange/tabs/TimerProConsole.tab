@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Timer Pro for AppExchange - Console
+Custom S-Control tab type. 
+(This tab is included for backward compatibility with older versions of Timer Pro. Use the custom Visual Force tab, included with the installation, instead. Salesforce.com&apos;s new VisualForce technology has superseded the older S-controls.)</description>
+    <frameHeight>770</frameHeight>
+    <hasSidebar>true</hasSidebar>
+    <label>Timer Pro Console (v1)</label>
+    <mobileReady>false</mobileReady>
+    <motif>Custom95: Stopwatch</motif>
+    <scontrol>Timer_Pro_Console</scontrol>
+</CustomTab>

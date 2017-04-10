@@ -1,0 +1,13 @@
+<aura:component description="Button to save data on the grid.">
+    <aura:attribute name="label" type="string" default="Save" description="Label of the button." />
+    <aura:attribute name="cellName" type="string" description="Name of the Cell Component which should save data." />
+    <aura:registerEvent name="CellSave" type="c:CellSave"  />
+    <aura:handler event="c:CellSaveComplete" action="{!c.completeSaving}" />
+    <link rel="stylesheet" href="/resource/Cell_pure_min_css" />
+    <aura:if isTrue="{! !v.saving }">
+		<a class="pure-button" onclick="{!c.saveCell}" style="font-size: 80%;">{!v.label}</a>
+		<aura:set attribute="else">
+			<a class="pure-button pure-button-disabled" style="font-size: 80%;">{!v.label}</a>
+		</aura:set>
+	</aura:if>
+</aura:component>

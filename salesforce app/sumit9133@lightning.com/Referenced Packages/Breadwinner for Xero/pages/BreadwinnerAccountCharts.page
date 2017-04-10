@@ -1,0 +1,246 @@
+<apex:page standardController="Account" extensions="Bread_Winner.BreadwinnerAccountChartsExtension" action="{!initializeAccountAndRelatedInvoice}" sidebar="false" showHeader="false">
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+     <style>
+    
+    #chartDivId ul{list-style-type: none;}
+    #chartDivId li{display: inline-block; list-style-type: none; }
+    .content{padding:15px 15px 15px 30px; margin-left:20px; border-left:2px solid #666; }
+    .labelHeading{font-size:20px; display:block; margin-bottom:10px;}
+    .orgStatus{ padding:0px; display:block;}
+    
+    #invoiceInfoTable{width:200px;}
+    .rightText{ text-align:right;}
+    .leftText{ text-align:left;}
+    .trialTxt{font-size: 12px; text-align:center; }
+    #invoiceInfoTable td{padding:5px; background: #f1f1f1;border-bottom: 1px solid #fff;}
+    .gaugeChartText{font-size: 11px;width: 200px; margin-top:-10px;}
+    .schedmsg .messageText{
+         display:none;
+         
+         }
+    #piechart_3d div[dir*='ltr']{height: 150px !important;;}
+    .pieChart3dTitle{font-size: 11px;font-weight: bold;}
+    @media screen and (max-width: 550px) {
+       #chartDivId > tbody > tr,  #chartDivId > tbody, #chartDivId{display:block;}
+       #chartDivId > tbody > tr > td{display:block;}
+       #piechart_3d,  #chart_div{width:142px; margin:0 auto;}
+       #bar_chart_div{width: 393px;margin: 0 auto;}
+       .trialTxt{text-align: center; font-size: 12px; position: relative;}
+       .gaugeChart{ text-align:center;}
+       .invoiceTable{padding:22px 15px;}
+       .barChart{padding-bottom:20px;}
+       #invoiceInfoTable{width:100%;}
+       .gaugeChartText{font-size: 11px;margin-top:0;width:auto;}
+    }
+    </style>
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart", "gauge", "bar"]});
+      google.setOnLoadCallback(drawChart);
+      
+      function drawChart() {
+                      
+            var jsonDataTotalInvoicesBilled = {!SUBSTITUTE(JSENCODE(jsonTotalBilledPieChartData), '\\', '')};
+            var pie_chart_data = new google.visualization.DataTable(jsonDataTotalInvoicesBilled);
+            
+            var pie_chart_options = {
+              //title: '{!JSENCODE(totalBilledPieChartTitle)}',
+              //titleTextStyle: {  fontSize: 11 },
+              width: 200,
+              height: 200,             
+              is3D: true,
+              colors: ['green', 'orange', 'red'],              
+              legend: { position: 'none' },
+              chartArea:{top:13}
+            };
+           
+            var gaugeData = {!JSENCODE(longestOverDueGaugeChartData)};
+            var guage_data = google.visualization.arrayToDataTable([
+              ['Label', 'Value'],
+              ['Days', gaugeData],
+            ]);
+
+            var guage_options = {
+              width: 130, height: 130,
+              max: 90,
+              redFrom: 30, redTo: 90,
+              yellowFrom:0, yellowTo: 30,
+              majorTicks: [0,30,60,90],
+              minorTicks: 5,
+              chartArea:{top:50}
+            };
+            
+            var barChartData = {!SUBSTITUTE(JSENCODE(barChartData), '\\', '') };
+            console.log(barChartData);
+            
+            var bar_chart_data = new google.visualization.DataTable(barChartData);
+            
+            var bar_chart_options = {
+                width:450,
+                height:190,
+                legend: { position: 'bottom' },
+                bar: { groupWidth: '50%' },
+                isStacked: true,
+                colors: ['green','orange', '#dc3912','#B0C4DE'],
+                chartArea:{righ:0,top:20}
+              };
+
+              if({!IF(noBarChartData,true,false)}){
+                bar_chart_options.vAxis= {minValue : 1000};
+              }
+              
+        var pie_chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        pie_chart.draw(pie_chart_data, pie_chart_options); 
+       
+        var guage_chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+        guage_chart.draw(guage_data, guage_options);
+        
+        var bar_chart = new google.visualization.ColumnChart(document.getElementById('bar_chart_div'));
+        bar_chart.draw(bar_chart_data, bar_chart_options);
+        
+      }
+      
+      window.onresize = drawChart;
+    </script>
+
+  </head>
+  <body>
+    <apex:outputPanel rendered="{!daysOverdue>0}">
+      <apex:outputPanel rendered="{!OR(isAdministrator, daysOverdue > 7)}">
+        <apex:pageMessage severity="{!daysOverdueSeverity}" summary="{!summaryMessage}" strength="{!IF(daysOverdue > 10, 3, IF(daysOverdue >3, 2, 1))}" />
+      </apex:outputPanel>
+    </apex:outputPanel>
+     <apex:outputPanel rendered="{!isAdministrator}" styleClass="schedmsg" >
+          <apex:outputPanel rendered="{!NOT(areScheduledJobsRunbyActiveUser)}" style="font-size:14px;" >
+              <apex:pageMessage severity="WARNING" >
+                  <table>
+                      <td><apex:image styleClass="crossIcon"  value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/yellow_check.png')}"/></td>
+                      <td style="vertical-align: middle;"> Breadwinner scheduled Jobs are running from an Inactive User. Visit the&nbsp;<a target="_blank" href="{!URLFOR($Page.TroubleshootingPage)}">Troubleshooting page</a> to fix this.</td>
+                  </table>
+              </apex:pageMessage>
+          </apex:outputPanel>
+      </apex:outputPanel>
+    <div align="center" style ="{!IF(AND(isExpired,NOT(isOrgOutOfSync)),'background:#FCC;', 'background:#FFFFCC;')}  layout:block; line-height:{!HTMLENCODE(lineHeight)};">
+        <apex:outputPanel rendered="{!isOrgOutOfSync}">
+          <apex:outputPanel style="{!HTMLENCODE(outOfSyncStyle)}" >
+            Please reset your connection to Xero <apex:outputText value="{!outOfSyncOrg}"/> by clicking "reconnect" in Step 2 in the <a href="{!URLFOR($Page.Breadwinner)}" target="_blank" >Breadwinner tab</a>. <a href="{!BW_SupportPortalURL}/customer/portal/articles/2065332-reset-reconnect-your-connection-to-xero-quickbooks-online" target="_blank"><apex:outputtext style="font-size:12px;"> Instructions</apex:outputtext></a>.
+          </apex:outputPanel>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!NOT(isOrgOutOfSync)}">
+          <apex:outputPanel rendered="{!AND(nodOfDaysLeft > -61, NOT(ISBLANK(expirationText)) )}" styleClass="trialTxt" >
+              {!expirationText} 
+              <apex:outputPanel rendered="{!AND(NOT(isSandbox),NOT(isDeveloperEdition))}"> Please&nbsp;
+                <a href="{!BW_API_BaseURL}/payment/{!$Organization.Id}" target="_blank">Click Here to start your subscription</a>.
+              </apex:outputPanel>              
+          </apex:outputPanel>
+          <apex:outputPanel rendered="{!AND(ISBLANK(expirationText),NOT(ISBLANK(alertMessage)))}" style="font-size:14px; line-height:22px;">
+              <apex:outputPanel style="font-size:20px; font-weight:bold">
+                Upgrade Breadwinner to access&nbsp;<apex:outputLink value="{!BW_SupportPortalURL}/customer/portal/articles/2149998-configure-default-revenue-account-and-due-date-fields" target="_blank">new features</apex:outputLink>!
+                <br/>
+              </apex:outputPanel>
+              {!alertMessage}
+          </apex:outputPanel>
+        </apex:outputPanel>
+    </div>
+    <apex:pagemessage summary="Insufficient Access" severity="WARNING" strength="3" rendered="{!NOT(AccountChartsareAccessible)}">
+        You do not have sufficient access to Read Invoices,&nbsp;<apex:outputLink styleClass="link" value="/{!Permissionsetid}">{!if(isAdministrator, 'Please assign Permission set.', 'Please contact your administrator.')}</apex:outputLink>
+    </apex:pagemessage>
+    <apex:outputPanel rendered="{!AND(isInvoicePresent, AccountChartsareAccessible)}">
+        
+        
+    
+        <table id="chartDivId" cellpadding="0" cellspacing="0" border="0" width="100%">
+            
+            <tr>
+            <!--<td class="trialTxt">
+                
+                <apex:outputpanel rendered="{!IF(nodOfDaysLeft >0, true, false )}" styleClass="trialTxt1">
+                    Your trial expires in {!nodOfDaysLeft} days.                          
+                </apex:outputpanel>
+            </td>-->
+            <!-- <td class="pieChart3d">
+                <div id="piechart_3d"></div>
+            </td>
+            <td class="gaugeChart">
+                <p class="gaugeChartText">
+                <apex:outputLabel value="{!longestOverDueGaugeChartTitle}"></apex:outputLabel>
+                </p>
+                <div id="chart_div"></div>-->
+                <td class="pieChart3d">
+               <div style="text-align:center;text-align: -webkit-center;text-align: -moz-center;">
+                    <p class="pieChart3dTitle">
+                        <apex:outputLabel value="{!totalBilledPieChartTitle}"></apex:outputLabel>
+                    </p>
+                   <div id="piechart_3d"></div>
+               </div>
+           </td>
+           <td class="gaugeChart" >
+               <div style="text-align:center;text-align: -webkit-center;text-align: -moz-center;margin-right: 20%;">
+              
+                   <p class="gaugeChartText">
+                       <apex:outputLabel value="{!longestOverDueGaugeChartTitle}"></apex:outputLabel>
+                   </p>
+                   
+                <div id="chart_div"></div>
+               </div>
+            </td>
+            <td class="invoiceTable">
+                <table id="invoiceInfoTable" cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                        <td>{!invoiceInfo.noOfOverdueInvoice}</td>
+                        <td>
+                            Invoices Overdue:
+                        </td>
+                        <td class="rightText">
+                            <apex:outputPanel rendered="{!IF(invoiceInfo.noOfOverdueInvoice > 0,true,false)}">
+                            {!invoiceInfo.amountOverdue}
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{!invoiceInfo.noOfDueInvoice}</td>
+                        <td> 
+                            Invoices Due:
+                        </td>
+                        <td class="rightText">
+                            <apex:outputPanel rendered="{!IF(invoiceInfo.noOfDueInvoice > 0,true,false)}">
+                            {!invoiceInfo.amountDue}
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {!invoiceInfo.noOfFullyPaidInvoice}
+                        </td>
+                        <td>
+                            Invoices Fully Paid:
+                        </td>
+                        <td class="rightText">
+                            <apex:outputPanel rendered="{!IF(invoiceInfo.noOfFullyPaidInvoice > 0,true,false)}">
+                            {!invoiceInfo.amountFullyPaid}
+                            </apex:outputPanel>                                    
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                  <apex:outputLabel style="{!IF(isMultiCurrency,'','padding-left:25%;')}" value="{!IF(isMultiCurrency==true, 'Amounts are in Multiple Currencies','Amounts in '+CurrencyCode)}"/>
+                </div>
+            </td>
+            <td class="barChart">
+                <div id="bar_chart_div"></div>
+            </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+    <apex:outputpanel rendered="{!!isInvoicePresent}">
+    <div style="font-size: 20px;margin-bottom: 10px;text-align: center;padding-top: 20px;">
+      {!noInvoiceMessageHeading}
+    </div>
+    <div style="font-size: 13px;margin-bottom: 10px;text-align: center;">
+      {!noInvoiceMessageSubHeading}
+    </div>    
+    </apex:outputpanel>
+  </body>
+</apex:page>

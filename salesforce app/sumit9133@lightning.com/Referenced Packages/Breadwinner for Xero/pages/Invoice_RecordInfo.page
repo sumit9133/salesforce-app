@@ -1,0 +1,104 @@
+<apex:page standardController="Bread_Winner__Invoice__c" extensions="Bread_Winner.Invoice_RecordInfoExtension" showHeader="false">
+    <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>
+    <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/jquery-1.11.3.js')}"></script>
+    <script>
+        var j$ = jQuery.noConflict();
+    
+    function HideStyleSheet() {
+        j$("link.user[href$='elements.css']").each(function() {
+            j$(this).attr("href", "#");
+        });
+    }
+    
+    function message()
+    {
+        j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+        j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+        j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+        j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+        
+        j$("div .messageText h4").css( "color", "white" );
+        j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+        j$("table.messageTable td").css({"color" : "white"});
+        j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+        
+    }
+    function addallfuncs(){
+        HideStyleSheet();
+        message();
+    }
+    j$(function(){
+        addallfuncs();
+        massCheckUncheck('');
+    });
+    </script>
+    <style>
+        .BreadwinnerLightning img {
+        max-width: initial;
+        height: initial;
+        }
+        .msgIcon{
+        display:none;
+        }
+        .message .messageText {
+        margin: 0px;
+        }
+        .message .messageText h4 {
+        font-weight: inherit;
+        }
+    </style>
+    <apex:form >
+        <div class="BreadwinnerLightning" >
+            <div class="slds-box">
+                
+                <apex:pageMessages id="pageMessagesSection"/>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr  >
+                        <td class="image">
+                            <apex:image url="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/BreadwinnerLogo.png')}" />
+                        </td>
+                        <td class="content">
+                            <apex:outputPanel rendered="{!daysOverdue>0}">
+                                <apex:outputPanel layout="block" style="color:white" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-texture" rendered="{!OR(isAdministrator, daysOverdue > 7)}">
+                                    <p>{!summaryMessage}</p>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            
+                            <apex:outputLink styleClass="slds-button slds-button--brand slds-m-top--xx-small" value="{!$Page.Bread_Winner__SendEmailPage}?id={!invoice.Id}"  target="_parent" rendered="{!AND(NOT(OR($User.UIThemeDisplayed == 'Theme4d', $User.UIThemeDisplayed == 'Theme4t')), isActiveOrganization)}">Send {!if(invoice.Bread_Winner__Type__c=='Credit Note (Invoice)' || invoice.Bread_Winner__Type__c=='Credit Note (Bill)', 'Credit Note',invoice.Bread_Winner__Type__c)} PDF as Email</apex:outputLink>
+                            <apex:outputLink styleClass="slds-button slds-button--brand slds-m-top--xx-small" value="{!$Page.Bread_Winner__SendEmailPage}?id={!invoice.Id}"  rendered="{!AND(OR($User.UIThemeDisplayed == 'Theme4d', $User.UIThemeDisplayed == 'Theme4t'), isActiveOrganization)}">Send {!if(invoice.Bread_Winner__Type__c=='Credit Note (Invoice)' || invoice.Bread_Winner__Type__c=='Credit Note (Bill)', 'Credit Note',invoice.Bread_Winner__Type__c)} PDF as Email</apex:outputLink>
+                            <apex:commandLink styleClass="slds-button slds-button--brand slds-m-top--xx-small"  value="Download {!if(invoice.Bread_Winner__Type__c=='Credit Note (Invoice)' || invoice.Bread_Winner__Type__c=='Credit Note (Bill)', 'Credit Note',invoice.Bread_Winner__Type__c)} as PDF"  action="{!downloadInvoice}" status="actStatusId" rendered="{!AND(NOT(ISBLANK(invoiceXeroId)),$ObjectType.Attachment.createable, isActiveOrganization)}" reRender="refreshpanel,pageMessagesSection" oncomplete="HideStyleSheet();message();"/>
+                            <apex:actionStatus id="actStatusId" onstop="windowRefresh();" >
+                                <apex:facet name="start" >
+                                    <div class="slds-spinner_container">
+                                        <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="alert">
+                                            <span class="slds-assistive-text">Loading</span>
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </div>                   
+                                </apex:facet>
+                            </apex:actionStatus>
+                            
+                            <ul class="slds-list--dotted slds-m-top--small">
+                                <li class="slds-text-heading--small">This Invoice record is a copy of the {!invoice.Type__c} in Xero. Please do not edit the Invoice fields on this page, as any changes you make here will not be reflected in Xero.</li>
+                                <li class="slds-text-heading--small">Any changes to the {!invoice.Type__c} made in Xero will be reflected here within the hour. Any new {!invoice.Type__c}s created in Xero will also appear in Salesforce within the hour.</li>
+                                <!-- <li class="slds-text-heading--small">If you wish to add custom fields to the Invoice Object, to reflect costs or other information, or add additional lookups to other objects, you are welcome to.</li> -->
+                            </ul>
+                            
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <apex:outputPanel id="refreshpanel" >
+            <apex:outputPanel rendered="{!refreshPage}">
+                <script>
+                function windowRefresh(){
+                    window.top.location ='/servlet/servlet.FileDownload?file={!JSENCODE(attachmentId)}&operationContext=S1';
+                }
+                </script>
+            </apex:outputPanel>
+            <apex:pageMessages />
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

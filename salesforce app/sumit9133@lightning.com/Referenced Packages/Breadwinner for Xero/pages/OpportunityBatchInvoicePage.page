@@ -1,0 +1,700 @@
+<apex:page controller="Bread_Winner.OpportunityBatchInvoiceController" sidebar="false" tabstyle="Bread_Winner__Invoice__c" showHeader="false"> 
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+            
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}" ></apex:stylesheet>
+            <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/jquery-1.11.3.js')}"></script>
+            <script>
+                var j$ = jQuery.noConflict();            
+            function identifyfield(elementt, helptext, TopMinusparam,LeftMinusParam) {
+                if(j$(".bPageHeader").outerHeight(true)==null){
+                    LeftMinusParam=LeftMinusParam-9;
+                    TopMinusparam=TopMinusparam-105;
+                }
+                var x = j$(elementt).offset();
+                var ToSetleft = x.left - LeftMinusParam;
+                j$("#help p").text(helptext);
+                var ToSetheight = x.top - TopMinusparam;
+                var heptextdiv = document.getElementById("help");
+                j$(heptextdiv).css({
+                    top: ToSetheight + 'px',
+                    left: ToSetleft + 'px',
+                    display: ""
+                })
+                
+            }
+            
+            function mouseoutclose() {
+                var heptextdiv = document.getElementById("help");
+                j$(heptextdiv).css({
+                    top: "0px",
+                    left: "0px",
+                    display: "none"
+                });
+            }
+            
+            function HideStyleSheet() {
+                j$("link.user[href$='elements.css']").each(function() {
+                    j$(this).attr("href", "#");
+                });
+            }
+            
+            function disableButton(btnid){
+                   var AllErrorMessagesCopy=j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1");
+                   var ErrorMessagesCount=AllErrorMessagesCopy.length;
+                   if(ErrorMessagesCount > 0){
+                    j$('input[id$=\"'+btnid+'\"]').attr("disabled", true);
+                    }
+                }
+            
+            function message()
+            {
+                j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                
+                j$("div .messageText h4").css( "color", "white" );
+                j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                j$("table.messageTable td").css({"color" : "white"});
+                j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+            }
+            
+            function massCheckUncheck(element){
+                if(element.id=='Checkall'){
+                    var AllCheckboxElements=j$("input[type*='checkbox']");
+                    for(x in AllCheckboxElements ){
+                        if(AllCheckboxElements[x].type=='checkbox'){
+                            AllCheckboxElements[x].checked=element.checked;
+                        }
+                    }  
+                }
+                // following is used to uncheck 
+                var AllCheckboxElementsCopy=j$("input[type*='checkbox']");
+                var checkboxtotalcount=AllCheckboxElementsCopy.length;
+                var checkedcount=0;
+                for(xw in AllCheckboxElementsCopy ){
+                    if(AllCheckboxElementsCopy[xw].checked){
+                        checkedcount+=1;}
+                }
+                //alert(document.getElementById("Checkall"));
+                if(document.getElementById("Checkall") != null){
+                    if(document.getElementById("Checkall").checked){
+                        if(checkedcount<checkboxtotalcount){
+                            document.getElementById("Checkall").checked='';
+                            document.getElementById("Checkall").value='';}
+                    }
+                    else {
+                        if(checkedcount==(checkboxtotalcount-1)){
+                            document.getElementById("Checkall").checked='checked';
+                            document.getElementById("Checkall").value='true';}
+                        else{
+                            document.getElementById("Checkall").checked='';
+                            document.getElementById("Checkall").value='';
+                        }
+                    }
+                }
+                
+            }
+            
+            j$(function() {
+                HideStyleSheet();
+                message();
+            });
+            
+            
+            function changeTheContact(name,ele){
+                if(!name.value){
+                    document.getElementById('' + name.id).style.borderColor = 'Red';
+                    document.getElementById('' + name.id).focus();
+                    alert("Please enter a valid value");
+                }
+                else{
+                    var eleid=ele+':test';
+                    j$('input[id$=\"'+eleid+'\"]').val(name.value); 
+                    document.getElementById('' + name.id).style.borderColor = '';
+                }
+                
+            }
+            
+            function enablingInput(elemId,eleValue,index)
+            {
+                j$('#'+elemId).removeAttr("disabled");
+                var eleid=index+':test';
+                j$('input[id$=\"'+eleid+'\"]').val(document.getElementById(elemId).value);
+                checkingDuplicateInputValues();
+            }
+            
+            function disablingInput (elemId,eleValue,index)
+            {
+                j$('#'+elemId).attr("disabled","disabled");
+                var eleid=index+':test';
+                j$('input[id$=\"'+eleid+'\"]').val(eleValue.value);
+                var AllTextboxElements=j$("input[type*='text']:disabled");
+                var Textboxtotalcount=AllTextboxElements.length;
+                for(i=0; i< Textboxtotalcount ; i++){
+                    document.getElementById('' + AllTextboxElements[i].id).style.borderColor = '';
+                    document.getElementById('' + AllTextboxElements[i].id).focus();
+                    }
+                checkingDuplicateInputValues();
+            }
+            
+            function checkingDuplicateInputValues(){
+                var AllTextboxElements=j$("input[type*='text']:enabled");
+                var Textboxtotalcount=AllTextboxElements.length;
+                var mapWithValuesandId = new Map();
+                var duplicatesFoundMapID = [];
+                for(i=0; i< Textboxtotalcount ; i++){
+                    document.getElementById('' + AllTextboxElements[i].id).style.borderColor = '';
+                    document.getElementById('' + AllTextboxElements[i].id).focus();
+                    if(mapWithValuesandId.has(AllTextboxElements[i].value)){
+                        duplicatesFoundMapID.push(mapWithValuesandId.get(AllTextboxElements[i].value));
+                        duplicatesFoundMapID.push(AllTextboxElements[i].id);
+                    }
+                    else
+                        mapWithValuesandId.set(AllTextboxElements[i].value,AllTextboxElements[i].id);
+                    }
+                var btnId = 'recheckbutton';
+                if(duplicatesFoundMapID.length >= 1){
+                    alert('Please enter the Unique Xero Contact Names.');
+                    for(i=0; i<duplicatesFoundMapID.length; i++ ){
+                        document.getElementById('' + duplicatesFoundMapID[i]).style.borderColor = 'Red';
+                        document.getElementById('' + duplicatesFoundMapID[i]).focus();
+                        }
+                    //j$('#'+btnId).attr("disabled","disabled");
+                    j$('*[id*=recheckbutton]:visible').attr("disabled","true");
+                }
+                else
+                    j$('*[id*=recheckbutton]:visible').removeAttr("disabled");
+            }
+            
+            
+                    
+            </script>
+            <style>
+                .message {
+                background-color: inherit;
+                border-style: none;
+                padding: initial;
+                }
+                
+                .BreadwinnerLightning .slds-section__title{
+                display: block ; 
+                text-align: right;
+                }
+                
+                .msgIcon {
+                display: none;
+                }
+                
+                .message .messageText {
+                margin: 0px;
+                }
+                
+                .message .messageText h4 {
+                font-weight: inherit;
+                display: initial;}
+                
+                body .bPageBlock,
+                body #bodyCell .bResource .secondaryPalette,
+                body .secondaryPalette.bPageBlock,
+                body .individualPalette .secondaryPalette.bPageBlock,
+                body .bodyDiv .genericTable,
+                body .genericPageBlockTable,
+                body .bodyDiv .bSubBlock,
+                body .bComponentBlock .bPageBlock,
+                body .bMyDashboard .bPageBlock,
+                body.rlHoverFrame .bPageBlock,
+                body.subjectSelectionPopup div.choicesBox,
+                body.lookupTab .secondaryPalette.bPageBlock,
+                body.popupTab .secondaryPalette.bPageBlock,
+                body.UserTagStatsPage .secondaryPalette.bPageBlock {
+                background-color: white;
+                -moz-border-radius: 4px;
+                border: 0px;
+                -webkit-border-radius: 4px;
+                border-radius: 4px;
+                
+                }       
+                .BreadwinnerLightning .slds-spinner_container{
+                position: fixed;
+                z-index: 9999;
+                }
+            </style>  
+            
+        </head>
+        <body>
+            
+            <div class="BreadwinnerLightning">
+                <apex:outputPanel rendered="{!xeroOrgId!= NULL}">
+                    <div id="help" class="slds-popover slds-popover--tooltip slds-nubbin--bottom-left  slds-theme--warning" role="tooltip" aria-live="polite" style="display:none;position:absolute;top:0px;left:0px;">
+                        <div class="slds-popover__body slds-text-longform">
+                            <p>Help text will come here dynamically</p>
+                        </div>
+                    </div>
+                    <div class="slds-page-header" role="banner">
+                        
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                                <svg aria-hidden="true" class="slds-icon slds-icon-standard-user">
+                                    <use xlink:href="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/icons/utility-sprite/svg/symbols.svg#moneybag')}"></use>
+                                </svg>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-page-header__title slds-truncate" title="Batch Invoicing from Opportunity"> Batch Invoicing from Multiple Opportunities </p>
+                                <p class="slds-text-body--small">Breadwinner • Xero </p>
+                            </div>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+                <apex:form id="formid" >
+
+                    <apex:actionStatus id="assign-action-status" layout="block">
+                        <apex:facet name="start">       
+                            <div class="slds-spinner_container">
+                                <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>     
+                        </apex:facet>       
+                    </apex:actionStatus>
+                    
+                    <div class="slds-m-horizontal--small slds-m-bottom--large">
+                        <apex:outputPanel rendered="{!AND(showSearch,xeroOrgId!= NULL) }" layout="block">
+                            <br/><apex:pageMessage severity="info" summary=" This is a Beta feature and is still being developed. If you choose to use this, please test in a Sandbox or Development org first." />
+                        </apex:outputPanel>
+                        <apex:pageMessages id="tt" escape="false" ></apex:pageMessages>
+                        <apex:outputPanel rendered="{!AND(showSearch,xeroOrgId!= NULL) }" layout="block">
+                            <h3 class="slds-section-title--divider">Opportunity Criteria</h3> 
+                            <div class="slds-form-element slds-m-horizontal--small">
+                                <label class="slds-form-element__label slds-m-top--medium" >Opportunity Stage Name</label>
+                                <div class="slds-picklist">
+                                    <apex:selectList label="Opportunity Stage Name" size="1" value="{!oppStage}" styleClass="slds-input" style="width: 30%;">
+                                        <apex:selectOption itemLabel="--Any Stage--" itemValue="" />
+                                        <apex:selectOptions value="{!OppStageNames}"></apex:selectOptions>
+                                    </apex:selectList>
+                                </div>
+                            </div><br/>
+                            <center>  <apex:commandButton action="{!searchForOpportunities}" value="Search" reRender="formid" status="assign-action-status" styleclass="slds-button slds-button--brand" oncomplete="HideStyleSheet(); message();"/>
+                            </center><br/>
+                        </apex:outputPanel>
+                        <apex:outputPanel id="oppListSection" rendered="{!AND(showOpportunities==TRUE,showWrapper== FALSE) }">
+                            <h3 class="slds-section-title--divider" style="display: block;">Opportunites</h3><br/>
+                            
+                            
+                            <div class="slds-m-horizontal--small">
+                                
+                                <apex:outputPanel rendered="{!oppList.size > 0}">
+                                    <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                                        <thead>
+                                            <tr class="slds-text-title--caps">
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Select"> 
+                                                        <span class="slds-checkbox">
+                                                            <input type="checkbox" id="Checkall" onchange="massCheckUncheck(this);" /> 
+                                                            <label class="slds-checkbox__label" for="Checkall">
+                                                                <span class="slds-checkbox--faux"></span>
+                                                            </label>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Account Name"> Account Name</div>
+                                                </th>
+                                                
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Opportunity Name">
+                                                        <apex:outputPanel >
+                                                            &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 
+                                                        </apex:outputPanel> 
+                                                        Opportunity Name
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Stage">Stage</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Close Date">Close Date</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Amount">Amount</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            <apex:repeat value="{!OppWrapperList}" var="opty" >
+                                                <tr>
+                                                    <td scope="row" data-label="Opportunity Name">
+                                                        
+                                                        <span class="slds-checkbox">
+                                                            <apex:inputcheckbox id="i" value="{!opty.isSelected}" onchange="massCheckUncheck(this);" /> 
+                                                            <apex:outputLabel styleclass="slds-checkbox__label" for="i">
+                                                                <span class="slds-checkbox--faux"></span>
+                                                            </apex:outputLabel>
+                                                        </span> 
+                                                        
+                                                    </td>
+                                                    <th scope="row" data-label="Account Name">
+                                                        <div class="slds-truncate" title="Account Name">{!opty.opp.Account.Name}</div>
+                                                    </th>
+                                                    <th scope="row" data-label="Opportunity Name">
+                                                        
+                                                        <div class="slds-truncate" title="Opportunity Name">
+                                                            <apex:outputPanel rendered="{!opty.isInvoiceCreatedToday}">
+                                                                <div class="slds-form-element__icon">
+                                                                    <a href="javascript:void(0);">
+                                                                        <img style="margin-left: 5px;margin-bottom: 2px;height:20px;width:20px;" src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/Images/Info_icon_yellow.png')}" onmouseover="identifyfield(this,' An Invoice is already created Today on this Opportunity.','165','25')" onmouseout="mouseoutclose();" />
+                                                                        <span class="slds-assistive-text">Help</span>
+                                                                    </a>
+                                                                </div>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!NOT(opty.isInvoiceCreatedToday)}">
+                                                                &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 
+                                                            </apex:outputPanel>    
+                                                            &nbsp; {!opty.opp.Name}
+                                                            
+                                                        </div>
+                                                        
+                                                    </th>
+                                                    
+                                                    <th scope="row" data-label="Stage">
+                                                        <div class="slds-truncate" title="Stage Name">{!opty.opp.StageName}</div>
+                                                    </th>
+                                                    <th scope="row" data-label="Stage">
+                                                        <div class="slds-truncate" title="Close Date">
+                                                            <apex:outputText value="{0, date,  MM'/'d'/'yy}">
+                                                                <apex:param value="{!opty.opp.Closedate}" /> 
+                                                            </apex:outputText>
+                                                        </div>
+                                                    </th>
+                                                    <th scope="row" data-label="Stage">
+                                                        <div class="slds-truncate" title="Amount">{!opty.opp.Amount}</div>
+                                                    </th>
+                                                </tr>
+                                            </apex:repeat>
+                                        </tbody>
+                                    </table>
+                                    
+                                    
+                                    
+                                </apex:outputPanel>
+                                
+                            </div>
+                            
+                            
+                            <div align="right" >
+                                <apex:commandButton action="{!invoiceGeneration}" value="Proceed" status="assign-action-status" reRender="formid,wrapSection" styleclass="slds-button slds-button--brand slds-m-top--medium slds-m-bottom--medium"  oncomplete="HideStyleSheet(); message();"/><br/>
+                            </div>
+                            
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel id="wrapSection">
+                            <apex:outputPanel rendered="{!AND(showOpportunities==FALSE,showWrapper== TRUE,is401Request == FALSE)}">
+                                <h3 class="slds-section-title--divider" style="display: block;">Opportunities with Invoices and Xero Contacts</h3><br/>
+                                <div class=" slds-m-horizontal--small ">
+                                    <apex:pageMessage severity="ERROR" rendered="{!if(MultipleXeroContactsSelectedCount == oiwrapper.size, TRUE, FALSE)}" summary=" Invoices can not be created against these Opportunities automatically, as the related Salesforce Account(s) are mapped with more than one Xero Contact." />
+                                <table class="slds-table">
+                                    
+                                    
+                                    <apex:repeat value="{!OIWrapperMapWithAccount}" var="oiw">
+                                        <tr>
+                                            <td style="padding: 0px;padding-top: 1rem;">
+                                                <div class="slds-box slds-box--x-small slds-grid" style="background-color:{!if(OIWrapperMapWithAccount[oiw][0].xeroContactDisplaytext == 'Warning - Multiple','rgba(255, 0, 0, 0.19)',if(OIWrapperMapWithAccount[oiw][0].xeroContactDisplaytext == 'New','rgba(255, 228, 128, 0.33)',' rgb(216, 242, 231)'))}">
+                                                    <!--  <div>
+<span class="slds-text-title--caps">Account Name: </span> <a href="/{!oiw.Id}" target="_blank">{!oiw.Name}</a>
+</div> -->
+                                                    
+                                                    <div class="slds-size--1-of-2 slds-m-right">
+                                                        <apex:outputPanel rendered="{!if(OIWrapperMapWithAccount[oiw][0].xeroContactDisplaytext == 'Warning - Multiple',TRUE,FALSE)}"> 
+                                                            <span style="font-weight: bold;" class="slds-text-body--small">
+                                                                <apex:outputText value="Invoices under this will not be created as there are multiple Xero Contacts."></apex:outputText>
+                                                            </span><br/>
+                                                        </apex:outputPanel>
+                                                        <span class="slds-text-title--caps">Account Name: </span><a href="/{!oiw.Id}" target="_blank">{!oiw.Name}</a>
+                                                    </div>
+                                                    <div class="slds-size--1-of-2 slds-m-left slds-text-align--right">
+                                                        <span class="slds-text-title slds-truncate">
+                                                            <apex:outputText value="{!if(OIWrapperMapWithAccount[oiw][0].xeroContactDisplaytext == 'New','A new Xero Contact will be created along with the Invoice.','')}"></apex:outputText>
+                                                        </span>
+                                                    </div> 
+                                                    
+                                                </div>
+                                                
+                                            </td>
+                                            
+                                        </tr>
+                                        
+                                        <apex:repeat value="{!OIWrapperMapWithAccount[oiw][0].bacList}" var="oiwXero">
+                                            <tr>
+                                                
+                                                <td style="padding: 0px">
+                                                    <div class="slds-m-left--xx-large slds-box slds-box--x-small" style="border-top-color: white;background-color:{!if(OIWrapperMapWithAccount[oiw][0].xeroContactDisplaytext == 'New','rgba(255, 228, 128, 0.33)','')}">
+                                                        <span class="slds-text-title--caps">Xero Contact: </span>
+                                                        <apex:outputLink value="/{!oiwXero.Id}" rendered="{!if(oiwXero.Id == NULL, False, True)}" target="__blank"> {!oiwXero.CompanyName__c}</apex:outputLink>
+                                                        <!-- <a href="/{!oiwXero.Id}" target="_blank">{!oiwXero.CompanyName__c}</a> -->
+                                                        <apex:outputText rendered="{!if(oiwXero.Id == NULL, TRUE, FALSE)}" > {!oiwXero.CompanyName__c}</apex:outputText>
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>   
+                                        </apex:repeat>
+                                        <apex:repeat value="{!OIWrapperMapWithAccount[oiw]}" var="oiwOpp">
+                                            <tr>
+                                                
+                                                <td style="padding: 0px">
+                                                    <div class="slds-m-left--xx-large ">
+                                                        <div class="slds-m-left--xx-large slds-box slds-box--x-small slds-grid">
+                                                            <div class="slds-size--1-of-3 slds-m-right--xx-large">
+                                                                <span class="slds-text-title--caps">Opportunity: </span><a href="/{!oiwOpp.opty.Id}" target="_blank">{!oiwOpp.opty.Name} </a>
+                                                            </div>
+                                                            <div class="slds-size--1-of-3 slds-text-align--right" style="padding-right: 15rem;">
+                                                                <span class="slds-text-title">Amount: </span>{!oiwOpp.opty.Amount}
+                                                            </div>
+                                                            <div class="slds-size--1-of-3">
+                                                                <span class="slds-text-title">Stage Name: </span>{!oiwOpp.opty.stagename}
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                
+                                                <td style="padding: 0px;">
+                                                    <div class="slds-m-left--xx-large">
+                                                        <div class="slds-m-left--xx-large">
+                                                            <div class="slds-m-left--xx-large slds-box slds-box--x-small slds-grid" style="border-top-color: white;background-color:{!if(OIWrapperMapWithAccount[oiw][0].xeroContactDisplaytext == 'Warning - Multiple','rgba(255, 0, 0, 0.19)',' rgb(216, 242, 231)')}">
+                                                                <div class="slds-size--1-of-3" >
+                                                                    <span class="slds-text-title--caps">Invoice: </span>
+                                                                </div>
+                                                                <div class="slds-size--1-of-3 slds-text-align--right" style="padding-right: 14.8rem;">
+                                                                    <span class="slds-text-title">Total: </span>{!oiwOpp.inv_total}
+                                                                </div>
+                                                                <div class="slds-size--1-of-3 ">
+                                                                    <span class="slds-text-title">&nbsp;Invoice Date: </span>
+                                                                    <apex:outputText value="{0, date,  MM'/'dd'/'yy}">
+                                                                        <apex:param value="{!oiwOpp.inv.Invoice_Date__c}" />
+                                                                    </apex:outputText>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>   
+                                        </apex:repeat>
+                                        
+                                    </apex:repeat>
+                                    
+                                </table>
+                                <div align="right" >
+                                    <apex:commandButton action="{!confirmXeroContacts}" value="{!if(AccountMapWithXeroContactNameSize > 0,'Create Xero Contacts','Create')}" disabled="{!if(MultipleXeroContactsSelectedCount == oiwrapper.size, TRUE, FALSE)}" rendered="{!oiwrapper.size > 0}" status="assign-action-status"  reRender="formid,wrapSection,confirmationPage" styleclass="slds-button slds-button--brand slds-m-top--medium" oncomplete="HideStyleSheet(); message();"/><br/>
+                                </div>
+                                    
+                                </div>
+                                
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel id="popup">
+                            <apex:outputPanel rendered="{!showXeroContactWarning}">
+                                
+                                
+                                <h3 class="slds-section-title--divider" style="display: block;">Xero Contact Warning </h3><br/>
+                                
+                                <div class="slds-m-horizontal--small">
+                                    <p class="slds-text-heading--small">There exists a few Xero Contacts with similar Salesforce Account Names in Xero, but they were not brought into Salesforce as they were not Customers (not Invoiced). </p>
+                                    <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-m-top--medium">
+                                        <tr>
+                                            <th><span class="slds-text-title--caps">SF Account</span></th>
+                                            <th><span class="slds-text-title--caps">Xero Contact Name</span></th>
+                                            
+                                        </tr>
+                                        <apex:variable var="index" value="{!0}" >
+                                            <apex:repeat value="{!XeroContactsThatAreNotCustomersMapWithAccountNameDup}" var="xc">
+                                                <tr>
+                                                    <td>{!XeroContactsThatAreNotCustomersMapWithAccountId[xc].name}</td>
+                                                    <td>
+                                                        
+                                                        <apex:inputHidden value="{!XeroContactsThatAreNotCustomersMapWithAccountNameDup[xc]}" html-class="{!xc}hdn" id="test"  />
+                                                        <span class="slds-radio">
+                                                            <input type="radio" checked="true" name="XeroContact+{!xc}" id="{!xc+'name'}" value="{!XeroContactsThatAreNotCustomersMapWithAccountName[xc]}" onclick="disablingInput('{!xc+'inputtext'}',this,'{!index}')"  />
+                                                            <label class="slds-radio__label" for="{!xc+'name'}">
+                                                                <span class="slds-radio--faux"></span>
+                                                                <span class="slds-form-element__label"> Use existing Xero Contact "<b><i>{!XeroContactsThatAreNotCustomersMapWithAccountName[xc]}</i></b>", and import it under Salesforce Account "<b><i>{!XeroContactsThatAreNotCustomersMapWithAccountId[xc].name}.</i></b>"</span>
+                                                            </label>
+                                                            <br/>
+                                                        </span><br/>
+                                                        <span class="slds-radio slds-m-top--x-small">
+                                                            <input type="radio" name="XeroContact+{!xc}" id="{!xc+'dup'}" value="{!XeroContactsThatAreNotCustomersMapWithAccountNameDup[xc]}" onclick="enablingInput('{!xc+'inputtext'}',this,'{!index}')" />
+                                                            <label class="slds-radio__label" for="{!xc+'dup'}">
+                                                                <span class="slds-radio--faux"></span>
+                                                                <span class="slds-form-element__label">
+                                                                    Create new Xero Contact <input class="slds-input" style="width: 10rem;" disabled="true" type="text" id="{!xc+'inputtext'}" value="{!XeroContactsThatAreNotCustomersMapWithAccountNameDup[xc]}" onchange="changeTheContact(this,'{!index}');checkingDuplicateInputValues();"/> and import it under Salesforce Account "<b><i>{!XeroContactsThatAreNotCustomersMapWithAccountId[xc].name}.</i></b>", and ignore existing Xero Contact "<b><i>{!XeroContactsThatAreNotCustomersMapWithAccountName[xc]}</i></b>".
+                                                                </span>
+                                                            </label>
+                                                            <br/>
+                                                        </span>
+                                                        <script>
+                                                        document.getElementsByClassName("{!xc}hdn")[0].value = "{!XeroContactsThatAreNotCustomersMapWithAccountName[xc]}";
+                                                        </script>
+                                                        
+                                                        <apex:variable var="index" value="{!index+1}" />
+                                                        
+                                                    </td>
+                                                    
+                                                    
+                                                </tr>
+                                            </apex:repeat>
+                                        </apex:variable>
+                                    </table>
+                                    <div align="right" >
+                                        <apex:commandButton id="recheckbutton" styleclass="slds-button slds-button--brand slds-m-top--medium" action="{!reCheckDuplicateXeroContact}" status="assign-action-status" reRender="formid" value="Continue" oncomplete="HideStyleSheet(); message();" />
+                                    </div>    
+                                </div>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel id="confirmationPage">
+                            <apex:outputPanel rendered="{!showContactCreationSuccessPage}">
+                                <h3 class="slds-section-title--divider" style="display: block;">Confirm to Create Invoices</h3><br/>
+                                <div class="slds-m-horizontal--small" >
+                                
+                                <table class="slds-table">
+                                    <apex:repeat value="{!OIWrapperMapWithAccount}" var="oiw">
+                                        <apex:outputPanel rendered="{!if(OIWrapperMapWithAccount[oiw][0].xeroContactDisplaytext == 'Warning - Multiple',FALSE,TRUE)}"> 
+                                            <tr>
+                                                <td style="padding: 0px;padding-top: 1rem;">
+                                                    <div class="slds-box slds-box--x-small slds-grid" style="background-color:rgb(216, 242, 231);}">
+                                                        <div class="slds-size--1-of-2 slds-m-right ">
+                                                            
+                                                            <span class="slds-text-title--caps">Account Name: </span><a href="/{!oiw.Id}" target="_blank">{!oiw.Name}</a>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <apex:repeat value="{!OIWrapperMapWithAccount[oiw][0].bacList}" var="oiwXero">
+                                                <tr>
+                                                    
+                                                    <td style="padding: 0px">
+                                                        <div class="slds-m-left--xx-large slds-box slds-box--x-small" >
+                                                            <span class="slds-text-title--caps">Xero Contact: </span>
+                                                            <apex:outputLink value="/{!oiwXero.Id}" target="_blank" rendered="{!if(oiwXero.Id == NULL,False,True)}">{!oiwXero.CompanyName__c}</apex:outputLink>
+                                                            <!-- <a href="/{!oiwXero.Id}" target="_blank">{!oiwXero.CompanyName__c}</a> -->
+                                                            <apex:outputLabel rendered="{!if(oiwXero.Id == NULL,True,False)}">{!oiwXero.CompanyName__c}</apex:outputLabel>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>   
+                                            </apex:repeat>
+                                            <apex:repeat value="{!OIWrapperMapWithAccount[oiw]}" var="oiwOpp">
+                                                <tr>
+                                                    
+                                                    <td style="padding: 0px">
+                                                        <div class="slds-m-left--xx-large ">
+                                                            <div class="slds-m-left--xx-large slds-box slds-box--x-small slds-grid">
+                                                                <div class="slds-size--1-of-3 slds-m-right--xx-large">
+                                                                    <span class="slds-text-title--caps">Opportunity: </span><a href="/{!oiwOpp.opty.Id}" target="_blank">{!oiwOpp.opty.Name} </a>
+                                                                </div>
+                                                                <div class="slds-size--1-of-3 slds-text-align--right" style="padding-right: 15rem;">
+                                                                    <span class="slds-text-title">Amount: </span>{!oiwOpp.opty.Amount}
+                                                                </div>
+                                                                <div class="slds-size--1-of-3">
+                                                                    <span class="slds-text-title">Stage Name: </span>{!oiwOpp.opty.stagename}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    
+                                                    <td style="padding: 0px;">
+                                                        <div class="slds-m-left--xx-large">
+                                                            <div class="slds-m-left--xx-large">
+                                                                <div class="slds-m-left--xx-large slds-box slds-box--x-small slds-grid" style="border-top-color: white;background-color:rgb(216, 242, 231)">
+                                                                    <div class="slds-size--1-of-3" >
+                                                                        <span class="slds-text-title--caps">Invoice: </span>
+                                                                    </div>
+                                                                    <div class="slds-size--1-of-3 slds-text-align--right" style="padding-right: 14.8rem;">
+                                                                        <span class="slds-text-title">Total: </span>{!oiwOpp.inv_total}
+                                                                    </div>
+                                                                    <div class="slds-size--1-of-3">
+                                                                        <span class="slds-text-title">&nbsp;Invoice Date: </span>
+                                                                        <apex:outputText value="{0, date,  MM'/'dd'/'yy}">
+                                                                            <apex:param value="{!oiwOpp.inv.Invoice_Date__c}" />
+                                                                        </apex:outputText>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>   
+                                            </apex:repeat><br/>
+                                        </apex:outputPanel>    
+                                    </apex:repeat>
+                                    
+                                </table>
+                                
+                                <div align="right" >
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-m-top--medium" >After successfully creating an Invoice, change the Opportunity Stage to: </label>
+                                        <div class="slds-picklist">
+                                            <apex:selectList label="Opportunity Stage Name" size="1" value="{!oppStagetobeModified}" styleClass="slds-input" style="width: 30%;">
+                                                <apex:selectOption itemLabel="--Do Not Change Opp Stage after creating Invoice--" itemValue="" />
+                                                <apex:selectOptions value="{!OppStageNames}"></apex:selectOptions>
+                                            </apex:selectList>
+                                        </div>
+                                    </div>
+                                    <apex:commandButton id="CreateInvButton" action="{!sendInvoicesToXero}" value="Create Invoices" status="assign-action-status"  reRender="formid,wrapSection" styleclass="slds-button slds-button--brand slds-m-top--medium slds-m-bottom--medium" oncomplete="HideStyleSheet(); message();disableButton(this.id);"/>
+                                </div>
+                                   
+                                </div>
+                            </apex:outputPanel>
+                            
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel id="InsertedInvoices" rendered="{!invoicesInserted.size > 0}">
+                            <h3 class="slds-section-title--divider" style="display: block;">Invoices created </h3><br/>
+                            <div class="slds-m-horizontal--small">
+                            <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Opportunity</th>
+                                    <th>Account</th>
+                                    <th>Xero Contact</th>
+                                    <th>Invoice Amount</th>
+                                </tr>
+                                <apex:repeat value="{!invoicesInserted}" var="inv" >
+                                    <tr>   
+                                        <td><a href="/{!inv.Id}" target="_blank"> {!inv.name}  </a> </td>
+                                        <td><a href="/{!inv.Opportunity__r.Id}" target="_blank">{!inv.Opportunity__r.name} </a></td>
+                                        <td><a href="/{!inv.Account__r.id}" target="_blank">{!inv.Account__r.name} </a></td>
+                                        <td><a href="/{!inv.Xero_Contact__r.Id}" target="_blank">{!inv.Xero_Contact__r.name} </a></td>
+                                        <td>{!inv.Bread_Winner__Total__c} </td>
+                                    </tr>
+                                    
+                                </apex:repeat>
+                            </table>
+                                    
+                            </div>
+                            <div align="right" >
+                              <apex:outputLink styleClass="slds-button slds-button--brand slds-m-top--xx-small" value="{!$Page.Bread_Winner__Breadwinner}"  target="_parent" rendered="{!NOT(OR($User.UIThemeDisplayed == 'Theme4d', $User.UIThemeDisplayed == 'Theme4t'))}">Finish</apex:outputLink>
+                              <apex:outputLink styleClass="slds-button slds-button--brand slds-m-top--xx-small" value="{!$Page.Bread_Winner__Breadwinner}"  rendered="{!OR($User.UIThemeDisplayed == 'Theme4d', $User.UIThemeDisplayed == 'Theme4t')}">Finish</apex:outputLink>  
+                            </div>
+                        </apex:outputPanel>
+                        
+                    </div>
+                </apex:form>
+            </div> 
+        </body>
+    </html>
+    
+</apex:page>

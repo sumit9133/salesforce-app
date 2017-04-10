@@ -1,0 +1,8 @@
+<design:component>
+	<design:attribute name="sobject" label="Object Name" description="Name of the Object corresponding to this grid." />
+    <design:attribute name="fields" label="Fields" description="Comma separated list of the field name to be displayed on the grid." />
+    <design:attribute name="loadData" label="Load Data" description="Whether to load data. If SOQL Query is not set, all records are retrieved. If SOQL Query is set, records are retrieved based on that query." />
+    <design:attribute name="query" label="SOQL Query" description="SOQL statement to retrieve records of the SObject. Load Data has to be true to make this query work." />
+    <design:attribute name="rows" label="Number of Rows" description="Number of rows displayed when no data is loaded." />
+	<design:attribute name="showRowHeader" label="Show Row Header" description="Whether to show Row Header on the left side of the grid." />
+</design:component>

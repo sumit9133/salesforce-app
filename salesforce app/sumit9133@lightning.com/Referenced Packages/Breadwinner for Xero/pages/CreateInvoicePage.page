@@ -1,0 +1,827 @@
+<apex:page standardcontroller="Bread_Winner__Invoice__c" sidebar="false" cache="true" extensions="Bread_Winner.CreateInvoiceExtension" docType="html-5.0" title="New Xero Invoice">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        
+        <head>
+            <apex:stylesheet value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/styles/salesforce-lightning-design-system-vf.min.css')}"></apex:stylesheet>
+            <link href="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/CSS/select2.min.css')}" rel="stylesheet" type="text/css"/>
+            <apex:includeScript value="{!URLFOR($Resource.Bread_Winner__Breadwinner_jQuery, 'jquery.min.js')}" />
+            <apex:variable value="{!OR($User.UIThemeDisplayed == 'Theme4d', $User.UIThemeDisplayed == 'Theme4t')}" var="isLightning" />
+            <script src="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/JS/select2.full.min.js')}" />
+                
+            <script>
+                var j$ = jQuery.noConflict();
+            
+            function initSelect2() {
+                console.log('init select 2');
+                j$('.select2.init').removeClass('init').select2().on('select2:close', function (evt) {
+                    document.getElementById(evt.target.id).focus();
+                });
+            }
+            function applySelect2ForTaxRate(){
+                j$('.select2.init.taxRate').removeClass('init').select2().on('select2:close', function (evt) {
+                    document.getElementById(evt.target.id).focus();
+                });
+            }
+            
+            var accountToTaxMap = {};
+            
+            function pushaccountToTaxMap(key, value) {
+                accountToTaxMap[key] = value;
+                console.log(accountToTaxMap);
+            }
+            
+            function identifyfield(elementt, helptext, TopMinusparam,LeftMinusParam) {
+                var x = j$(elementt).offset();
+                var islightningparam='{!isLightning}';
+                if(islightningparam=='true'){
+                    LeftMinusParam=LeftMinusParam-9;
+                    TopMinusparam=TopMinusparam-115;
+                }
+                
+                var ToSetleft = x.left - LeftMinusParam;
+                j$("#help p").text(helptext);
+                var ToSetheight = x.top - TopMinusparam;
+                var heptextdiv = document.getElementById("help");
+                j$(heptextdiv).css({
+                    top: ToSetheight + 'px',
+                    left: ToSetleft + 'px',
+                    display: ""
+                })
+                
+            }
+            
+            function amountfieldhelp() {
+                var heptextdiv = document.getElementById("helpAmount");
+                j$(heptextdiv).css({
+                    display: ""
+                })
+            }
+            
+            function mouseoutclose() {
+                var heptextdiv = document.getElementById("help");
+                j$(heptextdiv).css({
+                    top: "0px",
+                    left: "0px",
+                    display: "none"
+                });
+                
+                var heptextdivamount = document.getElementById("helpAmount");
+                j$(heptextdivamount).css({
+                    display: "none"
+                });
+            }
+            
+            function HideStyleSheet() {
+                j$("link.user[href$='elements.css']").each(function() {
+                    //j$(this).attr("href", "#");
+                });
+            }
+            
+            function message() {
+                j$(".infoM6, .infoM4, .infoM3, .infoM2, .infoS1").addClass("slds-notify slds-notify--alert slds-theme--inverse-text  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} );
+                j$(".errorM6, .errorM4, .errorM3, .errorM2, .errorS1").addClass("slds-notify slds-notify--alert slds-theme--error  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css({"font-weight":"500","line-height":"1.4","word-spacing":"1px"});
+                j$(".warningM6, .warningM4, .warningM3, .warningM2, .warningS1").addClass("slds-notify slds-notify--alert slds-theme--warning  slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                j$(".confirmM6, .confirmM4, .confirmM3, .confirmM2, .confirmS1").addClass("slds-notify slds-notify--alert slds-theme--success slds-text-align--left slds-text-heading--small slds-m-bottom--small").css( {"font-weight":"500","line-height":"1.4","word-spacing":"1px"} ) ;
+                
+                j$("div .messageText h4").css( "color", "white" );
+                j$("div[class*='warning'] div.messageText h4").css( "color", "black" );
+                j$("table.messageTable td").css({"color" : "white"});
+                j$("div[class*='warning'] table.messageTable td").css( "color", "black" );
+            }
+            function DatepickerOnfocusToOnclick(){
+               
+               j$("input[onfocus*='DatePicker.pickDate']").each(function( index ) {
+                   var getfocusmethod=j$( this ).attr("onfocus");
+                   j$( this ).attr("onclick",getfocusmethod).removeAttr("onfocus");
+               });
+           }
+            j$(function() {
+                HideStyleSheet();
+                message();
+                initSelect2();
+                DatepickerOnfocusToOnclick();
+            });
+            </script>
+            <style>
+                .msgIcon{
+                display:none;
+                }
+                table.messageTable td img{
+                display: none;
+                }
+                .message{
+                margin: 0px;
+                }
+                .message .messageText {
+                margin: 0px;
+                }
+                .message .messageText h4 {
+                font-weight: inherit;
+                }
+                
+                .select2-results__option {
+                margin-left:0;
+                line-height: 18px !important;
+                }
+                .select2-container .select2-selection--single .select2-selection__rendered{
+                padding-right:0px !important;
+                text-overflow: inherit;
+                }
+                .select2-container--default .select2-selection--single .select2-selection__rendered {
+                line-height: 23px !important;
+                margin: -11px;
+                margin-right: 1.1rem;
+                }
+                .select2-container .select2-selection--single{
+                height: 23px !important;
+                padding: 15px;
+                }
+                .slds-input .select2{
+                font-color:red !important;
+                padding-left: 0px !important;
+                }
+                
+                .select2-container--default .select2-selection--single {
+                border: 1px solid #d8dde6;
+                }
+                .select2-container--default .select2-selection--single .select2-selection__arrow b {
+                border-color: black transparent transparent 
+                }
+                .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b{
+                border-color: transparent transparent black transparent
+                }
+                .select2-dropdown{
+                border: 1px solid #d8dde6;
+                }
+                .select2-results__options {
+                list-style: inherit;
+                }
+                li.select2-results__option{
+                margin-left: 0px;
+                }
+                .select2-container--default .select2-search--dropdown .select2-search__field {
+                border: 1px solid #d8dde6;
+                border-radius: 4px;
+                }
+                select.slds-input{
+                padding-left: 0.50rem !important;
+                }
+            </style>
+            <style>
+                body .bPageBlock,
+                body #bodyCell .bResource .secondaryPalette,
+                body .secondaryPalette.bPageBlock,
+                body .individualPalette .secondaryPalette.bPageBlock,
+                body .bodyDiv .genericTable,
+                body .genericPageBlockTable,
+                body .bodyDiv .bSubBlock,
+                body .bComponentBlock .bPageBlock,
+                body .bMyDashboard .bPageBlock,
+                body.rlHoverFrame .bPageBlock,
+                body.subjectSelectionPopup div.choicesBox,
+                body.lookupTab .secondaryPalette.bPageBlock,
+                body.popupTab .secondaryPalette.bPageBlock,
+                body.UserTagStatsPage .secondaryPalette.bPageBlock {
+                background-color: white;
+                -moz-border-radius: 4px;
+                border: 0px;
+                -webkit-border-radius: 4px;
+                border-radius: 4px;
+                }
+                
+                table.slds-table td>img {
+                max-width: 24px !important;
+                height: 24px !important;
+                width: 24px !important;
+                }
+                
+                th.Headertocenter>div {
+                text-align: center;
+                text-transform: uppercase;
+                }
+                
+                .Headertocenter {
+                background-color: white !important;
+                font-weight: normal !important;
+                padding: 4px 2px 4px 5px !important;
+                }
+                
+                .productColumnClass,
+                .quantityColumnClass,
+                .unitpriceColumnClass,
+                .discountColumnClass,
+                .amountColumnClass,
+                .accountColumnClass,
+                .taxrateColumnClass,
+                .TrackcatogColumnClass,
+                .DeleteColumnClass {
+                width: initial;
+                }
+                
+                @media (min-width: 48em) {
+                .productColumnClass,
+                .quantityColumnClass {
+                width: 5%;
+                }
+                .unitpriceColumnClass,
+                .amountColumnClass,
+                .discountColumnClass {
+                width: 7%;
+                }
+                .accountColumnClass {
+                width: 15%;
+                }
+                .taxrateColumnClass {
+                width: 15%;
+                }
+                .TrackcatogColumnClass {
+                width: 8%;
+                }
+                .DeleteColumnClass {
+                width: 4%;
+                }
+                }
+                
+                .BreadwinnerLightning .slds-button {
+                white-space: nowrap;
+                }
+                .BreadwinnerLightning .slds-spinner_container{
+                position: fixed;
+                z-index: 9999;
+                }
+                
+                
+            </style>
+        </head>
+        
+        <body>
+            <div class="BreadwinnerLightning">
+                <apex:form id="theForm" rendered="{!noValidations}">
+                    
+                    <apex:actionStatus id="assign-action-status" layout="block">
+                        <apex:facet name="start">
+                            <div class="slds-spinner_container">
+                                <div class="slds-spinner--brand slds-spinner slds-spinner--medium" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </apex:facet>
+                    </apex:actionStatus>
+                    <apex:outputpanel rendered="{!initialized}">
+                        <apex:variable var="list" value="{!''}{!CurrencyValues}" />
+                        <!-- ----------------------------------- fields level help ---------------------------------- -->
+                        <div id="help" class="slds-popover slds-popover--tooltip slds-nubbin--bottom-left" role="tooltip" aria-live="polite" style="display:none;position:absolute;top:0px;left:0px;">
+                            <div class="slds-popover__body slds-text-longform">
+                                <p>Help text will come here dynamically</p>
+                            </div>
+                        </div>
+                        <!-- ----------------------------------- fields level help ---------------------------------- -->
+                        
+                        <!-- -------------------------- Header Start ------------------------------- -->
+                        <div class="slds-page-header" role="banner">
+                            <div class="slds-grid">
+                                <div class="slds-col slds-has-flexi-truncate">
+                                    <div class="slds-media slds-media--center slds-no-space slds-grow">
+                                        <div class="slds-media__figure">
+                                            <svg aria-hidden="true" class="slds-icon slds-icon-standard-user">
+                                                <use xlink:href="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/icons/utility-sprite/svg/symbols.svg#moneybag')}"></use>
+                                            </svg>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <p class="slds-text-heading--label">New Xero {!Invoice_Type_Label} For</p>
+                                            <h1 class="slds-page-header__title slds-m-right--small slds-truncate slds-align-middle">{!clientAccount.Bread_Winner__CompanyName__c}</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <apex:outputPanel layout="block" styleClass="slds-grid  slds-page-header__detail-row">
+                                
+                                <apex:outputPanel layout="block" styleClass="slds-page-header__detail-block" rendered="{!OR(AND(NOT(ISBLANK(clientAccount.CompanyName__c)),$ObjectType.Breadwinner_Account_Connection__c.fields.CompanyName__c.accessible),
+                                                                                                                       AND(NOT(ISBLANK(clientAccount.StreetAddress__c)),$ObjectType.Breadwinner_Account_Connection__c.fields.StreetAddress__c.accessible),
+                                                                                                                       AND(OR(NOT(ISBLANK(clientAccount.Region__c)),NOT(ISBLANK(clientAccount.PostalCode__c))),$ObjectType.Breadwinner_Account_Connection__c.fields.City__c.accessible,$ObjectType.Breadwinner_Account_Connection__c.fields.Region__c.accessible,$ObjectType.Breadwinner_Account_Connection__c.fields.PostalCode__c.accessible),
+                                                                                                                       AND(NOT(ISBLANK(clientAccount.Country__c)),$ObjectType.Breadwinner_Account_Connection__c.fields.Country__c.accessible)
+                                                                                                                       )}">
+                                    <p title="Company Information" class="slds-text-heading--label-normal slds-truncate slds-m-bottom--xx-small">Company Information</p>
+                                    <div class="slds-text-body--regular slds-truncate">
+                                        <apex:outputPanel title="{!clientAccount.Bread_Winner__CompanyName__c}" rendered="{!AND(NOT(ISBLANK(clientAccount.Bread_Winner__CompanyName__c)),$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__CompanyName__c.accessible)}">
+                                            {!clientAccount.Bread_Winner__CompanyName__c}
+                                            <br/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel title="{!clientAccount.Bread_Winner__StreetAddress__c}" rendered="{!AND(NOT(ISBLANK(clientAccount.Bread_Winner__StreetAddress__c)),$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__StreetAddress__c.accessible)}">
+                                            {!clientAccount.Bread_Winner__StreetAddress__c}
+                                            <br/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel title="{!clientAccount.Bread_Winner__City__c} {!clientAccount.Bread_Winner__Region__c} {!clientAccount.Bread_Winner__PostalCode__c}" rendered="{!AND(OR(NOT(ISBLANK(clientAccount.Bread_Winner__Region__c)),NOT(ISBLANK(clientAccount.Bread_Winner__PostalCode__c))),$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__City__c.accessible,$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Region__c.accessible,$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__PostalCode__c.accessible)}">
+                                            {!clientAccount.City__c},&nbsp;{!clientAccount.Region__c}&nbsp;{!clientAccount.PostalCode__c}
+                                            <br/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel title="{!clientAccount.Bread_Winner__Country__c}" rendered="{!AND(NOT(ISBLANK(clientAccount.Bread_Winner__Country__c)),$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Country__c.accessible)}">
+                                            {!clientAccount.Bread_Winner__Country__c}
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="slds-page-header__detail-block" rendered="{!OR(AND(NOT(ISBLANK(clientAccount.AttentionTo__c)),$ObjectType.Breadwinner_Account_Connection__c.fields.AttentionTo__c.accessible),
+                                                                                                                       AND(NOT(ISBLANK(clientAccount.EmailAddress__c)),$ObjectType.Breadwinner_Account_Connection__c.fields.EmailAddress__c.accessible))}">
+                                    <p title="Contact Info" class="slds-text-heading--label-normal slds-truncate slds-m-bottom--xx-small">Contact Info</p>
+                                    <div class="slds-text-body--regular slds-truncate">
+                                        <apex:outputPanel title="{!clientAccount.Bread_Winner__AttentionTo__c}" rendered="{!AND(NOT(ISBLANK(clientAccount.Bread_Winner__AttentionTo__c)),$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__AttentionTo__c.accessible)}">
+                                            {!clientAccount.Bread_Winner__AttentionTo__c}
+                                            <br/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel title="{!clientAccount.Bread_Winner__EmailAddress__c}" rendered="{!AND(NOT(ISBLANK(clientAccount.Bread_Winner__EmailAddress__c)),$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__EmailAddress__c.accessible)}">
+                                            {!clientAccount.Bread_Winner__EmailAddress__c}
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="slds-page-header__detail-block" rendered="{!AND(NOT(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c)),bwSetting.Bread_Winner__Multi_Org_Enabled__c)}">
+                                    <p title="Xero Org" class="slds-text-heading--label-normal slds-truncate slds-m-bottom--xx-small">Xero Org</p>
+                                    <div class="slds-text-body--regular slds-truncate">
+                                        <apex:outputPanel title="{!IF(ISBLANK(appConfigMap[clientAccount.Bread_Winner__Xero_Org_ID__c].Display_Name__c), clientAccount.Bread_Winner__Xero_Org_Name__c, appConfigMap[clientAccount.Bread_Winner__Xero_Org_ID__c].Display_Name__c)}" rendered="{!$ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__Xero_Org_Name__c.accessible}">
+                                            {!IF(ISBLANK(appConfigMap[clientAccount.Bread_Winner__Xero_Org_ID__c].Display_Name__c), clientAccount.Bread_Winner__Xero_Org_Name__c, appConfigMap[clientAccount.Bread_Winner__Xero_Org_ID__c].Display_Name__c)}
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!NOT(ISBLANK(appConfigMap[clientAccount.Bread_Winner__Xero_Org_ID__c].Logo_URL__c))}">
+                                            <br/>
+                                            <apex:image style="height: 40px" url="{!appConfigMap[clientAccount.Bread_Winner__Xero_Org_ID__c].Logo_URL__c}" />
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="slds-page-header__detail-block" rendered="{!AND(isProfessionalOrHigher, OR(xeroOrgCurrencies.size>2, haveMultiCurrencyOrg))}">
+                                    
+                                    <p title="Currency" class="slds-text-heading--label-normal slds-truncate slds-m-bottom--xx-small">Currency</p>
+                                    <div class="slds-text-body--regular slds-truncate">
+                                        <apex:outputPanel title="{!if(NOT(ISBLANK(clientAccount.Bread_Winner__DefaultCurrency__c)),clientAccount.Bread_Winner__DefaultCurrency__c,if(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c), '', if(contains(list, clientAccount.Bread_Winner__Xero_Org_ID__c),CurrencyValues[clientAccount.Bread_Winner__Xero_Org_ID__c],'')))}" rendered="{!AND($ObjectType.Bread_Winner__Breadwinner_Account_Connection__c.fields.Bread_Winner__DefaultCurrency__c.accessible, ISBLANK(Opportunity_record_Currency))}">
+                                            {!if(NOT(ISBLANK(clientAccount.Bread_Winner__DefaultCurrency__c)),clientAccount.Bread_Winner__DefaultCurrency__c,if(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c), '', if(contains(list, clientAccount.Bread_Winner__Xero_Org_ID__c),CurrencyValues[clientAccount.Bread_Winner__Xero_Org_ID__c],'')))}
+                                            
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!NOT(ISBLANK(Opportunity_record_Currency))}">
+                                            <apex:outputPanel style="color:red;font-weight:bold;" rendered="{! Opportunity_record_Currency != if(NOT(ISBLANK(clientAccount.DefaultCurrency__c)),clientAccount.DefaultCurrency__c,if(ISBLANK(clientAccount.Xero_Org_ID__c), '', if(contains(list, clientAccount.Xero_Org_ID__c),CurrencyValues[clientAccount.Xero_Org_ID__c],'')))}">
+                                                {!if(NOT(ISBLANK(clientAccount.Bread_Winner__DefaultCurrency__c)),clientAccount.Bread_Winner__DefaultCurrency__c,if(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c), '', if(contains(list, clientAccount.Bread_Winner__Xero_Org_ID__c),CurrencyValues[clientAccount.Bread_Winner__Xero_Org_ID__c],'')))}
+                                            </apex:outputPanel>
+                                            <apex:outputPanel style="color:green;" rendered="{! Opportunity_record_Currency == if(NOT(ISBLANK(clientAccount.DefaultCurrency__c)),clientAccount.DefaultCurrency__c,if(ISBLANK(clientAccount.Xero_Org_ID__c), '', if(contains(list, clientAccount.Xero_Org_ID__c),CurrencyValues[clientAccount.Xero_Org_ID__c],'')))}">
+                                                {!if(NOT(ISBLANK(clientAccount.Bread_Winner__DefaultCurrency__c)),clientAccount.Bread_Winner__DefaultCurrency__c,if(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c), '', if(contains(list, clientAccount.Bread_Winner__Xero_Org_ID__c),CurrencyValues[clientAccount.Bread_Winner__Xero_Org_ID__c],'')))}
+                                            </apex:outputPanel>                                            
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </div>
+                        <!-- --------------------------------- Header Ends  ------------------------------------ -->
+                        <apex:outputPanel rendered="{!AND(isProfessionalOrHigher, NOT(ISBLANK(Opportunity_record_Currency)), Opportunity_record_Currency != if(NOT(ISBLANK(clientAccount.Bread_Winner__DefaultCurrency__c)),clientAccount.Bread_Winner__DefaultCurrency__c,if(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c), '', if(contains(list, clientAccount.Bread_Winner__Xero_Org_ID__c),CurrencyValues[clientAccount.Bread_Winner__Xero_Org_ID__c],''))))}" layout="block">
+                            <apex:pageMessage rendered="true" severity="WARNING" strength="3" escape="false" summary="You are creating {!if(Invoice_Type_label=='Invoice', 'an', 'a')} {!Invoice_Type_label} from an Opportunity that was priced in <i><b>{!Opportunity_record_Currency}</b></i>. However, this will be created on a Xero Contact that has a default currency of <i><b>{!if(NOT(ISBLANK(clientAccount.Bread_Winner__DefaultCurrency__c)),clientAccount.Bread_Winner__DefaultCurrency__c,if(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c), '', if(contains(list, clientAccount.Bread_Winner__Xero_Org_ID__c),CurrencyValues[clientAccount.Bread_Winner__Xero_Org_ID__c],'')))}</i></b>, and as a result the Invoice will be created in <i><b>{!if(NOT(ISBLANK(clientAccount.Bread_Winner__DefaultCurrency__c)),clientAccount.Bread_Winner__DefaultCurrency__c,if(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c), '', if(contains(list, clientAccount.Bread_Winner__Xero_Org_ID__c),CurrencyValues[clientAccount.Bread_Winner__Xero_Org_ID__c],'')))}</i></b>. This will result in, for example, a 100 <i><b>{!Opportunity_record_Currency}</i></b> item being billed at 100 <i><b>{!if(NOT(ISBLANK(clientAccount.Bread_Winner__DefaultCurrency__c)),clientAccount.Bread_Winner__DefaultCurrency__c,if(ISBLANK(clientAccount.Bread_Winner__Xero_Org_ID__c), '', if(contains(list, clientAccount.Bread_Winner__Xero_Org_ID__c),CurrencyValues[clientAccount.Bread_Winner__Xero_Org_ID__c],'')))}</i></b>. Please double check the Opportunity and the Xero Contact, and also check with either your Finance Team or your Salesforce Administrator. You can also click back to change the Xero Contact's default currency." />
+                        </apex:outputPanel> 
+                        <apex:pageBlock mode="edit" id="theInvoiceDetailBlock">
+                            <apex:actionFunction action="{!CheckValidNumberORReference}" name="CheckreferenceValue" reRender="pgmsg,ButtonsPanel,billsMsgpanel" oncomplete="HideStyleSheet();message();initSelect2();" />
+                            <apex:pageMessages escape="false" id="pgmsg" ></apex:pageMessages>
+                            <apex:pageMessage rendered="{!isOAuthIssue}" escape="false" detail="{!oAuthExceptionWarningMessage}" summary="There was a problem with the connection to Xero." severity="WARNING" strength="3" />
+                            <apex:outputPanel id="billsMsgpanel">
+                                <apex:pageMessage severity="Error" summary="The {!Invoice_Type_Label} {!if(Invoice_type=='bill','Reference value', 'Number')} you have specified is already exist, Please change the {!Invoice_Type_Label} {!if(Invoice_type=='bill','Reference value', 'Number')}" title="You have provided an existing {!Invoice_Type_Label} {!if(Invoice_type=='bill','Reference value', 'Number')}" rendered="{!Existing_Custom_InvoiceNumber}" id="InvNumber"></apex:pageMessage>
+                                <apex:pageMessage severity="Error" summary="Reference is treated as Name for Bills, and due to Salesforce limitations, we can have a maximum of 80 characters in Reference" rendered="{!AND(MaxInvoiceNumberLength, Invoice_Type_Label=='Bill')}" title="Please change the Reference value and try again to create this {!Invoice_Type_Label}" id="MaxBillNumber"></apex:pageMessage>
+                                <apex:pageMessage severity="Error" summary="Due to Salesforce limitations, we can have {!Invoice_Type_Label} number at a maximum of 80 characters length." id="maxInvNumber" rendered="{!AND(MaxInvoiceNumberLength, NOT(Invoice_Type_Label=='Bill'))}" title="Please change this number on the respective record in Salesforce and try again to create this {!Invoice_Type_Label}"></apex:pageMessage>
+                                <apex:pageMessage Severity="Error" summary="Please enable {!Invoice_Type_Label}s sync for the Xero Org: {!appConfig.Bread_Winner__Connecting_App_Name__c}, in the Configuration section of Breadwinner tab, in order to create this {!Invoice_Type_Label}." rendered="{!Not(ValidCreationFor_Bill_Po)}"></apex:pageMessage>
+                                <apex:pageMessage severity="Warning" summary="You can create this {!Invoice_Type_Label}, but your {!Invoice_Type_Label}s will not get updated from Xero until your administrator completes the {!if(Invoice_Type=='purchaseorder','Purchase Order Contacts',(if(Invoice_Type=='bill','Supplier','Account' )))} Sync from Breadwinner tab." rendered="{!AND(Not(isResCustomerSyncDone), ValidCreationFor_Bill_Po)}"></apex:pageMessage>
+                            </apex:outputPanel>
+                            <!-- <apex:pageMessage rendered="{!BAC_Default_Currency_Missmatch}" escape="false" detail="" summary="Customer currency is not matching with Home Currency. Double check values before you proceed or contact your administrator." severity="WARNING" strength="3" /> -->
+                            <h3 class="slds-section-title--divider slds-m-top--medium">{!Invoice_Type_Label} Details</h3>
+                            <div class="slds-grid slds-wrap slds-m-bottom--medium">
+                                <apex:outputPanel layout="block" styleClass="slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2">
+                                    
+                                    <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-m-top--medium">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">{!Invoice_Type_Label} Number</span>
+                                            <div class="slds-form-element__control">
+                                                <apex:outputtext value="{!if(ISBLANK(Custom_InvoiceNumber) || Custom_InvoiceNumber=='',' Auto Determined by Xero',' '+Custom_InvoiceNumber)}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <apex:outputPanel layout="block" styleClass="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-m-top--medium" rendered="{!$ObjectType.Bread_Winner__Invoice__c.fields.Bread_Winner__Invoice_Date__c.createable}">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">{!if(Invoice_Type=='purchaseorder','Purchase Order',(if(Invoice_Type=='bill','Bill','Invoice' )))} Date</span>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputField id="invoiceDate" label="Invoice Date" value="{!sfInvoice.Bread_Winner__Invoice_Date__c}" styleClass="slds-input"  html-autofocus="false">
+                                                    <apex:actionSupport event="onchange" action="{!handleInvoiceDueDate}" reRender="dueDate" focus="dueDate" />
+                                                </apex:inputField>
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel layout="block" styleClass="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-m-top--medium" rendered="{!AND(NOT(Invoice_Type=='purchaseorder'),$ObjectType.Bread_Winner__Invoice__c.fields.Bread_Winner__Due_Date__c.createable)}">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <label class="slds-align-middle">Due Date</label>
+                                            </div>
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);" tabindex="-1">
+                                                    <apex:image style="height:15px;width:15px;"  value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Set the Default Due Date in the Breadwinner Tab, under Invoice Configuration Settings.','178','26')" onmouseout="mouseoutclose();" rendered="{!if(Invoice_type=='invoice', true, false)}"/>
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputField id="dueDate" label="Due Date" value="{!sfInvoice.Bread_Winner__Due_Date__c}" rendered="{!$ObjectType.Bread_Winner__Invoice__c.fields.Bread_Winner__Due_Date__c.createable}" styleClass="slds-input"   />
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel layout="block" styleClass="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-m-top--medium" rendered="{!AND((Invoice_Type=='purchaseorder'),$ObjectType.Bread_Winner__Invoice__c.fields.Bread_Winner__Delivery_Date__c.createable)}">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">Delivery Date</span>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputField id="deliveryDate" label="Delivery Date" value="{!sfInvoice.Bread_Winner__Delivery_Date__c}" rendered="{!$ObjectType.Bread_Winner__Invoice__c.fields.Bread_Winner__Delivery_Date__c.createable}" styleClass="slds-input" />
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                    
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="block" styleClass="slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2">
+                                    <apex:outputPanel layout="block" styleClass="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-m-top--medium" rendered="{!$ObjectType.Bread_Winner__Invoice__c.fields.Bread_Winner__Reference__c.createable}">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <label class="slds-align-middle">Reference</label>
+                                            </div>
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);" tabindex="-1">
+                                                    <apex:image style="height:15px;width:15px;"  value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'If you have Breadwinner Professional or Enterprise edition, you can populate the Reference field from a custom Opportunity field. Set this on the Breadwinner tab, in the section {!Invoice_Type_Label} Configuration.','230','26')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputField id="reference" value="{!sfInvoice.Bread_Winner__Reference__c}" styleClass="slds-input" onchange="CheckreferenceValue();"></apex:inputField>
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel layout="block" styleClass="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-m-top--medium">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <label class="slds-align-middle">Branding Theme</label>
+                                            </div>
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);" tabindex="-1">
+                                                    <apex:image style="height:15px;width:15px;" value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'Also known as Invoice Theme, this picklist is controlled in Xero, under General Settings > Invoice Settings. This is updated once a day, around midnight, from Xero.','213','26')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                            <div class="slds-form-element__control">
+                                                <apex:selectList id="BrandingTheme" styleClass="slds-input" value="{!selectedBrandingTheme}" size="1">
+                                                    <apex:selectOptions value="{!brandingThemes}"></apex:selectOptions>
+                                                </apex:selectList>
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel layout="block" styleClass="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-2 slds-m-top--medium" rendered="{!AND(xeroOrgCurrencies.size>0, isProfessionalOrHigher, false)}">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <label class="slds-align-middle">Default Currency</label>
+                                            </div>
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);" tabindex="-1">
+                                                    <apex:image style="height:15px;width:15px;"  value="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'This is a beta feature and may not be available at all Breadwinner subscription levels.','178','26')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                            <div class="slds-form-element__control">
+                                                <apex:selectlist id="currencycode" value="{!conDefaultCurrency}" size="1" styleclass="slds-input" rendered="{!havemulticurrency}">
+                                                    <apex:selectoptions value="{!xeroOrgCurrencies}"></apex:selectoptions>
+                                                </apex:selectlist>
+                                                <apex:outputText value="{!conDefaultCurrency}" rendered="{!!havemulticurrency}"></apex:outputText>
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                
+                            </div>
+                            <div class="slds-m-horizontal--small">
+                                <apex:outputPanel style="float:right" styleClass="slds-m-bottom--medium" layout="block" rendered="{!if(isBasicOrHigher, true, false)}">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__label">
+                                            <label class="slds-align-middle">Amounts Are</label>
+                                        </div>
+                                        <div class="slds-form-element__icon">
+                                            <a href="javascript:void(0);" tabindex="-1">
+                                                <svg aria-hidden="true" class="slds-icon slds-icon--x-small slds-icon-text-default" onmouseover="amountfieldhelp();" onmouseout="mouseoutclose();">
+                                                    <use xlink:href="{!URLFOR($Resource.Breadwinner_Xero, 'Breadwinner_Xero/SLDS/assets/icons/utility-sprite/svg/symbols.svg#info')}"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">Help</span>
+                                            </a>
+                                        </div>
+                                        <div id="helpAmount" class="slds-popover slds-popover--tooltip slds-nubbin--bottom-right" role="tooltip" aria-live="polite" style="display:none;position:absolute;top: -60px;left: -147px;margin-right: 10px;">
+                                            <div class="slds-popover__body slds-text-longform">
+                                                <p>Please select whether the amounts should be "Inclusive/Exclusive" of Tax.</p>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element__control">
+                                            <apex:selectList id="taxpick" styleClass="slds-input" tabindex="-1" value="{!TaxIncExcString}" size="1" onchange="notaxaf()">
+                                                <apex:selectOptions value="{!TaxIncExlList}"></apex:selectOptions>
+                                                <apex:actionFunction name="notaxaf" action="{!notax}" reRender="accountCode,taxRate,taxRate2,subtotalColumn,taxtotalColumn,totalColumn1,theTable" oncomplete="initSelect2();" />
+                                            </apex:selectList>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <!--------------------------- Product Box starts ----------------------------- -->
+                                
+                                <apex:repeat value="{!accountToTaxMap}" var="atm">
+                                    <script>
+                                    pushaccountToTaxMap('{!JSENCODE(atm)}', '{!JSENCODE(accountToTaxMap[atm])}');
+                                    </script>
+                                </apex:repeat>
+                                <apex:pageBlockTable value="{!lineItems}" var="item" id="theTable" styleClass="slds-table slds-table--bordered slds-max-medium-table--stacked-horizontal">
+                                    
+                                    <apex:column id="productColumn" styleClass="quantityColumnClass" headerClass="Headertocenter" headervalue="Xero Inventory Item" html-data-label="Xero Inventory Item" rendered="{!AND((UseOpportunityProducts == 'UseProducts' || AND(UseSobjectProducts == 'UseProducts' , haveinvoiceItemCode) || (haveinvoiceItemCode && ISBLANK(child_relationship_name))),OR(Invoice_Type=='invoice',InvoicefromURL) || (BillsSection && UseOpportunityProducts =='UseProducts' ) || (POforBusinessOrg && UseOpportunityProducts =='UseProducts'))}">
+                                        <div>
+                                        <apex:outputLabel id="product" value="{!item.invoiceItemCode}" styleClass="slds-truncate"></apex:outputLabel>
+                                        </div>
+                                    </apex:column>
+                                    <apex:column id="descriptionColumn" headervalue="Description" headerClass="Headertocenter" html-data-label="Description">
+                                        <apex:inputTextArea id="description" rows="1" onfocus="this.rows=3;" onblur="this.rows=1;" value="{!item.invoiceDescription}" styleClass="slds-input" />
+                                    </apex:column>
+                                    <apex:column headervalue="Quantity" styleClass="quantityColumnClass" headerClass="Headertocenter" html-data-label="Quantity">
+                                        <apex:inputText value="{!item.invoiceQuantity}" id="Qid" styleClass="slds-input slds-text-align--right" onblur="validateInputs(this.value,'Quantity',this.id);">
+                                            <apex:actionSupport event="onchange" reRender="amount,subtotalColumn,taxtotalColumn,totalColumn1"  />
+                                        </apex:inputText>
+                                    </apex:column>
+                                    <apex:column headervalue="Unit Price" styleClass="unitpriceColumnClass" headerClass="Headertocenter" html-data-label="Unit Price">
+                                        <apex:inputText value="{!item.invoicePrice}" id="Pid" styleClass="slds-input slds-text-align--right" onblur="validateInputs(this.value,'Unit Price',this.id);">
+                                            <apex:actionSupport event="onchange" reRender="amount,subtotalColumn,taxtotalColumn,totalColumn1" />
+                                        </apex:inputText>
+                                    </apex:column>
+                                    <apex:column headervalue="Discount" styleClass="discountColumnClass" rendered="{!if(Invoice_Type =='bill', False, True)}" headerClass="Headertocenter" html-data-label="Discount">
+                                        <div class="slds-grid">
+                                            <div>
+                                                <apex:inputText id="index" value="{!item.invoiceDiscount}" styleClass="slds-input slds-text-align--right" style="padding: 0 0.5rem 0 0.5rem;">
+                                                    <apex:actionSupport event="onblur" onsubmit="isDiscountValid(this.value,this.id);" reRender="amount,subtotalColumn,taxtotalColumn,totalColumn1" />
+                                                </apex:inputText>
+                                            </div>
+                                            <div>
+                                                <p class="slds-m-left--xx-small slds-m-top--xx-small">
+                                                    %
+                                                </p>
+                                            </div>
+                                        </div>
+                                        
+                                    </apex:column>
+                                    <apex:column id="accountCodeColumn" styleClass="accountColumnClass" headerClass="Headertocenter" html-data-label="Account">
+                                        <apex:facet name="header">
+                                            Account
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);" tabindex="-1">
+                                                    <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'These are updated from Xero nightly.','160','26')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                        </apex:facet>
+                                        <apex:selectList styleClass="slds-input select2 init" id="accountCode" value="{!item.invoiceAccountCode}" size="1">
+                                            <apex:selectOptions value="{!invoiceAccounts}"></apex:selectOptions>
+                                            <apex:actionSupport event="onchange" reRender="taxRateColumn" onsubmit="/*AccountChanged(this.id);*/tryMe(this.id,this.value);" oncomplete="applySelect2ForTaxRate();refreshTaxes();/*initSelect2();*/" />
+                                        </apex:selectList>
+                                        <apex:inputhidden id="accountChanged" value="{!item.isAccountChanged}" />
+                                    </apex:column>
+                                    <apex:column id="taxRateColumn" styleClass="taxrateColumnClass" headerClass="Headertocenter" html-data-label="Tax Rate">
+                                        <apex:facet name="header">
+                                            Tax Rate
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);" tabindex="-1">
+                                                    <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'These are updated from Xero nightly.','160','26')" onmouseout="mouseoutclose();" />                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                        </apex:facet>
+                                        <apex:selectList styleClass="slds-input select2 init taxRate" id="taxRate" value="{!item.invoiceTaxType}" size="1" style="width:100%;" html-autocomplete="off" disabled="{!if(TaxIncExcString!='NoTax',false,true)}">
+                                            <apex:selectOptions value="{!invoiceTaxRates}"></apex:selectOptions>
+                                            <apex:actionSupport event="onchange" reRender="accountChanged,subtotalColumn,taxtotalColumn,totalColumn1" onsubmit="/*makeAccountChangedFalse(this.id);*/" oncomplete="initSelect2();"/>
+                                        </apex:selectList>
+                                    </apex:column>
+                                    
+                                    <apex:column rendered="{!NOT(ISBLANK(trackingCategory1))}" styleClass="TrackcatogColumnClass" headerClass="Headertocenter" html-data-label="{!trackingCategory1}">
+                                        <apex:facet name="header">
+                                            {!trackingCategory1}
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);" tabindex="-1">
+                                                    <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'These are updated from Xero nightly.','160','26')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                        </apex:facet>
+                                        <apex:selectList styleClass="slds-input select2 init" value="{!item.SalesTrackingCategory1DefaultOption}" size="1" id="trackingCategory1">
+                                            <apex:selectOptions value="{!trackingCategoryNameToOptionsMap[trackingCategory1]}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:column>
+                                    <apex:column rendered="{!NOT(ISBLANK(trackingCategory2))}" styleClass="TrackcatogColumnClass" headerClass="Headertocenter" html-data-label="{!trackingCategory2}">
+                                        <apex:facet name="header">
+                                            {!trackingCategory2}
+                                            <div class="slds-form-element__icon">
+                                                <a href="javascript:void(0);" tabindex="-1">
+                                                    <img style="margin-left: 5px;margin-bottom: 4px;height:15px;width:15px;" src="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/InfoLightning.png')}" onmouseover="identifyfield(this,'These are updated from Xero nightly.','160','26')" onmouseout="mouseoutclose();" />
+                                                    <span class="slds-assistive-text">Help</span>
+                                                </a>
+                                            </div>
+                                        </apex:facet>
+                                        <apex:selectList styleClass="slds-input select2 init" value="{!item.SalesTrackingCategory2DefaultOption}" size="1" id="trackingCategory2" >
+                                            <apex:selectOptions value="{!trackingCategoryNameToOptionsMap[trackingCategory2]}"></apex:selectOptions>
+                                        </apex:selectList>
+                                    </apex:column>
+                                    <apex:column id="amountColumn" style="text-align:right;" styleClass="amountColumnClass" headervalue="Amount" headerClass="Headertocenter" html-data-label="Amount">
+                                        <apex:outputText id="amount" value="{!item.invoiceAmount}" />
+                                    </apex:column>
+                                    <apex:column headervalue="" style="text-align:center" styleClass="DeleteColumnClass" headerClass="Headertocenter">
+                                        <apex:image url="{!URLFOR($Resource.Bread_Winner__Breadwinner_Xero, 'Breadwinner_Xero/Images/delete_xero.png')}" style="cursor: pointer;" onclick="removeItem({!item.LIsrno}); " />
+                                    </apex:column>
+                                </apex:pageBlockTable>
+                                <apex:actionFunction name="refreshTaxes" reRender="taxtotalColumn,totalColumn1" />
+                                
+                                <div class="slds-m-top--medium">
+                                    <apex:commandLink tabindex="-1" value="Add more lines" style="text-decoration: underline;" action="{!addMoreLineItems}" reRender="theTable" oncomplete="initSelect2();" />
+                                    
+                                </div>
+                                
+                                <div align="right">
+                                    <apex:outputPanel layout="block" id="subtotalColumn" styleClass="slds-form-element__label">Sub Total: {!InvoiceSubtotal}</apex:outputPanel>
+                                    
+                                    <apex:outputPanel layout="block" id="taxtotalColumn" styleClass="slds-m-top--small">
+                                        <apex:outputPanel rendered="{!if(TaxIncExcString=='NoTax',false,true)}" styleClass="slds-form-element__label">{!if(TaxIncExcString == 'Exclusive' , 'Total Tax', 'Includes Tax')}: {!TaxTotal}</apex:outputPanel>
+                                    </apex:outputPanel>
+                                    
+                                    <hr style="width: 20%;margin-top: 5px;margin-bottom: 9px;background-color: black;" />
+                                    
+                                    <div class="subTotalDiv">
+                                        <apex:outputPanel layout="block" id="totalColumn1" styleClass="slds-text-heading--small">Total: {!TotalVal}</apex:outputPanel>
+                                    </div>
+                                </div>
+                                
+                                <apex:actionFunction name="removeItem" action="{!removeLineItemFromList}" status="assign-action-status" rerender="taxRate,theTable,subtotalColumn,taxtotalColumn,totalColumn1" oncomplete="initSelect2();">
+                                    <apex:param name="srNo" value="" assignTo="{!srNo}" />
+                                </apex:actionFunction>
+                                
+                                <script>
+                                function isDiscountValid(discount, discountid) {
+                                    if(isNaN(discount)){
+                                        document.getElementById('' + discountid).style.borderColor = 'Red';
+                                        alert("Please enter a valid Discount");
+                                    }
+                                    else if (discount > 100) {
+                                        //document.getElementById('' + discountid).focus();
+                                        document.getElementById('' + discountid).style.borderColor = 'Red';
+                                        alert("Please enter a valid Discount");
+                                    } else {
+                                        document.getElementById('' + discountid).style.borderColor = '';
+                                    }
+                                }
+                                
+                                function validateInputs(inputval,type,elementid){
+                                    if(isNaN(inputval)){
+                                        document.getElementById('' + elementid).style.borderColor = 'Red';
+                                        alert('Please enter a valid '+ type);
+                                    }
+                                    else{
+                                        document.getElementById('' + elementid).style.borderColor = '';
+                                    }
+                                }
+                                
+                                function AccountChanged(AccountId) {
+                                    var accountIdVar = '' + AccountId;
+                                    var checkBoxId = accountIdVar.replace("accountCode", "accountChanged");
+                                    document.getElementById(checkBoxId).value = true;
+                                    
+                                }
+                                
+                                function tryMe(AccountId, Account) {
+                                    var accountIdVar = '' + AccountId;
+                                    var accountString = '' + Account;
+                                    
+                                    var taxRateId = accountIdVar.replace("accountCode", "taxRate");
+                                    if (accountString in accountToTaxMap) {
+                                        document.getElementById(taxRateId).value = accountToTaxMap[accountString];
+                                    }
+                                    
+                                }
+                                
+                                function makeAccountChangedFalse(taxRateId) {
+                                    var tax_rate_id = '' + taxRateId;
+                                    var checkBoxId = tax_rate_id.replace("taxRate", "accountChanged");
+                                    document.getElementById(checkBoxId).value = false;
+                                }
+                                </script>
+                                <!------------------------------ Product Box Ends --------------------------->
+                                
+                                <div class="vfHelpText slds-m-top--medium" align="right">
+                                    <apex:outputLink value="javascript:return false;" tabindex="-1" style="margin-bottom:0px;text-decoration: underline;" onmouseover="identifyfield(this,'To refresh these manually, please click refresh in Step 4 of the Breadwinner tab, and then restart the Invoice creation','193','26')" onmouseout="mouseoutclose();">
+                                        Additional Information on Revenue, Tax, and Tracking Columns
+                                    </apex:outputLink>
+                                </div>
+                            </div>
+                            
+                            <apex:outputPanel layout="block" rendered="{!if(Invoice_Type=='purchaseorder', true, false)}">
+                                <h3 class="slds-section-title--divider slds-m-top--medium">Delivery Information</h3>
+                                
+                                <div class="slds-grid slds-wrap slds-m-bottom--medium">
+                                    
+                                    <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-m-top--medium">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label">Delivery Address</label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputTextArea id="index" value="{!sfinvoice.Bread_Winner__Delivery_Address__c}" styleClass="slds-input" style="height: 104px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-m-top--medium">
+                                        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label">Attention</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="index2" value="{!sfinvoice.Bread_Winner__Attention_To__c}" styleClass="slds-input" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1 ">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label slds-m-top--medium">Telephone</label>
+                                                <div class="slds-form-element__control">
+                                                    <apex:inputText id="index3" value="{!sfinvoice.Bread_Winner__Telephone__c}" styleClass="slds-input" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-3 slds-m-top--medium">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label">Delivery Instructions</label>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputTextArea id="index4" value="{!sfinvoice.Bread_Winner__Delivery_Instructions__c}" styleClass="slds-input" style="height: 104px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                            <div class="slds-text-body--small slds-m-left--small">
+                                Once you click create, we will post this to Xero and provide you the URL if you wish to edit it further.
+                            </div>
+                            <apex:outputPanel id="ButtonsPanel">
+                                <apex:outputpanel layout="block" styleclass="slds-m-bottom--medium" rendered="{!AND(NOT(Existing_Custom_InvoiceNumber), NOT(MaxInvoiceNumberLength), ValidCreationFor_Bill_Po)}">
+                                    <table>
+                                        <tr>
+                                            <td width="90%" style="text-align:right;">
+                                                <div class="slds-m-right--medium">
+                                                    
+                                                    <apex:outputPanel styleClass="slds-text-body--small" rendered="{!AND(NOT(showCreateAuthorizedInvoiceButton), bwSetting.Bread_Winner__Status__c=='trial',Invoice_Type!='bill', Invoice_Type!='purchaseorder')}" style="font-size:11px;">
+                                                        <p>Want to create Approved Invoices as well as Draft Invoices in Xero?</p>
+                                                        <p>This can be enabled in the Breadwinner tab, under Invoice Configuration.</p>
+                                                    </apex:outputPanel>
+                                                    
+                                                    <apex:outputPanel styleClass="slds-text-body--small" rendered="{!AND(NOT(showCreateAuthorizedBillButton), bwSetting.Bread_Winner__Status__c=='trial', Invoice_Type=='bill', Invoice_Type!='purchaseorder')}" style="font-size:11px;">
+                                                        <p>Want to create Approved Bill as well as Draft Bill in Xero?</p>
+                                                        <p>This can be enabled in the Breadwinner tab, under Bills Configuration.</p>
+                                                    </apex:outputPanel>
+                                                    
+                                                    <apex:outputPanel styleClass="slds-text-body--small" rendered="{!AND(NOT(showCreateAuthorizedPOButton), bwSetting.Bread_Winner__Status__c=='trial', Invoice_Type=='purchaseorder', Invoice_Type!='bill')}" style="font-size:11px;">
+                                                        <p>Want to create Approved Purchase Order as well as Draft Purchase Order in Xero?</p>
+                                                        <p>This can be enabled in the Breadwinner tab, under Purchase Orders Configuration.</p>
+                                                    </apex:outputPanel>
+                                                </div>
+                                            </td>
+                                            <td width="100%">
+                                                <apex:commandButton value="Create Draft Invoice in Xero" onclick="createDraftInvoice(); this.disabled=true; this.value='Creating...'; return false;" rendered="{!AND(showCreateDraftInvoiceButton, Invoice_Type!='bill', Invoice_Type!='purchaseorder')}" styleClass="slds-button slds-button--brand" />
+                                                <apex:commandButton value="Create Draft Bill in Xero" onclick="createDraftInvoice(); this.disabled=true; this.value='Creating...'; return false;" rendered="{!AND(showCreateDraftBillButton, Invoice_Type=='bill', Invoice_Type!='purchaseorder')}" styleClass="slds-button slds-button--brand" />
+                                                <apex:commandButton value="Create Draft Purchase Order in Xero" onclick="createDraftInvoice(); this.disabled=true; this.value='Creating...'; return false;" rendered="{!AND(showCreateDraftPOButton, Invoice_Type=='purchaseorder', Invoice_Type!='bill')}" styleClass="slds-button slds-button--brand" />
+                                            </td>
+                                            <td width="100%">
+                                                <apex:commandButton value="Create Approved Invoice in Xero" onclick="createAuthorizedInvoice(); this.disabled=true; this.value='Creating...'; return false;" rendered="{!AND(showCreateAuthorizedInvoiceButton, Invoice_Type!='bill',Invoice_Type!='purchaseorder')}" styleClass="slds-button slds-button--brand" />
+                                                <apex:commandButton value="Create Approved Bill in Xero" onclick="createAuthorizedInvoice(); this.disabled=true; this.value='Creating...'; return false;" rendered="{!AND(showCreateAuthorizedBillButton, Invoice_Type=='bill')}" styleClass="slds-button slds-button--brand" />
+                                                <apex:commandButton value="Create Approved Purchase Order in Xero" onclick="createAuthorizedInvoice(); this.disabled=true; this.value='Creating...'; return false;" rendered="{!AND(showCreateAuthorizedPOButton, Invoice_Type=='purchaseorder', Invoice_Type!='bill')}" styleClass="slds-button slds-button--brand" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputpanel>
+                            </apex:outputPanel>
+                            <apex:actionFunction name="createDraftInvoice" action="{!createXeroDraftInvoice}" />
+                            <apex:actionFunction name="createAuthorizedInvoice" action="{!createAuthorizedInvoice}" />
+                        </apex:pageBlock>
+                    </apex:outputpanel>
+                    
+                </apex:form>
+                <!-- --------------------------  Account/Opportunity Rollup Error popup --------------------------------------- -->
+                <apex:outputPanel id="ValidationErrorPopup">
+                    <apex:outputPanel rendered="{!Not(noValidations)}" >
+                        <div role="alertdialog" tabindex="-1" aria-labelledby="Rollprompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal--prompt">
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__header slds-theme--warning slds-theme--alert-texture">
+                                    <h2 class="slds-text-heading--medium" id="Rollprompt-heading-id">Warning</h2>
+                                </div>
+                                <div class="slds-modal__content slds-p-around--medium">
+                                    <div style="color:#54698d">
+                                        <p>
+                                            <apex:outputText value="{!Exceptionmessage}" escape="false" />
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-backdrop slds-backdrop--open"></div>
+                        
+                    </apex:outputPanel>
+                </apex:outputPanel>
+                <!-- --------------------------  Account/Opportunity Rollup Error popup --------------------------------------- -->
+                
+            </div>
+        </body>
+        
+    </html>
+</apex:page>

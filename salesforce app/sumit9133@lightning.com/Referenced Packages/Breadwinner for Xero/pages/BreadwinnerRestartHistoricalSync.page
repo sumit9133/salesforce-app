@@ -1,0 +1,3 @@
+<apex:page standardController="Bread_Winner__Invoice__c" recordSetVar="Invoice"> 
+    This Page is deprecated.
+</apex:page>

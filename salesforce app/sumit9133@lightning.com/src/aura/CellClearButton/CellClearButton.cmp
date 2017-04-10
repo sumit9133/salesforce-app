@@ -1,0 +1,7 @@
+<aura:component description="Button to clear data on the grid.">
+    <aura:attribute name="label" type="string"  default="Clear" description="Label of the button." />
+    <aura:attribute name="cellName" type="string" description="Name of the Cell Component which should clear the data." />
+    <aura:registerEvent name="CellClear" type="c:CellClear"  />
+    <link rel="stylesheet" href="/resource/Cell_pure_min_css" />
+	<a class="pure-button" onclick="{!c.clearCell}" style="font-size: 80%;">{!v.label}</a>
+</aura:component>

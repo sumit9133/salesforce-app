@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to set data to the grid.">
+    <aura:attribute name="records" type="object[]" description="Data for the grid." />
+    <aura:attribute name="componentName" type="string" description="Name of the component who should respond to this event." />
+</aura:event>
